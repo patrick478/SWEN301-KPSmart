@@ -1,0 +1,4 @@
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Common\bin\Debug\Common.dll
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Common\bin\Debug\Common.pdb
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Common\obj\Debug\Common.dll
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Common\obj\Debug\Common.pdb

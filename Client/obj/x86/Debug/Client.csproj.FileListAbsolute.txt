@@ -1,0 +1,9 @@
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Client\bin\Debug\Client.exe
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Client\bin\Debug\Client.pdb
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Client\obj\x86\Debug\Client.Properties.Resources.resources
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Client\obj\x86\Debug\Client.csproj.GenerateResource.Cache
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Client\obj\x86\Debug\Client.exe
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Client\obj\x86\Debug\Client.pdb
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Client\bin\Debug\Common.dll
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Client\bin\Debug\Common.pdb
+c:\users\ben\documents\visual studio 2010\Projects\KPSmart\Client\obj\x86\Debug\Client.csprojResolveAssemblyReference.cache
