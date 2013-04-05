@@ -86,6 +86,9 @@ namespace Server
             {
                 // TODO: Check if se.ErrorCode == 10054 (I think), and then fail the bind because socket already in use.
                 // This basically occurs when we try to bind to an in-use port.
+                // UPDATE: It's not 10054, 10054 is disconnect during recieve. I'll have to look into it.
+                // UPDATE2: The number appears to be 10048. http://msdn.microsoft.com/en-us/library/windows/desktop/ms740668(v=vs.85).aspx
+                // UPDATE3: We'll probably also need to catch 10049: Socket address not available.
                 Logger.WriteLine(se.ToString());
             }
             catch (Exception e)

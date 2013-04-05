@@ -1,4 +1,8 @@
-﻿using System;
+﻿//////////////////////
+// Original Writer: Ben Anderson.
+// Reviewed by:
+//////////////////////
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
