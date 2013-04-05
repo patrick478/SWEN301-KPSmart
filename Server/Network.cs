@@ -68,13 +68,18 @@ namespace Server
             IPAddress listenAddress = IPAddress.Any; // Should be fetched from config.
 
             // Setup the callbacks
-            acceptCallback = new AsyncCallback(Network.Instance.onAccept);
-            recieveCallback = new AsyncCallback(Network.Instance.onRecieve);
+            acceptCallback = new AsyncCallback(this.onAccept);
+            recieveCallback = new AsyncCallback(this.onRecieve);
 
+            // This actually creates the socket object and prepares it to be bound to a port
             this.listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             try
             {
+                // The bind. Binding the process of binding a socket to a specific port, and is essential
+                // for listening for servers on windows.
+                // It basically notifies the OS that this socket is an active socket on this port.
+                // Note, that just because a socket is bound, doesn't mean it's listening for connections.
                 this.listenSocket.Bind(new IPEndPoint(listenAddress, port));
             }
             catch (SocketException se)
@@ -98,37 +103,73 @@ namespace Server
         /// </summary>
         public void Open()
         {
+            // This actually starts the socket listening for incoming connections
             this.listenSocket.Listen(100);
+
+            // Because we're using an asynchronous socket, the OS will handle a lot of the work of actually accepting
+            // for us, using the OS level eventing. This means we just say what we want to happen on an accept-event and the
+            // OS / C# will execute that for us.
+            // This line starts an accept request, which will run "acceptCallback" when an accept is ready to happen!
             this.listenSocket.BeginAccept(acceptCallback, null);
+
             Logger.WriteLine("Server listening for connections");
         }
 
         // This function is called to accept a socket connection request on the listen socket.
-        public void onAccept(IAsyncResult ar)
+        private void onAccept(IAsyncResult ar)
         {
             // TODO: Error catching!
+            // This line ends the accept request. It returns the socket object referencing
+            // the client that has just finished the connection state.
             Socket clientSocket = this.listenSocket.EndAccept(ar);
+
+            // After accepting a client, the listener stops looking to accept new clients, so we put 
+            // it back into the state by making another call to BeginAccept.
             this.listenSocket.BeginAccept(acceptCallback, null);
 
+            // Allocates a new Client in the ConnectionManager.
             int id = ConnectionManager.Add();
+
+            // Fetch the newly created client.
             Client client = ConnectionManager.Get(id);
+
+            // Set the client socket, so that other code my use it.
             client.Socket = clientSocket;
+
+            // Records the time the client connected
             client.ConnectedTime = DateTime.Now;
 
+            // Start listening for data on the newly acquired client socket. This allows us to 
+            // start recieving immediatly.
+            // Arguments of note are the last one, 'id'. I'm setting the AsyncState variable to the ID, so that
+            // when the callback is executed, I know which Client object this particular socket is referencing.
             client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, recieveCallback, id);
 
+            // Prints out remote client stats
             IPEndPoint remoteEndPoint = client.Socket.RemoteEndPoint as IPEndPoint;
-            Logger.WriteLine("Client connected from {0}:{1}", remoteEndPoint.Address, remoteEndPoint.Port);
+            Logger.WriteLine("Client {0} connected from {1}:{2}", id, remoteEndPoint.Address, remoteEndPoint.Port);
         }
 
         // This function is executed when a client socket recieves data.
-        public void onRecieve(IAsyncResult ar)
+        private void onRecieve(IAsyncResult ar)
         {
+            // I previously set the AsyncState to the ID of the client, so get that back...
             int id = (int)ar.AsyncState;
+
+            // ...and fetch the client object
             Client client = ConnectionManager.Get(id);
+
+            // Now we've actually got the socket, we can end the recieve.
+            // 'rx' will now contain the number of bytes recieved.
             int rx = client.Socket.EndReceive(ar);
+
+            // Clone the client buffer
             byte[] recieved = client.Buffer;
+
+            // Clear the client buffer to prevent overwrites causing confusion
             Array.Clear(client.Buffer, 0, client.Buffer.Length);
+            
+            // And mark the socket as recieving so as to get more data.
             client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, recieveCallback, id);
 
             Logger.WriteLine("Recieved {0} from {1}", rx, id);
