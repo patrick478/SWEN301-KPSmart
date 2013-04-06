@@ -5,7 +5,7 @@
 // 
 //////////////////////
 
-namespace Common
+namespace Common{
     /// <summary>
     /// Describes the priority of a Delivery.
     /// 
