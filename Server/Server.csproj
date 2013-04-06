@@ -50,7 +50,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Business\DeliveryService.cs" />
     <Compile Include="Business\PathFinder.cs" />
     <Compile Include="Business\RouteService.cs" />
     <Compile Include="Network\Client.cs" />

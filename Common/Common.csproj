@@ -40,20 +40,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DomainObjects\Company.cs" />
+    <Compile Include="Company.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="DomainObjects\Country.cs" />
-    <Compile Include="DomainObjects\Delivery.cs" />
-    <Compile Include="DomainObjects\Destination.cs" />
-    <Compile Include="DomainObjects\DistributionCentre.cs" />
-    <Compile Include="DomainObjects\InternationalPort.cs" />
-    <Compile Include="DomainObjects\Price.cs" />
-    <Compile Include="DomainObjects\Priority.cs" />
-    <Compile Include="DomainObjects\Scope.cs" />
-    <Compile Include="DomainObjects\TransportType.cs" />
+    <Compile Include="Country.cs" />
+    <Compile Include="DaysOfTheWeek.cs" />
+    <Compile Include="Delivery.cs" />
+    <Compile Include="DepartureTime.cs" />
+    <Compile Include="Destination.cs" />
+    <Compile Include="DistributionCentre.cs" />
+    <Compile Include="InternationalPort.cs" />
+    <Compile Include="Price.cs" />
+    <Compile Include="Priority.cs" />
+    <Compile Include="Scope.cs" />
+    <Compile Include="WeeklyTime.cs" />
+    <Compile Include="TransportType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DomainObjects\Route.cs" />
-    <Compile Include="DomainObjects\RouteInstance.cs" />
+    <Compile Include="Route.cs" />
+    <Compile Include="RouteInstance.cs" />
     <Compile Include="StateSnapshot.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
