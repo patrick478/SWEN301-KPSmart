@@ -50,20 +50,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client.cs" />
-    <Compile Include="ConnectionManager.cs" />
-    <Compile Include="Database.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="Business\DeliveryService.cs" />
+    <Compile Include="Business\PathFinder.cs" />
+    <Compile Include="Business\RouteService.cs" />
+    <Compile Include="Network\Client.cs" />
+    <Compile Include="Network\ConnectionManager.cs" />
+    <Compile Include="Data\Database.cs" />
+    <Compile Include="Gui\Logger.cs" />
+    <Compile Include="Gui\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="Gui\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Network.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Network\Network.cs" />
+    <Compile Include="Gui\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="Gui\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

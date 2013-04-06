@@ -6,14 +6,13 @@
 // Changed By: Ben Anderson
 // Reviewed by: Bob Smith.
 //////////////////////
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using Server.Gui;
 
-namespace Server
+namespace Server.Network
 {
     /// <summary>
     /// This is the main networking class used by the server. All actual networking should take place in here.

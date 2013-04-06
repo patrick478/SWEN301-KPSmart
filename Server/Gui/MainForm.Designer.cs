@@ -1,6 +1,8 @@
-﻿namespace Server
+﻿using System.Windows.Forms;
+
+namespace Server.Gui
 {
-    partial class MainForm
+    partial class MainForm: Form
     {
         /// <summary>
         /// Required designer variable.

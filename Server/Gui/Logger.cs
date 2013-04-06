@@ -2,13 +2,11 @@
 // Original Writer: Ben Anderson.
 // Reviewed by:
 //////////////////////
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
-namespace Server
+namespace Server.Gui
 {
     /// <summary>
     /// A simple class designed to make writing to the server log easier.
@@ -20,7 +18,7 @@ namespace Server
         private static volatile Logger instance;
 
         // Locking object used for thread synchronisation
-        private static object syncRoot = new Object();
+        private static readonly object syncRoot = new Object();
 
         // Empty constructor is empty.
         private Logger() { 

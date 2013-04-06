@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data.SQLite;
-namespace Server
+﻿using System.Data.SQLite;
+using Server.Gui;
+
+namespace Server.Data
 {
     public class Database
     {

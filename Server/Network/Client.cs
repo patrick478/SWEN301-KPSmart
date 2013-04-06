@@ -5,14 +5,11 @@
 // Edited by Isabel: added socket to constructor, made it a private field. 
 // Reviewed by:
 //////////////////////
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
 using System.Net.Sockets;
 
-namespace Server
+namespace Server.Network
 {
     /// <summary>
     /// A object which represnts all known information about a connected client.

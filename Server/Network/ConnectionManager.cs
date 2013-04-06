@@ -2,13 +2,12 @@
 // Original Writer: Ben Anderson.
 // Reviewed by:  Isabel B-N 06/04/13
 //////////////////////
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Sockets;
 
-namespace Server
+namespace Server.Network
 {
     /// <summary>
     /// This is a class designed to allow for the mangement of all connected clients.

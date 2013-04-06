@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
+using Server.Data;
 
-namespace Server
+namespace Server.Gui
 {
-    public partial class MainForm : Form
+    public partial class MainForm 
     {
         public MainForm()
         {
@@ -21,7 +15,7 @@ namespace Server
             Logger.Instance.SetOutput(logBox);
             Logger.WriteLine("Server starting..");
 
-            Network network = Network.Instance;
+            Network.Network network = Network.Network.Instance;
             network.Start();
             network.Open();
 
