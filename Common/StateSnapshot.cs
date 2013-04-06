@@ -7,7 +7,11 @@
 
 namespace Common
 {
-    class StateSnapshot
+    /// <summary>
+    /// This holds all the current information for Routes, Destinations, Prices, and Deliveries.
+    /// </summary>
+    public class StateSnapshot
     {
+        //TODO
     }
 }

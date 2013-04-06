@@ -5,7 +5,7 @@
 // 
 //////////////////////
 
-namespace Common.DomainObjects
+namespace Common
 {
     /// <summary>
     /// This class represents a destination that mail can be sent to.

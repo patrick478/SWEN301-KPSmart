@@ -1,4 +1,4 @@
-﻿namespace Common.DomainObjects
+﻿namespace Common
 {
     /// <summary>
     /// Represents a country that mail can be sent to

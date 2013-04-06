@@ -5,7 +5,7 @@
 // 
 //////////////////////
 
-namespace Common.DomainObjects
+namespace Common
 {
     /// <summary>
     /// Represents an International Port.  

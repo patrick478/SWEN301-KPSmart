@@ -5,7 +5,7 @@
 // 
 //////////////////////
 
-namespace Common.DomainObjects
+namespace Common
 {
     /// <summary>
     /// This represents a destination within NZ that mail can originate from, and be sent to. 

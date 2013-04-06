@@ -5,7 +5,7 @@
 // 
 //////////////////////
 
-namespace Common.DomainObjects
+namespace Common
 {
     /// <summary>
     /// Represents the scope of a Route or Delivery.  

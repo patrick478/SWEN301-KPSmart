@@ -1,0 +1,58 @@
+﻿//////////////////////
+// Original Writer: Isabel Broome-Nicholson
+// Reviewed by: 
+//
+// 
+//////////////////////
+
+using System;
+using System.Collections.Generic;
+
+namespace Common
+{
+    /// <summary>
+    /// Represents an instance of a delivery.  It must contain at least one Route, and contained routes must be contiguous.
+    /// 
+    /// TODO: decide whether public get/set, or private.  Where does argument checking go?
+    /// </summary>
+    class Delivery
+    {
+
+        public Destination Origin { get; set; }
+        public Destination Destination { get; set; }
+
+        // Standard or Air
+        public Priority Priority { get; set; }
+
+        // Domestic or International
+        public Scope Scope { get; set; }
+
+        // the routes included in the delivery
+        public List<RouteInstance> Routes { get; set; }
+
+        // total price charged to the customer
+        public int TotalPrice { get; set; }
+
+        // total cost paid to the delivery companies
+        public int TotalCost { get; set; }
+
+        // the time the delivery was requested
+        public DateTime TimeOfRequest { get; set; }
+
+        // the time the delivery arrived at its destination
+        public DateTime TimeOfDelivery { get; set; }
+
+        // Eg. 'Domestic Air', 'International Standard'
+        public string CustomerFriendlyPriority
+        {
+            get { return Scope.ToString() + " " + Priority.ToString(); }
+        }
+
+        // the duration of the delivery
+        public TimeSpan Duration
+        {
+            get { return TimeOfDelivery.Subtract(TimeOfRequest); }
+        }
+
+    }
+}

@@ -5,8 +5,7 @@
 // 
 //////////////////////
 
-namespace Common.DomainObjects
-{
+namespace Common
     /// <summary>
     /// Describes the priority of a Delivery.
     /// 
