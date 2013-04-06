@@ -1,11 +1,12 @@
 ﻿//////////////////////
 // Original Writer: Ben Anderson.
-// Reviewed by:
+// Reviewed by:  Isabel B-N 06/04/13
 //////////////////////
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net.Sockets;
 
 namespace Server
 {
@@ -42,12 +43,13 @@ namespace Server
 
         /// <summary>
         /// Creates a new Client and returns the newly allocated ID number.
+        /// This doesn't return the Client for synchronisation reasons.
         /// </summary>
         /// <returns>The new client ID</returns>
-        public static int Add()
+        public static int Add(Socket clientSocket)
         {
             int id = GetUnixTimestamp();
-            connections.Add(id, new Client(id));
+            connections.Add(id, new Client(id, clientSocket));
             return id;
         }
     }

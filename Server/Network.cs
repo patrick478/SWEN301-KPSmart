@@ -1,6 +1,6 @@
 ﻿//////////////////////
 // Original Writer: Ben Anderson.
-// Reviewed by:
+// Reviewed by: Isabel Broome-Nicholson 06/04/13
 //
 // **Example for when someone makes a significant change**
 // Changed By: Ben Anderson
@@ -131,15 +131,12 @@ namespace Server
             this.listenSocket.BeginAccept(acceptCallback, null);
 
             // Allocates a new Client in the ConnectionManager.
-            int id = ConnectionManager.Add();
+            int id = ConnectionManager.Add(clientSocket);
 
             // Fetch the newly created client.
             Client client = ConnectionManager.Get(id);
 
-            // Set the client socket, so that other code my use it.
-            client.Socket = clientSocket;
-
-            // Records the time the client connected
+            // Records the time the client connected - due to async nature of method, this needs to happen here
             client.ConnectedTime = DateTime.Now;
 
             // Start listening for data on the newly acquired client socket. This allows us to 
