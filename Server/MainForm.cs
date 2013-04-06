@@ -24,6 +24,9 @@ namespace Server
             Network network = Network.Instance;
             network.Start();
             network.Open();
+
+            Database db = new Database();
+            db.Connect();
         }
     }
 }
