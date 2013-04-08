@@ -1,20 +1,16 @@
 ﻿namespace Common
 {
     /// <summary>
-    /// Represents a country that mail can be sent to
+    /// Represents a country that mail can be sent to.
     /// </summary>
-    public class Country
+    public class Country: DataObject
     {
        
         public Country(string name)
         {
-            this.name = name;
+            this.Name = name;
         }
 
-        private string name;
-        public string Name 
-        {
-            get { return name; }
-        }
+        public string Name { get; set; }
     }
 }

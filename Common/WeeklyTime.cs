@@ -11,7 +11,7 @@ namespace Common
     /// <summary>
     /// Still not too sure how this class works.  I'm thinking if we represent time in minutes, then we can add and subtract easily.
     /// 
-    /// Not sure if we need this class to limit it to 7 days, or if we can just use the TimeSpan class, and add an extension method to work out the day of the week?
+    /// TODO: Not sure if we need this class to limit it to 7 days and have nice constructors, or if we can just use the TimeSpan class, and add an extension method to work out the day of the week?
     /// 
     /// 
     /// TODO: if this is a good idea, we need to test it.
@@ -33,7 +33,7 @@ namespace Common
 
         public WeeklyTime(DayOfWeek day, int hour, int minute)
         {
-
+            //todo: set the value
         }
 
 

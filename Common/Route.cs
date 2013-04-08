@@ -12,7 +12,7 @@ namespace Common
     /// <summary>
     /// This represents a Route offered by a Company.
     /// </summary>
-    public class Route
+    public class Route: DataObject
     {
 
         public Route(Company company, TransportType transportType, Destination origin, Destination destination)

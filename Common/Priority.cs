@@ -7,7 +7,7 @@
 
 namespace Common{
     /// <summary>
-    /// Describes the priority of a Delivery.
+    /// Describes the priority of a Delivery.  Air or Standard.
     /// 
     /// A delivery is Standard if it contains some routes with 'Land' or 'Sea' TransportType.
     /// A delivery is Air if it only contains routes with 'Air' as the TransportType.  

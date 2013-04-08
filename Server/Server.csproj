@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Business\PathFinder.cs" />
     <Compile Include="Business\RouteService.cs" />
+    <Compile Include="Data\RouteDataHelper.cs" />
     <Compile Include="Network\Client.cs" />
     <Compile Include="Network\ConnectionManager.cs" />
     <Compile Include="Data\Database.cs" />

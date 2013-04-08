@@ -43,9 +43,9 @@
     <Compile Include="Company.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Country.cs" />
+    <Compile Include="DataObject.cs" />
     <Compile Include="DaysOfTheWeek.cs" />
     <Compile Include="Delivery.cs" />
-    <Compile Include="DepartureTime.cs" />
     <Compile Include="Destination.cs" />
     <Compile Include="DistributionCentre.cs" />
     <Compile Include="InternationalPort.cs" />
