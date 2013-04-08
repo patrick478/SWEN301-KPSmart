@@ -7,7 +7,13 @@
 
 namespace Common
 {
-    public class Company
+    /// <summary>
+    /// Represents a company that offers Route services.
+    /// </summary>
+    public class Company: DataObject
     {
+
+        private string Name { get; set; }
+
     }
 }

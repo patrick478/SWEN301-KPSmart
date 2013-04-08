@@ -13,7 +13,7 @@ namespace Common
     public abstract class Destination
     {
 
-        public Destination(Country country) 
+        protected Destination(Country country) 
         {
             Country = country;
         }

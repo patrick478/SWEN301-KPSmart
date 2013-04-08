@@ -15,7 +15,7 @@ namespace Common
     /// </summary>
     public class DistributionCentre: Destination
     {
-        // TODO: need to work out how to access countries - this should set country as NZ, but not sure where it gets it from yet, so put it in constructor for now
+
         public DistributionCentre(string name, Country country) : base(country)
         {
             Name = name;

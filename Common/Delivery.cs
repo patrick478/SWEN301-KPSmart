@@ -13,7 +13,7 @@ namespace Common
     /// <summary>
     /// Represents an instance of a delivery.  It must contain at least one Route, and contained routes must be contiguous.
     /// 
-    /// TODO: decide whether public get/set, or private.  Where does argument checking go?
+    /// TODO: decide whether public get/set, or private.  
     /// </summary>
     class Delivery
     {
