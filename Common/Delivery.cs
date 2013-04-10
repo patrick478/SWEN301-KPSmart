@@ -2,7 +2,8 @@
 // Original Writer: Isabel Broome-Nicholson
 // Reviewed by: 
 //
-// 
+// Edited by Adam: Set the class to public.
+// Reviewed by: 
 //////////////////////
 
 using System;
@@ -15,7 +16,7 @@ namespace Common
     /// 
     /// TODO: decide whether public get/set, or private.  
     /// </summary>
-    class Delivery
+    public class Delivery
     {
 
         public Destination Origin { get; set; }
