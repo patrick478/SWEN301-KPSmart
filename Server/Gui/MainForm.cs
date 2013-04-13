@@ -31,5 +31,18 @@ namespace Server.Gui
             cdh.Save(country);
 
         }
+
+        private void IzziDBTests()
+        {
+
+            CompanyDataHelper comDH = new CompanyDataHelper();
+            Company company = new Company{Name = "NZ Post"};
+            comDH.Save(company);
+
+        }
+
+
+
+
     }
 }
