@@ -28,8 +28,15 @@ namespace Server.Data
         /// <returns></returns>
         public override Country Load(int id)
         {
-            //todo
-            throw new NotImplementedException();
+            var sql = String.Format("SELECT name, code FROM `countries` WHERE country_id={0} ORDER BY created DESC LIMIT 1");
+            object[] row = Database.Instance.FetchRow(sql);
+
+            string name = row[0] as string;
+            string code = row[1] as string;
+
+            Country c = new Country(name, code);
+            c.ID = id;
+            return c;
         }
 
         /// <summary>
@@ -59,20 +66,28 @@ namespace Server.Data
         {
             if(country.ID == 0)
                 this.Create(country);
-            this.Update(country);
+            else
+                this.Update(country);
         }
 
         /// <summary>
         /// Used for saving changes to an existing Country.
         /// </summary>
         /// <param name="Country"></param>
-        public override Country Update(Country Country)
+        public override void Update(Country country)
         {
-            throw new NotImplementedException();
+            // LOCK BEGINS HERE
+            var sql = String.Format("UPDATE `countries` SET active=0 WHERE country_id={0}", country.ID);
+            Database.Instance.InsertQuery(sql);
+
+            // TODO: Should this insert the full row information?
+            sql = String.Format("INSERT INTO `countries` (country_id, active, name, code) VALUES ({0}, 1, '{1}', '{2}')", country.ID, country.Name, country.Code);
+            Database.Instance.InsertQuery(sql);
+            // LOCK ENDS HERE
         }
 
         /// <summary>
-        /// Used for saving a new Country.
+        /// Used for saving a new Country. 
         /// </summary>
         /// <param name="Country"></param>
         public override void Create(Country country)
@@ -81,11 +96,8 @@ namespace Server.Data
             long inserted_id = Database.Instance.InsertQuery(sql);
             
             sql = String.Format("SELECT country_id FROM `countries` WHERE id={0}", inserted_id);
-            Logger.WriteLine("Before");
             long country_id = Database.Instance.FetchNumberQuery(sql);
-            Logger.WriteLine("After");
             country.ID = (int)country_id;
-            Logger.WriteLine("Country.ID={0}", country.ID);
         }
 
         /// <summary>

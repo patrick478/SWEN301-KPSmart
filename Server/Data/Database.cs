@@ -79,9 +79,8 @@ namespace Server.Data
 
         public long InsertQuery(string sql)
         {
-            Logger.WriteLine("InsertQuery: {0}", sql);
+            Logger.WriteLine(sql);
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
-            Logger.WriteLine("InsertQuery-2");
             try
             {
                 int n_rows = sqlCommand.ExecuteNonQuery();
@@ -90,33 +89,44 @@ namespace Server.Data
             {
                 Logger.WriteLine("Exception: {0}", ex);
             }
-            Logger.WriteLine("InsertQuery-3");
             return this.connection.LastInsertRowId;
         }
 
         public long FetchNumberQuery(string sql)
         {
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
-            Logger.WriteLine("SQL: {0}", sql);
-
 
             long returnValue = 0;
 
             try
             {
                 object row = sqlCommand.ExecuteScalar();
-
-
                 if (row == DBNull.Value) return 0;
 
                 returnValue = (long)row;
             }
             catch (Exception ex)
             {
-                Logger.WriteLine("{0}", ex);
+                Logger.WriteLine("Exception: {0}", ex);
             }
 
             return returnValue;
+        }
+
+        public object[] FetchRow(string sql)
+        {
+            SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
+            SQLiteDataReader reader = sqlCommand.ExecuteReader();
+
+            if (reader.FieldCount < 1)
+                throw new Exception("Query returned no results");
+
+            List<object> row = new List<object>();
+            
+            for(int i = 0; i < reader.VisibleFieldCount; i++)
+                row.Add(reader.GetValue(i));
+
+            return row.ToArray();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Server.Data
         public abstract void Delete(int id);
         public abstract void Delete(T obj);
 
-        public abstract T Update(T obj);
+        public abstract void Update(T obj);
         public abstract void Create(T country);
     }
 }

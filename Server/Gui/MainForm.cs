@@ -25,7 +25,11 @@ namespace Server.Gui
             CountryDataHelper cdh = new CountryDataHelper();
             Country country = new Country("Wellington", "WLG");
             cdh.Save(country);
-            Logger.WriteLine("abc");
+            country.Code = "WLN";
+            cdh.Save(country);
+            country.Code = "BEN";
+            cdh.Save(country);
+
         }
     }
 }
