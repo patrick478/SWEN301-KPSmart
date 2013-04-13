@@ -15,12 +15,12 @@ namespace Common
     public class Route: DataObject
     {
 
-        public Route(Company company, TransportType transportType, Destination origin, Destination destination)
+        public Route(Company company, TransportType transportType, RouteNode origin, RouteNode routeNode)
         {
             Company = company;
             TransportType = transportType;
             Origin = origin;
-            Destination = destination;
+            RouteNode = routeNode;
 
             this.departureTimes = new List<WeeklyTime>();
         }
@@ -29,8 +29,8 @@ namespace Common
         //----------------------------------------------
         public Company Company { get; private set; }
         public TransportType TransportType { get; private set; }
-        public Destination Origin { get; private set; }
-        public Destination Destination { get; private set; }
+        public RouteNode Origin { get; private set; }
+        public RouteNode RouteNode { get; private set; }
 
 
         // other fields
