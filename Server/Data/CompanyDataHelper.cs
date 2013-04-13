@@ -16,12 +16,8 @@ namespace Server.Data
     /// </summary>
     class CompanyDataHelper: DataHelper<Company>
     {
-        
-
         private const string TABLE_NAME = "companies";
         private const string ID_COL_NAME = "company_id";
-
-
 
         /// <summary>
         /// Loads the Company of the given id.
@@ -30,8 +26,12 @@ namespace Server.Data
         /// <returns></returns>
         public override Company Load(int id)
         {
-            //todo
-            throw new NotImplementedException();
+            var sql = String.Format("SELECT name FROM `{0}` WHERE {1}={2} ORDER BY created DESC LIMIT 1", TABLE_NAME, ID_COL_NAME, id);
+            object[] row = Database.Instance.FetchRow(sql);
+
+            string name = row[0] as string;
+
+            return new Company { Name = name, ID = id };
         }
 
         /// <summary>
@@ -54,35 +54,19 @@ namespace Server.Data
         }
 
         /// <summary>
-        /// This either calls editCompany, or newCompany accordingly.
-        /// </summary>
-        /// <param name="newCompany"></param>
-        public override void Save(Company Company)
-        {
-            if(Company.ID == 0)
-                this.Create(Company);
-            else 
-                this.Update(Company);
-        }
-
-        /// <summary>
         /// Used for saving changes to an existing Company.
         /// </summary>
         /// <param name="Company"></param>
-        public override Company Update(Company Company)
+        public override void Update(Company Company)
         {
-            
-            var sql = String.Format("INSERT INTO `{0}` ({1}, active, name) VALUES {3}, 1, '{2}')",TABLE_NAME, ID_COL_NAME,
-            Company.Name, Company.ID);
-
-            // START POTENTIAL LOCK ZONE
-            long inserted_id = Database.Instance.InsertQuery(sql);
-            sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}=(SELECT {1} FROM `{0}` WHERE id={2}) AND id != {0}",TABLE_NAME, ID_COL_NAME, inserted_id);
+            // LOCK BEGINS HERE
+            var sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, Company.ID);
             Database.Instance.InsertQuery(sql);
-            // END POTENTIAL LOCK ZONE
 
-            throw new NotImplementedException();
-
+            // TODO: Should this insert the full row information?
+            sql = String.Format("INSERT INTO `{0}` ({1}, active, name) VALUES ({2}, 1, '{3}')", TABLE_NAME, ID_COL_NAME, Company.ID, Company.Name);
+            Database.Instance.InsertQuery(sql);
+            // LOCK ENDS HERE
         }
 
         /// <summary>
@@ -93,30 +77,27 @@ namespace Server.Data
         {
             var sql = String.Format("INSERT INTO `{0}` ({1}, active, name) VALUES (coalesce((SELECT MAX({1})+1 FROM `{0}`), 1), 1, '{2}')",TABLE_NAME, ID_COL_NAME,
             Company.Name);
-
             long inserted_id = Database.Instance.InsertQuery(sql);
 
             sql = String.Format("SELECT {1} FROM `{0}` WHERE id={2}", TABLE_NAME, ID_COL_NAME, inserted_id);
+            long country_id = Database.Instance.FetchNumberQuery(sql);
+            Company.ID = (int)country_id;
+        }
 
-            //todo: get the new id of the created company, and set
-
+        public override void Delete(Company obj)
+        {
+            throw new NotImplementedException();
         }
 
 
-        
-
-
-
-        /// <summary>
-        /// Deletes the Company, and returns a copy of the deleted Company.
-        /// This allows the delete to be time stamped.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public override void Delete(int id)
         {
             throw new NotImplementedException();
         }
+
+
+
+
     }
 }
 
