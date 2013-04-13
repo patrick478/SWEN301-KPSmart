@@ -77,20 +77,20 @@ namespace Server.Data
         /// <param name="Country"></param>
         public override void Create(Country country)
         {
-            Logger.WriteLine("NewCountry");
-            //var sql = @"UPDATE `countries` SET active=0 WHERE country_id";
             var sql = String.Format("INSERT INTO `countries` (country_id, active, name, code) SELECT MAX(country_id)+1, 1, '{0}', '{1}' FROM `countries`", country.Name, country.Code);
 
             // START POTENTIAL LOCK ZONE
             long inserted_id = Database.Instance.InsertQuery(sql);
-            Logger.WriteLine("NewCountry-2");
             sql = String.Format("UPDATE `countries` SET active=0 WHERE country_id=(SELECT country_id FROM `countries` WHERE id={0}) AND id != {0}", inserted_id);
             Database.Instance.InsertQuery(sql);
             // END POTENTIAL LOCK ZONE
             
             sql = String.Format("SELECT country_id FROM `countries` WHERE id={0}", inserted_id);
-            country.ID = Database.Instance.FetchValueQuery<int>(sql);
-            Server.Gui.Logger.WriteLine("Country.ID={0}", country.ID);
+            Logger.WriteLine("Before");
+            int country_id = Database.Instance.FetchValueQuery<int>(sql);
+            Logger.WriteLine("After");
+            country.ID = country_id;
+            Logger.WriteLine("Country.ID={0}", country.ID);
         }
 
         /// <summary>

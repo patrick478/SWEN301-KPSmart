@@ -98,7 +98,11 @@ namespace Server.Data
         {
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
             Logger.WriteLine("SQL: {0}", sql);
-            object row = sqlCommand.ExecuteScalar();
+            var row = sqlCommand.ExecuteScalar();
+            Logger.WriteLine("{0}", row);
+            Logger.WriteLine("done query");
+            Logger.WriteLine("done query - 123");
+            Logger.WriteLine("{0}", row);
             return (T)row;
         }
     }
