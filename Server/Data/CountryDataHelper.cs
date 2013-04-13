@@ -77,31 +77,42 @@ namespace Server.Data
         /// <param name="Country"></param>
         public override void Create(Country country)
         {
-            var sql = String.Format("INSERT INTO `countries` (country_id, active, name, code) SELECT MAX(country_id)+1, 1, '{0}', '{1}' FROM `countries`", country.Name, country.Code);
-
-            // START POTENTIAL LOCK ZONE
+            var sql = String.Format("INSERT INTO `countries` (country_id, active, name, code) VALUES (coalesce((SELECT MAX(country_id)+1 FROM `countries`), 1), 1, '{0}', '{1}')", country.Name, country.Code);
             long inserted_id = Database.Instance.InsertQuery(sql);
-            sql = String.Format("UPDATE `countries` SET active=0 WHERE country_id=(SELECT country_id FROM `countries` WHERE id={0}) AND id != {0}", inserted_id);
-            Database.Instance.InsertQuery(sql);
-            // END POTENTIAL LOCK ZONE
             
             sql = String.Format("SELECT country_id FROM `countries` WHERE id={0}", inserted_id);
             Logger.WriteLine("Before");
-            int country_id = Database.Instance.FetchValueQuery<int>(sql);
+            long country_id = Database.Instance.FetchNumberQuery(sql);
             Logger.WriteLine("After");
-            country.ID = country_id;
+            country.ID = (int)country_id;
             Logger.WriteLine("Country.ID={0}", country.ID);
         }
 
         /// <summary>
-        /// Deletes the Country, and returns a copy of the deleted Country.
+        /// Deletes the country
         /// This allows the delete to be time stamped.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">The ID of the country to be deleted</param>
         /// <returns></returns>
         public override void Delete(int id)
         {
-            throw new NotImplementedException();
+            // LOCK BEGINS HERE
+            var sql = String.Format("UPDATE `countries` SET active=0 WHERE country_id={0}", id);
+            Database.Instance.InsertQuery(sql);
+
+            // TODO: Should this insert the full row information?
+            sql = String.Format("INSERT INTO `countries` (country_id, active, name, code) VALUES ({0}, -1, {1}, {2})", id, "", "");
+            Database.Instance.InsertQuery(sql);
+            // LOCK ENDS HERE
+        }
+
+        /// <summary>
+        /// Deltes the country
+        /// </summary>
+        /// <param name="obj">The country to be delelted</param>
+        public override void Delete(Country obj)
+        {
+            this.Delete(obj.ID);
         }
     }
 }

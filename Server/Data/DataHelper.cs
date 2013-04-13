@@ -13,6 +13,7 @@ namespace Server.Data
         public abstract IDictionary<int, T> LoadAll(DateTime snapshotTime);
         public abstract void Save(T obj);
         public abstract void Delete(int id);
+        public abstract void Delete(T obj);
 
         public abstract T Update(T obj);
         public abstract void Create(T country);

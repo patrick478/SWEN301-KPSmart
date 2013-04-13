@@ -79,7 +79,7 @@ namespace Server.Data
 
         public long InsertQuery(string sql)
         {
-            Logger.WriteLine("InsertQuery");
+            Logger.WriteLine("InsertQuery: {0}", sql);
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
             Logger.WriteLine("InsertQuery-2");
             try
@@ -94,16 +94,29 @@ namespace Server.Data
             return this.connection.LastInsertRowId;
         }
 
-        public T FetchValueQuery<T>(string sql)
+        public long FetchNumberQuery(string sql)
         {
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
             Logger.WriteLine("SQL: {0}", sql);
-            var row = sqlCommand.ExecuteScalar();
-            Logger.WriteLine("{0}", row);
-            Logger.WriteLine("done query");
-            Logger.WriteLine("done query - 123");
-            Logger.WriteLine("{0}", row);
-            return (T)row;
+
+
+            long returnValue = 0;
+
+            try
+            {
+                object row = sqlCommand.ExecuteScalar();
+
+
+                if (row == DBNull.Value) return 0;
+
+                returnValue = (long)row;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLine("{0}", ex);
+            }
+
+            return returnValue;
         }
     }
 }
