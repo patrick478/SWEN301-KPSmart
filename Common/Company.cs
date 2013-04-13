@@ -13,7 +13,7 @@ namespace Common
     public class Company: DataObject
     {
 
-        private string Name { get; set; }
+        public string Name { get; set; }
 
     }
 }

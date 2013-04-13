@@ -16,16 +16,11 @@ namespace Common
     /// It is assumed that there is only one InternationalPort per country.
     /// TODO: decide if NZ has one.
     /// </summary>
-    public class InternationalPort: Destination 
+    public class InternationalPort: RouteNode 
     {
-
-        public InternationalPort(Country country, bool inNz) : base(country)
+        public InternationalPort(string country) : base(country)
         {
-            InNz = inNz;
+         
         }
-
-        // Whether or not the port is the NZ one. 
-        // note: will perhaps change this to simplify (eg. international ports only for other countries), but waiting for that discussion
-        public bool InNz { get; private set; }
     }
 }

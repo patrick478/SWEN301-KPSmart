@@ -20,10 +20,10 @@ namespace Common
     {
         private IDictionary<int, Route> routes;
         private IDictionary<int, Price> prices;
-        private IDictionary<int, Country> countries;
         private IDictionary<int, Delivery> deliveries;
-        private IDictionary<int, Destination> destinations;
-        private IDictionary<int, Company> companies; 
+        private IDictionary<int, RouteNode> destinations;
+        private IDictionary<int, Company> companies;
+        private IDictionary<int, Country> countries; 
 
         // the time that the stateSnapshot is from. still not sure about this field
         // my idea is that this is the latest LastEdited date from any DataObject in all the collections.
@@ -33,9 +33,9 @@ namespace Common
         {
             routes = new Dictionary<int, Route>();
             prices = new Dictionary<int, Price>();
-            countries = new Dictionary<int, Country>();
             deliveries = new Dictionary<int, Delivery>();
-            destinations = new Dictionary<int, Destination>();
+            destinations = new Dictionary<int, RouteNode>();
+            countries = new Dictionary<int, Country>();
             companies = new Dictionary<int, Company>();
         }
 

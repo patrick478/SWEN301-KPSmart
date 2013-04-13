@@ -19,8 +19,8 @@ namespace Common
     public class Delivery
     {
 
-        public Destination Origin { get; set; }
-        public Destination Destination { get; set; }
+        public RouteNode Origin { get; set; }
+        public RouteNode RouteNode { get; set; }
 
         // Standard or Air
         public Priority Priority { get; set; }
@@ -46,7 +46,7 @@ namespace Common
         // Eg. 'Domestic Air', 'International Standard'
         public string CustomerFriendlyPriority
         {
-            get { return Scope.ToString() + " " + Priority.ToString(); }
+            get { return Scope + " " + Priority; }
         }
 
         // the duration of the delivery
