@@ -1,5 +1,6 @@
 ﻿using System;
 using Server.Data;
+using Common;
 
 namespace Server.Gui
 {
@@ -19,8 +20,12 @@ namespace Server.Gui
             network.Start();
             network.Open();
 
-            Database db = new Database();
-            db.Connect();
+            Database.Instance.Connect();
+
+            CountryDataHelper cdh = new CountryDataHelper();
+            Country country = new Country("Wellington", "WLG");
+            cdh.Save(country);
+            Logger.WriteLine("abc");
         }
     }
 }

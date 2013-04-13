@@ -11,7 +11,7 @@ namespace Common
     public abstract class DataObject
     {
         // the id from the DB
-        public int Id { get; set; }
+        public int ID { get; set; }
 
         // the time it was last changed
         public DateTime LastEdited { get; set; }

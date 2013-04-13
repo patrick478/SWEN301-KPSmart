@@ -1,4 +1,5 @@
-﻿using System.Data.SQLite;
+﻿using System;
+using System.Data.SQLite;
 using Server.Gui;
 using System.Collections.Generic;
 
@@ -6,12 +7,36 @@ namespace Server.Data
 {
     public class Database
     {
+        // The singleton instance
+        private static volatile Database instance;
+        // Locking object for the singleton. Thread safety!
+        private static object syncRoot = new Database();
+
+        // The variable to fetches the instance, it's all magical. Uses C# Get. 
+        public static Database Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    lock (syncRoot)
+                    {
+                        if (instance == null)
+                            instance = new Database();
+                    }
+                }
+
+
+                return instance;
+            }
+        }
+
         private SQLiteConnection connection;
         private Dictionary<string, string> tables = new Dictionary<string, string>();
 
         public Database()
         {
-            tables.Add("syslog", "CREATE TABLE syslog (id int, body text, time timestamp)");
+            tables.Add("countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT , country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))");
         }
 
         public static void CreateDatabase()
@@ -50,6 +75,31 @@ namespace Server.Data
                     command.ExecuteNonQuery();
                 }
             }
+        }
+
+        public long InsertQuery(string sql)
+        {
+            Logger.WriteLine("InsertQuery");
+            SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
+            Logger.WriteLine("InsertQuery-2");
+            try
+            {
+                int n_rows = sqlCommand.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLine("Exception: {0}", ex);
+            }
+            Logger.WriteLine("InsertQuery-3");
+            return this.connection.LastInsertRowId;
+        }
+
+        public T FetchValueQuery<T>(string sql)
+        {
+            SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
+            Logger.WriteLine("SQL: {0}", sql);
+            object row = sqlCommand.ExecuteScalar();
+            return (T)row;
         }
     }
 }

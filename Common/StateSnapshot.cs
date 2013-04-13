@@ -42,12 +42,12 @@ namespace Common
         #region routes
         public void SaveRoute(Route route)
         {
-            routes.Add(route.Id, route);
+            routes.Add(route.ID, route);
         }
 
         public void RemoveRoute(Route route)
         {
-            routes.Remove(route.Id);
+            routes.Remove(route.ID);
         }
 
         public IEnumerable<Route> GetAllRoutes()
@@ -64,13 +64,13 @@ namespace Common
         #region prices
         public void SavePrice(Price price)
         {
-            prices.Add(price.Id, price);
+            prices.Add(price.ID, price);
             UpdateTime(price);
         }
 
         public void RemovePrice(Price price)
         {
-            prices.Remove(price.Id);
+            prices.Remove(price.ID);
             UpdateTime(price);
         }
 
@@ -89,13 +89,13 @@ namespace Common
         #region countries
         public void SaveCountry(Country country)
         {
-            countries.Add(country.Id, country);
+            countries.Add(country.ID, country);
             UpdateTime(country);
         }
 
         public void RemoveCountry(Country country)
         {
-            prices.Remove(country.Id);
+            prices.Remove(country.ID);
             UpdateTime(country);
         } 
 
