@@ -21,9 +21,15 @@ namespace Server.Gui
             network.Open();
 
             Database.Instance.Connect();
+            BenDBTests();
+            IzziDBTests();
+        }
 
+
+        private void BenDBTests()
+        {
             CountryDataHelper cdh = new CountryDataHelper();
-            Country country = new Country("Wellington", "WLG");
+            Country country = new Country { Name = "Wellington", Code = "WLG" };
             cdh.Save(country);
             country.Code = "WLN";
             cdh.Save(country);
@@ -33,5 +39,13 @@ namespace Server.Gui
             Country loadedCountry = cdh.Load(country.ID);
             Logger.WriteLine("Loaded country ( ID: {0}, Name: {1}, Code: {2} )", country.ID, country.Name, country.Code);
         }
+
+        private void IzziDBTests()
+        {
+            CompanyDataHelper comDH = new CompanyDataHelper();
+            Company company = new Company{Name = "NZ Post"};
+            comDH.Save(company);
+        }
+
     }
 }
