@@ -46,6 +46,7 @@
     <Compile Include="DataObject.cs" />
     <Compile Include="DaysOfTheWeek.cs" />
     <Compile Include="Delivery.cs" />
+    <Compile Include="InvalidObjectStateException.cs" />
     <Compile Include="RouteNode.cs" />
     <Compile Include="DistributionCentre.cs" />
     <Compile Include="InternationalPort.cs" />
