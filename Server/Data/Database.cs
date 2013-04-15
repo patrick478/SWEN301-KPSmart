@@ -79,7 +79,6 @@ namespace Server.Data
 
         public long InsertQuery(string sql)
         {
-            Logger.WriteLine(sql);
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
             try
             {

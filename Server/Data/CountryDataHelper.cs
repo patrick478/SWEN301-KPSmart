@@ -20,7 +20,6 @@ namespace Server.Data
     /// </summary>
     public class CountryDataHelper : DataHelper<Country>
     {
-
         /// <summary>
         /// Loads the Country of the given id.
         /// </summary>
@@ -28,7 +27,7 @@ namespace Server.Data
         /// <returns></returns>
         public override Country Load(int id)
         {
-            var sql = String.Format("SELECT name, code FROM `countries` WHERE country_id={0} ORDER BY created DESC LIMIT 1");
+            var sql = String.Format("SELECT name, code FROM `countries` WHERE country_id={0} ORDER BY created DESC LIMIT 1", id);
             object[] row = Database.Instance.FetchRow(sql);
 
             string name = row[0] as string;

@@ -30,6 +30,8 @@ namespace Server.Gui
             country.Code = "BEN";
             cdh.Save(country);
 
+            Country loadedCountry = cdh.Load(country.ID);
+            Logger.WriteLine("Loaded country ( ID: {0}, Name: {1}, Code: {2} )", country.ID, country.Name, country.Code);
         }
     }
 }
