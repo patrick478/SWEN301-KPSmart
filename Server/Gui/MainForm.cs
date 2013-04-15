@@ -28,23 +28,50 @@ namespace Server.Gui
 
         private void BenDBTests()
         {
-            CountryDataHelper cdh = new CountryDataHelper();
-            Country country = new Country { Name = "Wellington", Code = "WLG" };
-            cdh.Save(country);
-            country.Code = "WLN";
-            cdh.Save(country);
-            country.Code = "BEN";
-            cdh.Save(country);
+            try
+            {
 
-            Country loadedCountry = cdh.Load(country.ID);
-            Logger.WriteLine("Loaded country ( ID: {0}, Name: {1}, Code: {2} )", country.ID, country.Name, country.Code);
+                CountryDataHelper cdh = new CountryDataHelper();
+
+                // create country if doesn't exist
+                Country country = new Country {Name = "Wellington", Code = "WLG"};
+                if (cdh.GetId(country) == 0)
+                {
+                    cdh.Create(country);
+                }
+
+                // perform updates
+                country.Code = "WLN";
+                cdh.Update(country);
+                country.Code = "BEN";
+                cdh.Update(country);
+
+                // get latest version
+                Country loadedCountry = cdh.Load(country.ID);
+                Logger.WriteLine("Current country ( ID: {0}, Name: {1}, Code: {2} )", country.ID, country.Name,
+                                     country.Code);
+                
+            }
+            catch (DatabaseException e)
+            {
+                Logger.Write(e.Message);
+            }
         }
 
         private void IzziDBTests()
         {
-            CompanyDataHelper comDH = new CompanyDataHelper();
-            Company company = new Company{Name = "NZ Post"};
-            comDH.Save(company);
+            try{
+                CountryDataHelper cdh = new CountryDataHelper();
+                Country country = new Country { Name = "Wellington", Code = "WLG" };
+
+                int existingId = cdh.GetId(country);
+                Logger.WriteLine("Existing country id: " + existingId);
+
+            }
+            catch (DatabaseException e)
+            {
+                Logger.Write(e.Message);
+            }
         }
 
     }

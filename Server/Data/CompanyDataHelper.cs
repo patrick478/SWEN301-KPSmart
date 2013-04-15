@@ -53,20 +53,6 @@ namespace Server.Data
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Checks whether there is an active company with the same Name already in the DB.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        protected override bool Exists(Company obj)
-        {
-            var sql = String.Format("SELECT COUNT(*) FROM `{0}` WHERE active=1 AND name LIKE '{1}'", TABLE_NAME, ID_COL_NAME, obj.Name);
-
-            // do more stuff!
-
-            return false;
-
-        }
 
         /// <summary>
         /// Used for saving changes to an existing Company.
@@ -99,7 +85,12 @@ namespace Server.Data
             Company.ID = (int)country_id;
         }
 
-        public override void Delete(Company obj)
+            public override int GetId(Company obj)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void Delete(Company obj)
         {
             throw new NotImplementedException();
         }

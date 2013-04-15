@@ -41,6 +41,12 @@ namespace Server.Business
         }
 
 
+        public Country LoadCountry(string name)
+        {
+            //todo
+            return null;
+        }
+
         public void DeleteCountry(int id)
         {
             // check the country isn't used in any routes
@@ -52,7 +58,7 @@ namespace Server.Business
         }
 
 
-        public Country EditCountry(int id, string name, string code)
+        public Country EditCountry(int id, string code)
         {
             //todo
             return null;

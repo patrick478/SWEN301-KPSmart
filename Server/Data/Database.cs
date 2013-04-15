@@ -102,7 +102,7 @@ namespace Server.Data
             try
             {
                 object row = sqlCommand.ExecuteScalar();
-                if (row == DBNull.Value) return 0;
+                if (row == null || row == DBNull.Value) return 0;
 
                 returnValue = (long)row;
             }
