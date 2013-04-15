@@ -17,9 +17,8 @@ namespace Common
             set 
             {
                 // validation       
-                if (name == null)
+                if (value == null)
                     throw new InvalidObjectStateException("Name","Name cannot be null");
-
                 
                 name = value; 
             }
