@@ -89,6 +89,21 @@ namespace Server.Data
         }
 
         /// <summary>
+        /// Checks whether there is an active country with the same Name already in the DB.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        protected override bool Exists(Country obj)
+        {
+            var sql = String.Format("SELECT {1} FROM `{0}` WHERE active=1 AND name={2} ", TABLE_NAME, ID_COL_NAME, obj.Name);
+
+            // do more stuff!
+
+            return false;
+
+        }
+
+        /// <summary>
         /// Deletes the country
         /// This allows the delete to be time stamped.
         /// </summary>

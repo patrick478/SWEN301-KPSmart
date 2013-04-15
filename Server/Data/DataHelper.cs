@@ -25,5 +25,7 @@ namespace Server.Data
 
         public abstract void Update(T obj);
         public abstract void Create(T country);
+
+        protected abstract bool Exists(T obj);
     }
 }
