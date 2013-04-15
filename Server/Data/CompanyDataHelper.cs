@@ -99,7 +99,12 @@ namespace Server.Data
             Company.ID = (int)country_id;
         }
 
-        public override void Delete(Company obj)
+        protected override bool Exists(Company obj)
+        {
+            throw new NotImplementedException();
+        }
+
+            public override void Delete(Company obj)
         {
             throw new NotImplementedException();
         }
