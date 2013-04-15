@@ -20,7 +20,7 @@ namespace Common
     {
 
         public RouteNode Origin { get; set; }
-        public RouteNode RouteNode { get; set; }
+        public RouteNode Destination { get; set; }
 
         // Standard or Air
         public Priority Priority { get; set; }
