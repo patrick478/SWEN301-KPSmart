@@ -94,7 +94,7 @@ namespace Server.Data
         /// <returns></returns>
         protected override bool Exists(Country obj)
         {
-            var sql = String.Format("SELECT {1} FROM `{0}` WHERE active=1 AND name={2} ", TABLE_NAME, ID_COL_NAME, obj.Name);
+            var sql = String.Format("SELECT COUNT(*) FROM `{0}` WHERE active=1 AND (name LIKE '{1}' OR code LIKE '{2}')", TABLE_NAME, ID_COL_NAME, obj.Name, obj.Code);
 
             // do more stuff!
 

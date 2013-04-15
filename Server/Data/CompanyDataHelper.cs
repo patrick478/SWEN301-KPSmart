@@ -54,6 +54,21 @@ namespace Server.Data
         }
 
         /// <summary>
+        /// Checks whether there is an active company with the same Name already in the DB.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        protected override bool Exists(Company obj)
+        {
+            var sql = String.Format("SELECT COUNT(*) FROM `{0}` WHERE active=1 AND name LIKE '{1}'", TABLE_NAME, ID_COL_NAME, obj.Name);
+
+            // do more stuff!
+
+            return false;
+
+        }
+
+        /// <summary>
         /// Used for saving changes to an existing Company.
         /// </summary>
         /// <param name="Company"></param>
