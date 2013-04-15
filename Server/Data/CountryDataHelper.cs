@@ -20,7 +20,8 @@ namespace Server.Data
     /// </summary>
     public class CountryDataHelper : DataHelper<Country>
     {
-
+        private const string TABLE_NAME = "countries";
+        private const string ID_COL_NAME = "country_id";
         /// <summary>
         /// Loads the Country of the given id.
         /// </summary>
@@ -28,15 +29,13 @@ namespace Server.Data
         /// <returns></returns>
         public override Country Load(int id)
         {
-            var sql = String.Format("SELECT name, code FROM `countries` WHERE country_id={0} ORDER BY created DESC LIMIT 1");
+            var sql = String.Format("SELECT name, code FROM `{0}` WHERE {1}={2} ORDER BY created DESC LIMIT 1", TABLE_NAME, ID_COL_NAME, id);
             object[] row = Database.Instance.FetchRow(sql);
 
             string name = row[0] as string;
             string code = row[1] as string;
 
-            Country c = new Country(name, code);
-            c.ID = id;
-            return c;
+            return new Country {Name = name, Code = code, ID = id};
         }
 
         /// <summary>
@@ -59,29 +58,17 @@ namespace Server.Data
         }
 
         /// <summary>
-        /// This either calls editCountry, or newCountry accordingly.
-        /// </summary>
-        /// <param name="newCountry"></param>
-        public override void Save(Country country)
-        {
-            if(country.ID == 0)
-                this.Create(country);
-            else
-                this.Update(country);
-        }
-
-        /// <summary>
         /// Used for saving changes to an existing Country.
         /// </summary>
         /// <param name="Country"></param>
         public override void Update(Country country)
         {
             // LOCK BEGINS HERE
-            var sql = String.Format("UPDATE `countries` SET active=0 WHERE country_id={0}", country.ID);
+            var sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, country.ID);
             Database.Instance.InsertQuery(sql);
 
             // TODO: Should this insert the full row information?
-            sql = String.Format("INSERT INTO `countries` (country_id, active, name, code) VALUES ({0}, 1, '{1}', '{2}')", country.ID, country.Name, country.Code);
+            sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES ({2}, 1, '{3}', '{4}')", TABLE_NAME, ID_COL_NAME, country.ID, country.Name, country.Code);
             Database.Instance.InsertQuery(sql);
             // LOCK ENDS HERE
         }
@@ -92,12 +79,27 @@ namespace Server.Data
         /// <param name="Country"></param>
         public override void Create(Country country)
         {
-            var sql = String.Format("INSERT INTO `countries` (country_id, active, name, code) VALUES (coalesce((SELECT MAX(country_id)+1 FROM `countries`), 1), 1, '{0}', '{1}')", country.Name, country.Code);
+            var sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES (coalesce((SELECT MAX({1})+1 FROM `{0}`), 1), 1, '{2}', '{3}')", TABLE_NAME, ID_COL_NAME, country.Name, country.Code);
             long inserted_id = Database.Instance.InsertQuery(sql);
             
-            sql = String.Format("SELECT country_id FROM `countries` WHERE id={0}", inserted_id);
+            sql = String.Format("SELECT {1} FROM `{0}` WHERE id={2}",TABLE_NAME, ID_COL_NAME, inserted_id);
             long country_id = Database.Instance.FetchNumberQuery(sql);
             country.ID = (int)country_id;
+        }
+
+        /// <summary>
+        /// Checks whether there is an active country with the same Name already in the DB.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        protected override bool Exists(Country obj)
+        {
+            var sql = String.Format("SELECT COUNT(*) FROM `{0}` WHERE active=1 AND (name LIKE '{1}' OR code LIKE '{2}')", TABLE_NAME, ID_COL_NAME, obj.Name, obj.Code);
+
+            // do more stuff!
+
+            return false;
+
         }
 
         /// <summary>
@@ -109,11 +111,11 @@ namespace Server.Data
         public override void Delete(int id)
         {
             // LOCK BEGINS HERE
-            var sql = String.Format("UPDATE `countries` SET active=0 WHERE country_id={0}", id);
+            var sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, id);
             Database.Instance.InsertQuery(sql);
 
             // TODO: Should this insert the full row information?
-            sql = String.Format("INSERT INTO `countries` (country_id, active, name, code) VALUES ({0}, -1, {1}, {2})", id, "", "");
+            sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES ({2}, -1, {3}, {4})", TABLE_NAME, ID_COL_NAME, id, "", "");
             Database.Instance.InsertQuery(sql);
             // LOCK ENDS HERE
         }

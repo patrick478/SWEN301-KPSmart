@@ -7,27 +7,37 @@ namespace Common
     /// </summary>
     public class Country: DataObject
     {
-       
-        public Country(string name, string code)
+        /// <summary>
+        ///  the country name
+        /// </summary>
+        private string name;   
+        public string Name
         {
-            this.Name = name;
-            this.Code = code;
-        }
-
-        public string Name { get; set; }
-
-        private string _code;
-        public string Code
-        {
-            get
+            get { return name; }
+            set 
             {
-                return _code;
-            }
-            set
-            {
-                if (value.Length > 3) throw new Exception("Country code must not be more than 3 letters");
-                _code = value;
+                // validation       
+                if (value == null)
+                    throw new InvalidObjectStateException("Name","Name cannot be null");
+                
+                name = value; 
             }
         }
+
+       /// <summary>
+       /// 3 character code
+       /// </summary>
+       private string code;
+       public string Code {
+           get { return code; }
+           set
+           {
+               // validate
+               if(value.Length > 3)
+                   throw new InvalidObjectStateException("Code", "Code cannot be more than 3 characters");
+
+               code = value.ToUpper();
+           }
+       }
     }
 }

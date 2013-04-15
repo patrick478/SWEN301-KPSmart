@@ -90,13 +90,11 @@ namespace Common
         public void SaveCountry(Country country)
         {
             countries.Add(country.ID, country);
-            UpdateTime(country);
         }
 
         public void RemoveCountry(Country country)
         {
             prices.Remove(country.ID);
-            UpdateTime(country);
         } 
 
         public IEnumerable<Country> GetAllCountries()

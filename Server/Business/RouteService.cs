@@ -21,7 +21,6 @@ namespace Server.Business
         private StateSnapshot state;
         private RouteDataHelper data;
 
-
         public void AddRoute(Route newRoute)
         {
 

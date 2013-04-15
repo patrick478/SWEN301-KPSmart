@@ -37,6 +37,8 @@ namespace Server.Data
         public Database()
         {
             tables.Add("countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT , country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))");
+            tables.Add("companies",
+                       "CREATE  TABLE 'companies' ('id' INTEGER PRIMARY KEY AUTOINCREMENT , 'company_id' INTEGER NOT NULL , 'created' TIMESTAMP DEFAULT(CURRENT_TIMESTAMP) , 'active' INTEGER NOT NULL DEFAULT('0') ,'name' VARCHAR(20))");
         }
 
         public static void CreateDatabase()
@@ -79,7 +81,6 @@ namespace Server.Data
 
         public long InsertQuery(string sql)
         {
-            Logger.WriteLine(sql);
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
             try
             {
