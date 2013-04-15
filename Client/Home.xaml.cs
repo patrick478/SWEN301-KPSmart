@@ -31,5 +31,10 @@ namespace Client
             this.NavigationService.Navigate(routes);
 
         }
+
+        private void CompaniesButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
