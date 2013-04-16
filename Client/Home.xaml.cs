@@ -36,5 +36,11 @@ namespace Client
         {
 
         }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            RoutesPage routes = new RoutesPage();
+            this.NavigationService.Navigate(routes);
+        }
     }
 }

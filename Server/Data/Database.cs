@@ -119,7 +119,8 @@ namespace Server.Data
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
             SQLiteDataReader reader = sqlCommand.ExecuteReader();
 
-            if (reader.FieldCount < 1)
+            Logger.WriteLine("reader.FieldCount = {0}", reader.FieldCount);
+            if (!reader.HasRows)
                 throw new Exception("Query returned no results");
 
             List<object> row = new List<object>();
