@@ -63,7 +63,7 @@ namespace Server.Network
         /// </summary>
         /// <param name="air">Air-Priority Delivery to store.</param>
         /// <param name="standard">Standard-Priority Delivery to store.</param>
-        public void storePendingDelivery(Common.Delivery air, Common.Delivery standard)
+        public void StorePendingDelivery(Common.Delivery air, Common.Delivery standard)
         {
             pendingAirDelivery = air;
             pendingStdDelivery = standard;
@@ -74,7 +74,7 @@ namespace Server.Network
         /// </summary>
         /// <param name="priority">The Priority the Client selected. null to cancel.</param>
         /// <returns>Delivery corresponding to the Priority selected.</returns>
-        public Common.Delivery getPendingDelivery(Common.Priority priority)
+        public Common.Delivery GetPendingDelivery(Common.Priority priority)
         {
             Common.Delivery selected;
             if (priority == Common.Priority.Air)
