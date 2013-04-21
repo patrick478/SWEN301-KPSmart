@@ -4,6 +4,7 @@
 //////////////////////
 
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Server.Gui
@@ -22,7 +23,7 @@ namespace Server.Gui
 
         // Empty constructor is empty.
         private Logger() { 
-            this.writerDelegate = new WriteDelegate(this.WriteDelegated);
+            
         }
 
         // The variable returns the logger instance, and can create it if needed
@@ -43,14 +44,17 @@ namespace Server.Gui
             }
         }
 
-        // Stores the textbox the logger should be writing too
+        // Stores the textbox the logger should be writing to
         private TextBox target = null;
+        private bool consoleOnly = true;  // flag for whether should be writing to console or TextBox(s)
 
         // Changes the output textbox. It'd be cool to allow for multiple output sources, so this would
         // need to be expanded
         public void SetOutput(TextBox tb)
         {
             this.target = tb;
+            this.consoleOnly = false;
+            this.writerDelegate = new WriteDelegate(this.WriteDelegated);
         }
 
         // Used for invoking the change to a WinForms component, on the main thread
@@ -69,7 +73,7 @@ namespace Server.Gui
         public void _Write(string s, params object[] values)
         {
             // Obviously, we need a textbox to write too. Error out if one isn't available
-            if (target == null)
+            if (target == null && !consoleOnly)
                 throw new Exception("Logger has not had a output set");
 
             // This'll parse any params out of the s.
@@ -78,8 +82,15 @@ namespace Server.Gui
             // and now format the string nicely.
             s = String.Format("[{0}] {1}", DateTime.Now.ToString(), s);
 
+            // write message to console if consoleOnly is true
+            if (consoleOnly)
+            {
+                Console.Write(s);
+                return;
+            }
+
             // Detectings if this function is being executed by the main thread
-            if (!this.target.InvokeRequired)
+            if (this.target.InvokeRequired)
                 this.target.Text += s;
             else // if it's not, we need to invoke it.
                 this.target.Invoke(writerDelegate, s);
@@ -90,6 +101,8 @@ namespace Server.Gui
         {
             this._Write(s + "\r\n", values);
         }
+
+
 
         // Static version which was actually intended to be used.
         public static void Write(string s, params object[] values)

@@ -39,5 +39,15 @@ namespace Common
                code = value.ToUpper();
            }
        }
+
+       public override string ToString()
+       {
+           return string.Format("[Name: {0}, Code: {1}, ID: {2}, LastModified: {3}]", name, code, ID, LastEdited);
+       }
+
     }
+
+
+
+
 }

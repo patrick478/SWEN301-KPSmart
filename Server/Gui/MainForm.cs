@@ -50,6 +50,7 @@ namespace Server.Gui
                 Country loadedCountry = cdh.Load(country.ID);
                 Logger.WriteLine("Current country ( ID: {0}, Name: {1}, Code: {2} )", country.ID, country.Name,
                                      country.Code);
+                Logger.WriteLine(loadedCountry.ToString());
                 
             }
             catch (DatabaseException e)

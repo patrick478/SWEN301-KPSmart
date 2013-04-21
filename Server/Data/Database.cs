@@ -32,15 +32,28 @@ namespace Server.Data
         }
 
         private SQLiteConnection connection;
-        private Dictionary<string, string> tables = new Dictionary<string, string>();
+        private IDictionary<string, string> tables = new Dictionary<string, string>();
+        private string databaseFileName;
+        private int versionNumber = 3;
+        private bool testDB;
 
         public Database()
         {
+            // set the tables to create
             tables.Add("countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT , country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))");
             tables.Add("companies",
                        "CREATE  TABLE 'companies' ('id' INTEGER PRIMARY KEY AUTOINCREMENT , 'company_id' INTEGER NOT NULL , 'created' TIMESTAMP DEFAULT(CURRENT_TIMESTAMP) , 'active' INTEGER NOT NULL DEFAULT('0') ,'name' VARCHAR(20))");
+
+            // set filename and version
+            // TODO: Use a config value for database to be opened.
+            databaseFileName = "kpsmart.db";
+            versionNumber = 3;
+            testDB = false;
+
         }
 
+
+        // Question from Isabel - is theis method going to be used????
         public static void CreateDatabase()
         {
             // TODO: Use a config value for the name of the database
@@ -50,8 +63,7 @@ namespace Server.Data
 
         public void Connect()
         {
-            // TODO: Use a config value for database to be opened.
-            this.connection = new SQLiteConnection("Data Source=kpsmart.db;Version=3;");
+            this.connection = new SQLiteConnection(String.Format("Data Source={0};Version={1};", databaseFileName, versionNumber));
             this.connection.Open();
 
             Logger.WriteLine("Connected to database");
@@ -130,5 +142,40 @@ namespace Server.Data
 
             return row.ToArray();
         }
+
+        #region for unit tests
+
+        /// <summary>
+        /// Constructor for Unit tests.  Let me know if this is a bad idea ben.
+        /// </summary>
+        /// <param name="databaseFileName"></param>
+        /// <param name="version"></param>
+        /// <param name="tables"></param>
+        public Database(string databaseFileName, IDictionary<string, string> tables)
+        {
+            this.tables = tables;
+            this.databaseFileName = databaseFileName;
+            this.testDB = true;
+
+            Connect();
+        }
+
+        /// <summary>
+        /// Pull down method for Unit Testing the DB
+        /// </summary>
+        public void DropAllTables()
+        {
+            if (!testDB)
+                throw new DatabaseException("Cannot drop tables of live database.");
+
+            foreach (string tableName in tables.Keys)
+            {
+                var sql = String.Format("DROP TABLE IF EXISTS {0}", tableName);
+                SQLiteCommand command = new SQLiteCommand(sql, this.connection);
+                command.ExecuteNonQuery();
+            }
+        }
+        #endregion
+
     }
 }

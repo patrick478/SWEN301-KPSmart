@@ -22,6 +22,7 @@ namespace Server.Data
     {
         private const string TABLE_NAME = "countries";
         private const string ID_COL_NAME = "country_id";
+
         /// <summary>
         /// Loads the Country of the given id.
         /// </summary>
@@ -29,15 +30,14 @@ namespace Server.Data
         /// <returns></returns>
         public override Country Load(int id)
         {
-            var sql = String.Format("SELECT name, code FROM `{0}` WHERE {1}={2} ORDER BY created DESC LIMIT 1", TABLE_NAME, ID_COL_NAME, id);
+            var sql = String.Format("SELECT name, code, created FROM `{0}` WHERE {1}={2} ORDER BY created DESC LIMIT 1", TABLE_NAME, ID_COL_NAME, id);
             object[] row = Database.Instance.FetchRow(sql);
 
             string name = row[0] as string;
             string code = row[1] as string;
+            DateTime created = (DateTime)row[2];
 
-            // todo refresh timestamp
-
-            return new Country {Name = name, Code = code, ID = id};
+            return new Country {Name = name, Code = code, ID = id, LastEdited = created};
         }
 
         /// <summary>
@@ -52,10 +52,9 @@ namespace Server.Data
 
             int id = (int)row[0];
             string name = row[1] as string;
+            DateTime created = (DateTime)row[2];
 
-            // todo refresh timestamp
-
-            return new Country {ID = id, Name = name, Code = code};
+            return new Country {ID = id, Name = name, Code = code, LastEdited = created};
         }
 
 
@@ -104,8 +103,10 @@ namespace Server.Data
             sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES ({2}, 1, '{3}', '{4}')", TABLE_NAME, ID_COL_NAME, country.ID, country.Name, country.Code);
             Database.Instance.InsertQuery(sql);
 
-            // todo refresh timestamp
-
+            // update lastEdited 
+            sql = String.Format("SELECT created FROM `{0}` WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, country.ID);
+            var row = Database.Instance.FetchRow(sql);
+            country.LastEdited = (DateTime)row[0];
             // LOCK ENDS HERE
         }
 
