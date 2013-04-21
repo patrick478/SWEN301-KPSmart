@@ -57,13 +57,19 @@ namespace ServerTests
         //{
         //}
         //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
+
+       
+        [TestCleanup()]
+        public void MyTestCleanup()
+        {
+            if(target != null)
+                target.DropAllTables();
+        }
+
         #endregion
+
+
+        private Database target;
 
         /// <summary>
         ///A test for Test Database Constructor
@@ -74,8 +80,23 @@ namespace ServerTests
             string databaseFileName = "testDB1.db";
             IDictionary<string, string> tables = new Dictionary<string, string>(); 
 
-            Database target = new Database(databaseFileName, tables);
+            target = new Database(databaseFileName, tables);
         }
+
+
+        /// <summary>
+        ///A test for Test Database Constructor
+        ///</summary>
+        [TestMethod()]
+        public void CheckThatDatabaseInstanceIsTestDBWhenUsingTestConstructor()
+        {
+            string databaseFileName = "testDB1.db";
+            IDictionary<string, string> tables = new Dictionary<string, string>();
+
+            target = new Database(databaseFileName, tables);
+            Assert.IsTrue(Database.Instance.IsTestDatabase);
+        }
+
 
 
 

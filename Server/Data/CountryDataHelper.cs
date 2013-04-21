@@ -50,6 +50,13 @@ namespace Server.Data
             var sql = String.Format("SELECT {1}, name, created FROM `{0}` WHERE active=1 AND code LIKE '{2}'", TABLE_NAME, ID_COL_NAME, code);
             object[] row = Database.Instance.FetchRow(sql);
 
+            Logger.WriteLine(row.Length + "");
+
+            if (row.Length == 0)
+            {
+                return null;
+            }
+
             int id = (int)row[0];
             string name = row[1] as string;
             DateTime created = (DateTime)row[2];
@@ -116,7 +123,11 @@ namespace Server.Data
         /// <param name="Country"></param>
         public override void Create(Country country)
         {
-            if (GetId(country) != 0)
+            // check it is legal
+            int countryID = GetId(country);
+            Logger.WriteLine("id = " + countryID);
+
+            if (countryID != 0)
                 throw new DatabaseException("A country with that name already exists");
 
             if(Load(country.Code) != null)
@@ -125,15 +136,15 @@ namespace Server.Data
             // insert the record
             var sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES (coalesce((SELECT MAX({1})+1 FROM `{0}`), 1), 1, '{2}', '{3}')", TABLE_NAME, ID_COL_NAME, country.Name, country.Code);
             long inserted_id = Database.Instance.InsertQuery(sql);
-            
-            // get id
-            sql = String.Format("SELECT {1} FROM `{0}` WHERE id={2}",TABLE_NAME, ID_COL_NAME, inserted_id);
-            long country_id = Database.Instance.FetchNumberQuery(sql);
 
-            // set id
-            country.ID = (int)country_id;
+            // set id and LastEdited
+            sql = String.Format("SELECT {1}, created FROM `{0}` WHERE id={2}",TABLE_NAME, ID_COL_NAME, inserted_id);
+            var row = Database.Instance.FetchRow(sql);
 
-            //todo set timestamp
+            long id = (long) row[0];
+            country.ID = (int) id;
+            country.LastEdited = (DateTime) row[1];
+
         }
 
 

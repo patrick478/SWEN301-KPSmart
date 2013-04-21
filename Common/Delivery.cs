@@ -16,7 +16,7 @@ namespace Common
     /// 
     /// TODO: decide whether public get/set, or private.  
     /// </summary>
-    public class Delivery
+    public class Delivery: DataObject
     {
 
         public RouteNode Origin { get; set; }

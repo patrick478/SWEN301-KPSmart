@@ -18,8 +18,14 @@ namespace Server.Business
     /// </summary>
     public class RouteService
     {
-        private StateSnapshot state;
+        private CurrentState state;
         private RouteDataHelper data;
+
+        public RouteService(CurrentState state, RouteDataHelper data)
+        {
+            this.state = state;
+            this.data = data;
+        }
 
         public void AddRoute(Route newRoute)
         {

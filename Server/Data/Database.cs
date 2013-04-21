@@ -36,6 +36,9 @@ namespace Server.Data
         private string databaseFileName;
         private int versionNumber = 3;
         private bool testDB;
+        public bool IsTestDatabase {
+            get { return testDB; }
+        }
 
         public Database()
         {
@@ -126,19 +129,26 @@ namespace Server.Data
             return returnValue;
         }
 
+        /// <summary>
+        /// Returns the first row of an executed query, or an empty array if there were no results.
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
         public object[] FetchRow(string sql)
         {
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
             SQLiteDataReader reader = sqlCommand.ExecuteReader();
 
             Logger.WriteLine("reader.FieldCount = {0}", reader.FieldCount);
-            if (!reader.HasRows)
-                throw new Exception("Query returned no results");
 
             List<object> row = new List<object>();
-            
-            for(int i = 0; i < reader.VisibleFieldCount; i++)
-                row.Add(reader.GetValue(i));
+
+            if (reader.HasRows)
+            {
+
+                for (int i = 0; i < reader.VisibleFieldCount; i++)
+                    row.Add(reader.GetValue(i));
+            }
 
             return row.ToArray();
         }
@@ -156,7 +166,7 @@ namespace Server.Data
             this.tables = tables;
             this.databaseFileName = databaseFileName;
             this.testDB = true;
-
+            instance = this;
             Connect();
         }
 
@@ -173,7 +183,12 @@ namespace Server.Data
                 var sql = String.Format("DROP TABLE IF EXISTS {0}", tableName);
                 SQLiteCommand command = new SQLiteCommand(sql, this.connection);
                 command.ExecuteNonQuery();
+                Logger.WriteLine(String.Format("Dropped table {0} from database {1}", tableName, databaseFileName));
             }
+
+            connection.Close();
+            connection = null;
+            instance = null;
         }
         #endregion
 

@@ -43,6 +43,7 @@
     <Compile Include="Company.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Country.cs" />
+    <Compile Include="CurrentState.cs" />
     <Compile Include="DataObject.cs" />
     <Compile Include="DaysOfTheWeek.cs" />
     <Compile Include="Delivery.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="Price.cs" />
     <Compile Include="Priority.cs" />
     <Compile Include="Scope.cs" />
+    <Compile Include="State.cs" />
     <Compile Include="WeeklyTime.cs" />
     <Compile Include="TransportType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -8,11 +8,11 @@ namespace Server.Business
     public class CountryService: Service
     {
 
-        private StateSnapshot state;
+        private CurrentState state;
         private DataHelper<Country> dataHelper;
 
 
-        public CountryService(StateSnapshot state, DataHelper<Country> dataHelper)
+        public CountryService(CurrentState state, DataHelper<Country> dataHelper)
         {
             this.state = state;
             this.dataHelper = dataHelper;

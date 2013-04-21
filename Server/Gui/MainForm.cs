@@ -64,10 +64,6 @@ namespace Server.Gui
             try{
                 CountryDataHelper cdh = new CountryDataHelper();
                 Country country = new Country { Name = "Wellington", Code = "WLG" };
-
-                int existingId = cdh.GetId(country);
-                Logger.WriteLine("Existing country id: " + existingId);
-
             }
             catch (DatabaseException e)
             {
