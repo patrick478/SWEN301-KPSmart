@@ -63,6 +63,7 @@
     <Compile Include="Data\SQLQueryBuilder.cs" />
     <Compile Include="Network\Client.cs" />
     <Compile Include="Network\ConnectionManager.cs" />
+	<Compile Include="Network\Controller.cs" />
     <Compile Include="Data\Database.cs" />
     <Compile Include="Gui\Logger.cs" />
     <Compile Include="Gui\MainForm.cs">

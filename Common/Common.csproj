@@ -58,6 +58,7 @@
     <Compile Include="WeeklyTime.cs" />
     <Compile Include="TransportType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="NetCodes.cs" />
     <Compile Include="Route.cs" />
     <Compile Include="RouteInstance.cs" />
     <Compile Include="StateSnapshot.cs" />
