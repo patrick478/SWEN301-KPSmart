@@ -85,7 +85,7 @@ namespace Server.Data
             Company.ID = (int)country_id;
         }
 
-            public override int GetId(Company obj)
+            public override int GetId(Company country)
             {
                 throw new NotImplementedException();
             }

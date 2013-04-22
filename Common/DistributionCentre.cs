@@ -15,7 +15,7 @@ namespace Common
     /// </summary>
     public class DistributionCentre: RouteNode
     {
-        private const string NEW_ZEALAND = "New Zealand"; // should this go in some config file?
+        private static readonly Country NEW_ZEALAND = new Country{Name="New Zealand"}; // should this go in some config file?
 
         public DistributionCentre(string name) : base(NEW_ZEALAND)
         {

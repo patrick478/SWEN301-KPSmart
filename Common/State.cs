@@ -14,12 +14,12 @@ namespace Common
     /// </summary>
     public abstract class State
     {
-        protected readonly IDictionary<int, Route> routes;
-        protected readonly IDictionary<int, Price> prices;
-        protected readonly IDictionary<int, Delivery> deliveries;
-        protected readonly IDictionary<int, RouteNode> routeNodes;
-        protected readonly IDictionary<int, Company> companies;
-        protected readonly IDictionary<int, Country> countries;
+        protected IDictionary<int, Route> routes;
+        protected IDictionary<int, Price> prices;
+        protected IDictionary<int, Delivery> deliveries;
+        protected IDictionary<int, RouteNode> routeNodes;
+        protected IDictionary<int, Company> companies;
+        protected IDictionary<int, Country> countries;
 
         protected State(IDictionary<int, Route> routes, 
             IDictionary<int, Price> prices, 
@@ -36,6 +36,10 @@ namespace Common
             this.companies = new ConcurrentDictionary<int, Company>(companies);
         }
 
+        protected State()
+        {
+        }
+
         #region routes
         public Route GetRoute(int id)
         {
@@ -46,6 +50,15 @@ namespace Common
         {
             return new List<Route>(routes.Values);
         }
+
+        public void SetAllRoutes(IDictionary<int, Route> routes)
+        {
+            if (routes != null && this.routeNodes == null)
+            {
+                this.routes = new ConcurrentDictionary<int, Route>(routes);
+            }
+        }
+
         #endregion
 
 
@@ -58,6 +71,14 @@ namespace Common
         public IEnumerable<RouteNode> GetAllRouteNodes()
         {
             return new List<RouteNode>(routeNodes.Values);
+        }
+
+        public void SetAllRouteNodes(IDictionary<int, RouteNode> routeNodes)
+        {
+            if (routeNodes != null && this.routeNodes == null)
+            {
+                this.routeNodes = new ConcurrentDictionary<int, RouteNode>(routeNodes);
+            }
         }
         #endregion
 
@@ -72,6 +93,8 @@ namespace Common
         {
             return new List<Price>(prices.Values);
         }
+
+
         #endregion
 
 
@@ -85,6 +108,16 @@ namespace Common
         {
             return new List<Country>(countries.Values);
         }
+
+        public void SetAllCountries(IDictionary<int, Country> countries)
+        {
+            // only allow to be set if not initialised yet
+            if (countries != null && this.countries == null)
+            {
+                this.countries = new ConcurrentDictionary<int, Country>(countries);
+            }
+        }
+
         #endregion
 
 

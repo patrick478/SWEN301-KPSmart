@@ -30,14 +30,22 @@ namespace Server.Data
         /// <returns></returns>
         public override Country Load(int id)
         {
-            var sql = String.Format("SELECT name, code, created FROM `{0}` WHERE {1}={2} ORDER BY created DESC LIMIT 1", TABLE_NAME, ID_COL_NAME, id);
+            var sql = String.Format("SELECT name, code, created FROM `{0}` WHERE active=1 AND {1}={2}", TABLE_NAME, ID_COL_NAME, id);
             object[] row = Database.Instance.FetchRow(sql);
+
+            if (row.Length == 0)
+            {
+                return null;
+            }
 
             string name = row[0] as string;
             string code = row[1] as string;
             DateTime created = (DateTime)row[2];
 
-            return new Country {Name = name, Code = code, ID = id, LastEdited = created};
+            var country = new Country {Name = name, Code = code, ID = id, LastEdited = created};
+            Logger.WriteLine("Loaded country: " + country);
+
+            return country;
         }
 
         /// <summary>
@@ -50,18 +58,19 @@ namespace Server.Data
             var sql = String.Format("SELECT {1}, name, created FROM `{0}` WHERE active=1 AND code LIKE '{2}'", TABLE_NAME, ID_COL_NAME, code);
             object[] row = Database.Instance.FetchRow(sql);
 
-            Logger.WriteLine(row.Length + "");
-
             if (row.Length == 0)
             {
                 return null;
             }
 
-            int id = (int)row[0];
+            long id = (long)row[0];
             string name = row[1] as string;
             DateTime created = (DateTime)row[2];
 
-            return new Country {ID = id, Name = name, Code = code, LastEdited = created};
+            var country = new Country {ID = (int)id, Name = name, Code = code, LastEdited = created};
+            Logger.WriteLine("Loaded Country: " + country);
+
+            return country;
         }
 
 
@@ -72,7 +81,29 @@ namespace Server.Data
         /// <returns></returns>
         public override IDictionary<int, Country> LoadAll()
         {
-            throw new NotImplementedException();
+            var sql = String.Format("Select {1}, name, code, created FROM {0} WHERE active=1", TABLE_NAME, ID_COL_NAME);
+            object[][] rows = Database.Instance.FetchRows(sql);
+
+            Logger.WriteLine("Loaded {0} countries:", rows.Length);
+
+            var results = new Dictionary<int, Country>();
+            foreach (object[] row in rows)
+            {                         
+                // extract data
+                long id = (long)row[0];
+                string name = row[1] as string;
+                string code = row[2] as string;
+                DateTime created = (DateTime)row[3];
+
+                // make country
+                var country = new Country { ID = (int)id, Name = name, Code = code, LastEdited = created };
+                Logger.WriteLine(country.ToString());
+
+                // add country to results
+                results.Add((int)id, country);
+            }
+            
+            return results;
         }
 
         /// <summary>
@@ -111,10 +142,12 @@ namespace Server.Data
             Database.Instance.InsertQuery(sql);
 
             // update lastEdited 
-            sql = String.Format("SELECT created FROM `{0}` WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, country.ID);
+            sql = String.Format("SELECT created FROM `{0}` WHERE active=1 AND {1}={2}", TABLE_NAME, ID_COL_NAME, country.ID);
             var row = Database.Instance.FetchRow(sql);
             country.LastEdited = (DateTime)row[0];
             // LOCK ENDS HERE
+
+            Logger.WriteLine("Updated country: " + country);
         }
 
         /// <summary>
@@ -125,7 +158,6 @@ namespace Server.Data
         {
             // check it is legal
             int countryID = GetId(country);
-            Logger.WriteLine("id = " + countryID);
 
             if (countryID != 0)
                 throw new DatabaseException("A country with that name already exists");
@@ -145,19 +177,25 @@ namespace Server.Data
             country.ID = (int) id;
             country.LastEdited = (DateTime) row[1];
 
+            Logger.WriteLine("Created country: " + country);
         }
 
 
         /// <summary>
         /// Returns the id of the country that is active and matches the given countries name.  Returns 0 if it doesn't exist.
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="country"></param>
         /// <returns></returns>
-        public override int GetId(Country obj)
+        public override int GetId(Country country)
         {
-            var sql = String.Format("SELECT {1} FROM `{0}` WHERE active=1 AND name LIKE '{2}'", TABLE_NAME, ID_COL_NAME, obj.Name);
+            var sql = String.Format("SELECT {1} FROM `{0}` WHERE active=1 AND name LIKE '{2}'", TABLE_NAME, ID_COL_NAME, country.Name);
             long id = Database.Instance.FetchNumberQuery(sql);
-            return (int) id;
+
+            // set id in country
+            country.ID = (int) id;
+
+            // return result
+            return country.ID;
         }
 
         /// <summary>
@@ -173,9 +211,11 @@ namespace Server.Data
             Database.Instance.InsertQuery(sql);
 
             // TODO: Should this insert the full row information?
-            sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES ({2}, -1, {3}, {4})", TABLE_NAME, ID_COL_NAME, id, "", "");
+            sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES ({2}, -1, '{3}', '{4}')", TABLE_NAME, ID_COL_NAME, id, "", "");
             Database.Instance.InsertQuery(sql);
             // LOCK ENDS HERE
+
+            Logger.WriteLine("Deleted country: " + id);
         }
 
         /// <summary>

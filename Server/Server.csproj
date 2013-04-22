@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Business\CountryService.cs" />
+    <Compile Include="Business\IllegalActionException.cs" />
     <Compile Include="Business\PathFinder.cs" />
     <Compile Include="Business\RouteService.cs" />
     <Compile Include="Business\Service.cs" />

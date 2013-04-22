@@ -22,15 +22,19 @@ namespace Common
         {
         }
 
+        public CurrentState()
+        {
+        }
+
         #region route
         public void SaveRoute(Route route)
         {
             routes.Add(route.ID, route);
         }
 
-        public void RemoveRoute(Route route)
+        public void RemoveRoute(int id)
         {
-            routes.Remove(route.ID);
+            routes.Remove(id);
         }
         #endregion
 
@@ -41,9 +45,9 @@ namespace Common
             routeNodes.Add(routeNode.ID, routeNode);
         }
 
-        public void RemoveRouteNode(RouteNode routeNode)
+        public void RemoveRouteNode(int id)
         {
-            routeNodes.Remove(routeNode.ID);
+            routeNodes.Remove(id);
         }
         #endregion
 
@@ -54,9 +58,9 @@ namespace Common
             prices.Add(price.ID, price);
         }
 
-        public void RemovePrice(Price price)
+        public void RemovePrice(int id)
         {
-            prices.Remove(price.ID);
+            prices.Remove(id);
 
         }
         #endregion
@@ -65,12 +69,12 @@ namespace Common
         #region countries
         public void SaveCountry(Country country)
         {
-            countries.Add(country.ID, country);
+            countries[country.ID] = country;
         }
 
-        public void RemoveCountry(Country country)
+        public void RemoveCountry(int id)
         {
-            prices.Remove(country.ID);
+            countries.Remove(id);
         }
         #endregion
 
@@ -81,9 +85,9 @@ namespace Common
             deliveries.Add(delivery.ID, delivery);
         }
 
-        public void RemoveDelivery(Delivery delivery)
+        public void RemoveDelivery(int id)
         {
-            deliveries.Remove(delivery.ID);
+            deliveries.Remove(id);
         }
         #endregion
 
@@ -94,9 +98,9 @@ namespace Common
             companies.Add(company.ID, company);
         }
 
-        public void RemoveCompany(Company company)
+        public void RemoveCompany(int id)
         {
-            companies.Remove(company.ID);
+            companies.Remove(id);
         }
         #endregion
 

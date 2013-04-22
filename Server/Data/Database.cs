@@ -139,8 +139,6 @@ namespace Server.Data
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
             SQLiteDataReader reader = sqlCommand.ExecuteReader();
 
-            Logger.WriteLine("reader.FieldCount = {0}", reader.FieldCount);
-
             List<object> row = new List<object>();
 
             if (reader.HasRows)
@@ -152,6 +150,29 @@ namespace Server.Data
 
             return row.ToArray();
         }
+
+        public object[][] FetchRows(string sql)
+        {
+            SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
+            SQLiteDataReader reader = sqlCommand.ExecuteReader();
+
+            List<object[]> allRows = new List<object[]>();
+
+            while (reader.Read())
+            {
+                List<object> row = new List<object>();
+
+                for (int i = 0; i < reader.VisibleFieldCount; i++)
+                {
+                    row.Add(reader.GetValue(i));
+                }
+
+                allRows.Add(row.ToArray());
+            }
+
+            return allRows.ToArray();
+        }
+
 
         #region for unit tests
 

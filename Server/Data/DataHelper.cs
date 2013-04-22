@@ -18,7 +18,7 @@ namespace Server.Data
         public abstract void Update(T obj);
         public abstract void Create(T obj);
 
-        public abstract int GetId(T obj);
+        public abstract int GetId(T country);
 
     }
 }

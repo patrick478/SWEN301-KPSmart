@@ -13,12 +13,12 @@ namespace Common
     public abstract class RouteNode: DataObject
     {
 
-        protected RouteNode(string country)
+        protected RouteNode(Country country)
         {
             Country = country;
         }
 
         // the country that the RouteNode is in
-        protected string Country { get; set; }
+        public Country Country { get; protected set; }
     }
 }

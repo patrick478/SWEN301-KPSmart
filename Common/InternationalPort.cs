@@ -18,7 +18,7 @@ namespace Common
     /// </summary>
     public class InternationalPort: RouteNode 
     {
-        public InternationalPort(string country) : base(country)
+        public InternationalPort(Country country) : base(country)
         {
          
         }
