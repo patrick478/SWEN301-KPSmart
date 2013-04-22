@@ -57,5 +57,8 @@ namespace Common
         public const string TRANSPORT_SEA = "s";
 
         public const string CANCEL = "x";
+
+        /// <summary>Character used to seperate tokens in a network message.</summary>
+        public const char SEPARATOR = '\t';
     }
 }

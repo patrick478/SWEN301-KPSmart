@@ -29,7 +29,7 @@ namespace Server.Network
         public static void OnReceived(Client client, string data)
         {
             // TODO try catches for string arrays that are missing expected arguments. And can't be converted etc.
-            var tokens = data.Split();
+            var tokens = data.Split(Common.NetCodes.SEPARATOR);
 
             switch (tokens[0])
             {
@@ -98,6 +98,7 @@ namespace Server.Network
             //Transmit(client, BuildTransmissionString(Common.NetCode.SV_DELIVERY_CONFIRM));
         }
 
+        // Just does a full update at the moment, can do delta update later.
         private static void RouteEdit(Client client, string[] tokens)
         {
             int count = 1;
@@ -151,14 +152,6 @@ namespace Server.Network
             int count = 1;
         }
 
-        /*
-         * TODO Maybe change the token seperator for network messages to something other than space, 
-         * as some of the string params like Location Name can contain spaces, which restricts to only 
-         * having one Space-able string per transmission, which is a lame limitation.
-         * \t instead maybe? Using UTF-8, where ASCII 0-127 characters only cost one byte, so should use one of them.
-         */
-
-
         /// <summary>
         /// Creates a string out of all the string parameters, seperated by spaces. Ensures at least one string is given.
         /// </summary>
@@ -171,7 +164,7 @@ namespace Server.Network
             builder.Append(first);
             for (int i = 0; i < rest.Length; ++i)
             {
-                builder.Append(" ");
+                builder.Append(Common.NetCodes.SEPARATOR);
                 builder.Append(rest[i]);
             }
             return builder.ToString();
