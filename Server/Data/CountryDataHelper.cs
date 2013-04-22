@@ -30,7 +30,7 @@ namespace Server.Data
         /// <returns></returns>
         public override Country Load(int id)
         {
-            var sql = String.Format("SELECT name, code, created FROM `{0}` WHERE active=1 AND {1}={2}", TABLE_NAME, ID_COL_NAME, id);
+            var sql = SQLQueryBuilder.LoadQuery(id, TABLE_NAME, ID_COL_NAME, new string[]{"name", "code", "created"});
             object[] row = Database.Instance.FetchRow(sql);
 
             if (row.Length == 0)

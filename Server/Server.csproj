@@ -60,6 +60,7 @@
     <Compile Include="Data\DatabaseException.cs" />
     <Compile Include="Data\DataHelper.cs" />
     <Compile Include="Data\RouteDataHelper.cs" />
+    <Compile Include="Data\SQLQueryBuilder.cs" />
     <Compile Include="Network\Client.cs" />
     <Compile Include="Network\ConnectionManager.cs" />
     <Compile Include="Data\Database.cs" />
