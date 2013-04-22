@@ -4,8 +4,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" 
-      d:DesignHeight="768" d:DesignWidth="1024"
-	Title="KPSmart - Home">
+      d:DesignHeight="700" d:DesignWidth="1024"
+	Title="KPSmart - Home" DataContext="{Binding}" ShowsNavigationUI="False">
 
     <Grid Margin="10,0,10,0" Background="#00000000">
         <Grid.ColumnDefinitions>
@@ -17,14 +17,25 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <!-- View routes button -->
-        <TabControl Grid.Row="1" Height="690" HorizontalAlignment="Left" Margin="17,66,0,0" Name="tabControl1" VerticalAlignment="Top" Width="975" IsHitTestVisible="True" IsEnabled="True" IsTextSearchEnabled="False" FontSize="20" ForceCursor="False" FontWeight="ExtraBold" AllowDrop="False">
-            <TabItem Header="Routes" Name="tabItem1">
-                <Grid>
+        <TabControl Grid.Row="1" Height="585" HorizontalAlignment="Left" Margin="12,129,0,0" Name="tabControl1" VerticalAlignment="Top" Width="975" IsHitTestVisible="True" IsEnabled="True" IsTextSearchEnabled="False" FontSize="20" ForceCursor="False" FontWeight="ExtraBold" AllowDrop="False" Grid.RowSpan="2">
+            <TabItem Header="Countries" Name="tabItem1">
+                <Grid Height="500" Width="943">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="67*" />
-                        <ColumnDefinition Width="76*" />
-                        <ColumnDefinition Width="822*" />
+                        <ColumnDefinition Width="165*" />
+                        <ColumnDefinition Width="40*" />
+                        <ColumnDefinition Width="760*" />
                     </Grid.ColumnDefinitions>
+                    <Button Content="Add Country" Height="36" HorizontalAlignment="Left" Margin="18,27,0,0" Name="addCountry" VerticalAlignment="Top" Width="125" FontSize="12" FontWeight="Bold" Click="addCountry_Click" />
+                    <Button Content="Edit Country" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="18,85,0,0" Name="editCountry" VerticalAlignment="Top" Width="125" Click="editCountry_Click" />
+                    <Button Content="Delete Country" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="18,143,0,0" Name="deleteCountry" VerticalAlignment="Top" Width="125" Click="deleteCountry_Click" />
+                    <ListBox Grid.Column="2" Height="435" HorizontalAlignment="Left" Margin="0,27,0,0" Name="countriesList" VerticalAlignment="Top" Width="711" FontWeight="Normal" FontSize="14">
+                    <ListBoxItem Content="Kashakstan"></ListBoxItem>
+                    <ListBoxItem Content="Siberia"></ListBoxItem>
+                    <ListBoxItem Content="Mongolia"></ListBoxItem>
+                    <ListBoxItem Content="Milk"></ListBoxItem>
+                    <ListBoxItem Content="Iced Tea"></ListBoxItem>
+                    <ListBoxItem Content="Mango Shake"></ListBoxItem>
+                    </ListBox>
                 </Grid>
             </TabItem>
             <TabItem Header="Companies" Name="Companies" FontSize="20" Background="#E6EBFFFF" UseLayoutRounding="False">
@@ -34,6 +45,6 @@
                 <Grid Height="656" Width="976" />
             </TabItem>
         </TabControl>
-        <Button Content="Button" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="399,40,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" />
+        <Image Grid.Row="1" Height="88" HorizontalAlignment="Left" Margin="12,12,0,0" Name="image1" Stretch="Fill" VerticalAlignment="Top" Width="975" Source="/Client;component/header.png" />
     </Grid>
 </Page>

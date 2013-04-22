@@ -11,36 +11,60 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Client.Countries;
 
 namespace Client
 {
     /// <summary>
     /// Interaction logic for Home.xaml
     /// </summary>
-    public partial class Home : Page
+    public partial class Home 
     {
         public Home()
         {
             InitializeComponent();
         }
 
-        private void RoutesButton_Click(object sender, RoutedEventArgs e)
-        {
-            // View Expense Report
-            RoutesPage routes = new RoutesPage();
-            this.NavigationService.Navigate(routes);
 
+        private void addCountry_Click(object sender, RoutedEventArgs e)
+        {
+            // Instantiate the dialog box
+            var dlg = new AddCountryDialogBox();
+
+            // Open the dialog box modally 
+            dlg.ShowDialog();
+            if (dlg.DialogResult != false)
+            {
+                countriesList.Items.Add(dlg.countryName.Text);
+            }
         }
 
-        private void CompaniesButton_Click(object sender, RoutedEventArgs e)
+        private void editCountry_Click(object sender, RoutedEventArgs e)
         {
+            // Instantiate the dialog box
+            var dlg = new AddCountryDialogBox
+                {
+                    countryName = {Text = ((ListBoxItem) countriesList.SelectedItem).Content.ToString()}
+                };
 
+            // Open the dialog box modally 
+            dlg.ShowDialog();
+
+            if (dlg.DialogResult != false)
+            {
+                countriesList.Items.Remove(countriesList.SelectedItem);
+                countriesList.Items.Add(dlg.countryName.Text);
+            }
+
+            
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void deleteCountry_Click(object sender, RoutedEventArgs e)
         {
-            RoutesPage routes = new RoutesPage();
-            this.NavigationService.Navigate(routes);
+            countriesList.Items.Remove(countriesList.SelectedItem);
         }
+
+
+       
     }
 }

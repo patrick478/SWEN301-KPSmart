@@ -1,6 +1,14 @@
 ﻿<NavigationWindow x:Class="Client.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="KPSmart" Height="768" Width="1024" Source="Home.xaml" Loaded="NavigationWindow_Loaded">
-    
+        Title="KPSmart" Height="768" Width="1024" Source="Home.xaml" Loaded="NavigationWindow_Loaded" ResizeMode="CanMinimize">
+    <NavigationWindow.Background>
+        <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+            <GradientStop Color="Black" Offset="1" />
+            <GradientStop Color="#FF3B57FF" Offset="1" />
+            <GradientStop Color="#FF101847" Offset="0.488" />
+            <GradientStop Color="#FF121B52" Offset="0" />
+            <GradientStop Color="#FF10194C" Offset="0.25" />
+        </LinearGradientBrush>
+    </NavigationWindow.Background>
 </NavigationWindow>
