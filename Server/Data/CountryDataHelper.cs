@@ -30,7 +30,7 @@ namespace Server.Data
         /// <returns></returns>
         public override Country Load(int id)
         {
-            var sql = SQLQueryBuilder.LoadQuery(id, TABLE_NAME, ID_COL_NAME, new string[]{"name", "code", "created"});
+            var sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, id.ToString(), new string[] { "name", "code", "created" });
             object[] row = Database.Instance.FetchRow(sql);
 
             if (row.Length == 0)
@@ -55,7 +55,7 @@ namespace Server.Data
         /// <returns></returns>
         public Country Load(String code)
         {
-            var sql = String.Format("SELECT {1}, name, created FROM `{0}` WHERE active=1 AND code LIKE '{2}'", TABLE_NAME, ID_COL_NAME, code);
+            var sql = SQLQueryBuilder.SelectFieldsWhereFieldLike(TABLE_NAME, "code", code, new string[] { ID_COL_NAME, "name", "created" });             
             object[] row = Database.Instance.FetchRow(sql);
 
             if (row.Length == 0)
@@ -81,7 +81,7 @@ namespace Server.Data
         /// <returns></returns>
         public override IDictionary<int, Country> LoadAll()
         {
-            var sql = String.Format("Select {1}, name, code, created FROM {0} WHERE active=1", TABLE_NAME, ID_COL_NAME);
+            var sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[]{ID_COL_NAME, "name", "code", "created"});
             object[][] rows = Database.Instance.FetchRows(sql);
 
             Logger.WriteLine("Loaded {0} countries:", rows.Length);
@@ -138,11 +138,13 @@ namespace Server.Data
             Database.Instance.InsertQuery(sql);
 
             // insert new record
-            sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES ({2}, 1, '{3}', '{4}')", TABLE_NAME, ID_COL_NAME, country.ID, country.Name, country.Code);
+            var fieldNames = new string[]{ID_COL_NAME, "active", "name", "code"};
+            var values = new string[]{country.ID.ToString(), "1", country.Name, country.Code};
+            sql = SQLQueryBuilder.InsertFields(TABLE_NAME, fieldNames, values);
             Database.Instance.InsertQuery(sql);
 
             // update lastEdited 
-            sql = String.Format("SELECT created FROM `{0}` WHERE active=1 AND {1}={2}", TABLE_NAME, ID_COL_NAME, country.ID);
+            sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, country.ID.ToString(), new string[]{"created"});
             var row = Database.Instance.FetchRow(sql);
             country.LastEdited = (DateTime)row[0];
             // LOCK ENDS HERE

@@ -10,7 +10,6 @@ namespace Common
     /// </summary>
     public class CurrentState: State
     {
-        //todo - should this be singleton? Should only be one instance
 
 
         public CurrentState(IDictionary<int, Route> routes,
@@ -29,7 +28,7 @@ namespace Common
         #region route
         public void SaveRoute(Route route)
         {
-            routes.Add(route.ID, route);
+            routes[route.ID] = route;
         }
 
         public void RemoveRoute(int id)
@@ -42,7 +41,7 @@ namespace Common
         #region route node
         public void SaveRouteNode(RouteNode routeNode)
         {
-            routeNodes.Add(routeNode.ID, routeNode);
+            routeNodes[routeNode.ID] = routeNode;
         }
 
         public void RemoveRouteNode(int id)
@@ -82,7 +81,7 @@ namespace Common
         #region deliveries
         public void SaveDelivery(Delivery delivery)
         {
-            deliveries.Add(delivery.ID, delivery);
+            deliveries[delivery.ID] = delivery;
         }
 
         public void RemoveDelivery(int id)
@@ -95,7 +94,7 @@ namespace Common
         #region companies
         public void SaveCompany(Company company)
         {
-            companies.Add(company.ID, company);
+            companies[company.ID] = company;
         }
 
         public void RemoveCompany(int id)
