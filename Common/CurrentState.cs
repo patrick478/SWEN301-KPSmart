@@ -11,16 +11,6 @@ namespace Common
     public class CurrentState: State
     {
 
-
-        public CurrentState(IDictionary<int, Route> routes,
-                            IDictionary<int, Price> prices,
-                            IDictionary<int, Delivery> deliveries,
-                            IDictionary<int, RouteNode> routeNodes,
-                            IDictionary<int, Company> companies,
-                            IDictionary<int, Country> countries): base(routes, prices, deliveries, routeNodes, companies, countries)
-        {
-        }
-
         public CurrentState()
         {
         }

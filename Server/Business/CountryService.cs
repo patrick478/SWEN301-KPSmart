@@ -19,8 +19,8 @@ namespace Server.Business
 
             // initialise the countries of the state
             var countries = dataHelper.LoadAll();
-            state.SetAllCountries(countries);
-            state.SetAllRouteNodes(new Dictionary<int, RouteNode>());
+            state.InitialiseCountries(countries);
+            state.InitialiseRouteNodes(new Dictionary<int, RouteNode>());
         }
 
         /// <summary>
