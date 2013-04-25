@@ -168,14 +168,19 @@ namespace Server.Data
                 throw new DatabaseException("A country with that code already exists");
 
             // insert the record
-            var sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES (coalesce((SELECT MAX({1})+1 FROM `{0}`), 1), 1, '{2}', '{3}')", TABLE_NAME, ID_COL_NAME, country.Name, country.Code);
+            var sql = SQLQueryBuilder.CreateNewRecord(TABLE_NAME, 
+                                                        ID_COL_NAME, 
+                                                        new string[] {"name, code"},
+                                                        new string[] {country.Name, country.Code});              
             long inserted_id = Database.Instance.InsertQuery(sql);
 
-            // set id and LastEdited
-            sql = String.Format("SELECT {1}, created FROM `{0}` WHERE id={2}",TABLE_NAME, ID_COL_NAME, inserted_id);
+            // get id and LastEdited
+            var fields = new string[] {ID_COL_NAME, "created"};
+            sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, "id", inserted_id.ToString(), fields);         
             var row = Database.Instance.FetchRow(sql);
-
             long id = (long) row[0];
+
+            // set id and lastedited
             country.ID = (int) id;
             country.LastEdited = (DateTime) row[1];
 
@@ -184,13 +189,17 @@ namespace Server.Data
 
 
         /// <summary>
-        /// Returns the id of the country that is active and matches the given countries name.  Returns 0 if it doesn't exist.
+        /// Returns the id of the country that is active and matches the given countries name,
+        /// and also sets the ID field to that value.
+        /// 
+        /// Returns 0 if it doesn't exist in the Database.
         /// </summary>
         /// <param name="country"></param>
         /// <returns></returns>
         public override int GetId(Country country)
         {
-            var sql = String.Format("SELECT {1} FROM `{0}` WHERE active=1 AND name LIKE '{2}'", TABLE_NAME, ID_COL_NAME, country.Name);
+            // get id of matching record
+            var sql = SQLQueryBuilder.SelectFieldsWhereFieldLike(TABLE_NAME, "name", country.Name, new []{ID_COL_NAME});           
             long id = Database.Instance.FetchNumberQuery(sql);
 
             // set id in country
@@ -213,7 +222,9 @@ namespace Server.Data
             Database.Instance.InsertQuery(sql);
 
             // TODO: Should this insert the full row information?
-            sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES ({2}, -1, '{3}', '{4}')", TABLE_NAME, ID_COL_NAME, id, "", "");
+            sql = SQLQueryBuilder.InsertFields(TABLE_NAME, 
+                                               new string[] {ID_COL_NAME, "active", "name", "code"},
+                                               new string[] {id.ToString(), "-1", "", ""});
             Database.Instance.InsertQuery(sql);
             // LOCK ENDS HERE
 

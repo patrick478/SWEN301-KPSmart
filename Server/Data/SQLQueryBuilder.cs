@@ -98,23 +98,51 @@ namespace Server.Data
             string fieldValues = "";
             foreach (string field in values)
             {
-                fields += field + "', '";
+                fieldValues += field + "', '";
             }
-            fields.Trim('\'');
+            fieldValues = fieldValues.Trim('\'');
+            fieldValues = fieldValues.Trim();
+            fieldValues = fieldValues.Trim(',');
+
+            return String.Format("INSERT INTO `{0}` ({1}) VALUES ('{2})", tableName, fields, fieldValues);
+        }
+
+
+        /// <summary>
+        /// INSERT INTO `'tableName'` ('idFieldName', active, 'fieldNames') VALUES (coalesce((SELECT MAX({idFieldName})+1 FROM `'tableName'`), 1), 1, 'fieldValues')
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="fieldNames">all field names other than the 'Object_ID_field' and 'active'</param>
+        /// <param name="fieldValues">values matching the fields in 'fieldNames'</param>
+        /// <returns></returns>
+        public static string CreateNewRecord(string tableName, string idFieldName, string[] fieldNames, string[] fieldValues) {
+
+            // format the fieldNames section
+            string fields = "";
+            foreach (string field in fieldNames)
+            {
+                fields += field + ", ";
+            }
             fields = fields.Trim();
             fields = fields.Trim(',');
 
-            return String.Format("INSERT INTO `{0}` ({1}) VALUES ({2})", tableName, fields, fieldValues);
+            // format the fieldValues section
+            string values = "";
+            foreach (string field in fieldValues)
+            {
+                values += field + "', '";
+            }
+            values = values.Trim('\'');
+            values = values.Trim();
+            values = values.Trim(',');
+
+
+            return String.Format("INSERT INTO `{0}` ({1}, active, {2}) VALUES (coalesce((SELECT MAX({1})+1 FROM `{0}`), 1), 1, '{3})", tableName, idFieldName, fields, values);
+
         }
 
 
-        public static string CreateNewRecord() {
 
-            String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES (coalesce((SELECT MAX({1})+1 FROM `{0}`), 1), 1, '{2}', '{3}')", TABLE_NAME, ID_COL_NAME, country.Name, country.Code);
-        
-        
-        
-        }
 
     }
 }
