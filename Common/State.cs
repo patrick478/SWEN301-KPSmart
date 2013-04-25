@@ -110,8 +110,6 @@ namespace Common
         {
             return new List<Company>(companies.Values);
         }
-
-
         #endregion
     }
 }

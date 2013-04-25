@@ -12,7 +12,9 @@ namespace Common
     /// </summary>
     public class CurrentState: State
     {
-
+        /// <summary>
+        /// Creates an uninitialised CurrentState.  Its internal state must be initialised via the Initialise...() methods.
+        /// </summary>
         public CurrentState()
         {
         }

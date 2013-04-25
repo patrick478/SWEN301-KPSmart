@@ -7,28 +7,27 @@ using Server.Data;
 
 namespace Server.Business
 {
-    public class CompanyService: Service<Company>
+    public class DeliveryService: Service<Delivery>
     {
-
-        public CompanyService(CurrentState state) : base(state, new CompanyDataHelper())
+        public DeliveryService(CurrentState state) : base(state, new DeliveryDataHelper())
         {
-            // initialise the companies of the state     
-            //var companies = dataHelper.LoadAll();
-            var companies = new Dictionary<int, Company>(); 
-            state.InitialiseCompanies(companies);
+            // initialise current deliveries
+            //var deliveries = dataHelper.LoadAll();
+            var deliveries = new Dictionary<int, Delivery>();
+            state.InitialiseDeliveries(deliveries);
         }
 
-        public override Company Get(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerable<Company> GetAll()
+        public override Delivery Get(int id)
         {
             throw new NotImplementedException();
         }
 
-        public override bool Exists(Company obj)
+        public override IEnumerable<Delivery> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Exists(Delivery obj)
         {
             throw new NotImplementedException();
         }

@@ -6,19 +6,19 @@ using Common;
 
 namespace Server.Data
 {
-    public class DeliveryDataHelper: DataHelper<Delivery>
+    class RouteNodeDataHelper: DataHelper<RouteNode>
     {
-        public override Delivery Load(int id)
+        public override RouteNode Load(int id)
         {
             throw new NotImplementedException();
         }
 
-        public override IDictionary<int, Delivery> LoadAll()
+        public override IDictionary<int, RouteNode> LoadAll()
         {
             throw new NotImplementedException();
         }
 
-        public override IDictionary<int, Delivery> LoadAll(DateTime snapshotTime)
+        public override IDictionary<int, RouteNode> LoadAll(DateTime snapshotTime)
         {
             throw new NotImplementedException();
         }
@@ -28,22 +28,22 @@ namespace Server.Data
             throw new NotImplementedException();
         }
 
-        public override void Delete(Delivery obj)
+        public override void Delete(RouteNode obj)
         {
             throw new NotImplementedException();
         }
 
-        public override void Update(Delivery obj)
+        public override void Update(RouteNode obj)
         {
             throw new NotImplementedException();
         }
 
-        public override void Create(Delivery obj)
+        public override void Create(RouteNode obj)
         {
             throw new NotImplementedException();
         }
 
-        public override int GetId(Delivery country)
+        public override int GetId(RouteNode country)
         {
             throw new NotImplementedException();
         }

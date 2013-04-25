@@ -17,73 +17,45 @@ namespace Server.Data
     /// 
     /// Maybe it returns the DateTime instead of void so StateSnapshot can be updated???
     /// </summary>
-    public class RouteDataHelper
+    public class RouteDataHelper: DataHelper<Route>
     {
 
-        /// <summary>
-        /// Loads the route of the given id.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public Route LoadRoute(int id)
-        {
-            //todo
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Loads the most up to date version of all routes in the system.
-        /// </summary>
-        /// <returns></returns>
-        public IDictionary<int, Route> LoadAllRoutes()
+        public override Route Load(int id)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Loads all routes that were in the system at the given snapshotTime.
-        /// </summary>
-        /// <param name="snapshotTime"></param>
-        /// <returns></returns>
-        public IDictionary<int, Route> LoadAllRoutes(DateTime snapshotTime)
+        public override IDictionary<int, Route> LoadAll()
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// This either calls editRoute, or newRoute accordingly.
-        /// </summary>
-        /// <param name="newRoute"></param>
-        public Route SaveRoute(Route newRoute)
+        public override IDictionary<int, Route> LoadAll(DateTime snapshotTime)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Used for saving changes to an existing route.
-        /// </summary>
-        /// <param name="route"></param>
-        private Route EditRoute(Route route)
+        public override void Delete(int id)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Used for saving a new route.
-        /// </summary>
-        /// <param name="route"></param>
-        private Route NewRoute(Route route)
+        public override void Delete(Route obj)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Deletes the route, and returns a copy of the deleted route.
-        /// This allows the delete to be time stamped.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public void DeleteRoute(int id)
+        public override void Update(Route obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Create(Route obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int GetId(Route country)
         {
             throw new NotImplementedException();
         }

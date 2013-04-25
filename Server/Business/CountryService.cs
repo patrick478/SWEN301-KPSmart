@@ -6,21 +6,13 @@ using Server.Data;
 
 namespace Server.Business
 {
-    public class CountryService: Service
+    public class CountryService: Service<Country>
     {
-
-        private CurrentState state;
-        private DataHelper<Country> dataHelper = new CountryDataHelper();
-
-
-        public CountryService(CurrentState state)
+        public CountryService(CurrentState state): base(state, new CountryDataHelper())
         {
-            this.state = state;
-
             // initialise the countries of the state
             var countries = dataHelper.LoadAll();
             state.InitialiseCountries(countries);
-            state.InitialiseRouteNodes(new Dictionary<int, RouteNode>());
         }
 
         /// <summary>
@@ -31,7 +23,7 @@ namespace Server.Business
         /// <returns>the created object, with ID field, and LastEdited initialised</returns>
         /// <exception cref="DatabaseException"></exception>
         /// <exception cref="InvalidObjectStateException"></exception>
-        public Country CreateCountry (string name, string code) 
+        public Country Create(string name, string code) 
         {
             // throws an exception if invalid
             var newCountry = new Country {Name = name, Code = code};
@@ -45,40 +37,7 @@ namespace Server.Business
             return newCountry;
         }
 
-        public Country LoadCountry(int id)
-        {
-            if (id == 0)
-            {
-                throw new IllegalActionException("id cannot be 0");
-            }
-
-            return state.GetCountry(id);
-        }
-
-        public void DeleteCountry(int id)
-        {
-            if (id == 0)
-            {
-                throw new IllegalActionException("id cannot be 0");
-            }
-
-            // check the country isn't used in any routeNodes
-            var routeNodes = state.GetAllRouteNodes();
-            bool isUsed = routeNodes.AsQueryable().Any(t=> t.Country.ID==id);
-            if (isUsed)
-            {
-                throw new IllegalActionException("Cannot remove country that is used in an active RouteNode.");
-            }
-
-            // remove from db
-            dataHelper.Delete(id);
-
-            // remove from state     
-            state.RemoveCountry(id);
-        }
-
-
-        public Country EditCountry(int id, string name, string code)
+        public Country Update(int id, string name, string code)
         {
             // throws an exception if invalid
             var newCountry = new Country { ID=id, Name = name, Code = code };
@@ -93,22 +52,54 @@ namespace Server.Business
             return newCountry;
         }
 
+        public override Country Get(int id)
+        {
+            if (id == 0)
+            {
+                throw new IllegalActionException("id cannot be 0");
+            }
+
+            return state.GetCountry(id);
+        }
+
+        public override IEnumerable<Country> GetAll()
+        {
+            return state.GetAllCountries();
+        }
+
         /// <summary>
         /// Checks whether the country exists or not.  Returns true if a country with the same name is 
         /// active.
         /// </summary>
         /// <param name="country"></param>
         /// <returns></returns>
-        public bool Exists(Country country)
+        public override bool Exists(Country country)
         {
             var countries = state.GetAllCountries().AsQueryable();
 
             return countries.Any(t => t.Name.ToLower() == country.Name.ToLower());
         }
 
-        public IEnumerable<Country> GetAllCountries()
+        public override void Delete(int id)
         {
-            return state.GetAllCountries();
+            if (id == 0)
+            {
+                throw new IllegalActionException("id cannot be 0");
+            }
+
+            // check the country isn't used in any routeNodes
+            var routeNodes = state.GetAllRouteNodes();
+            bool isUsed = routeNodes.AsQueryable().Any(t => t.Country.ID == id);
+            if (isUsed)
+            {
+                throw new IllegalActionException("Cannot remove country that is used in an active RouteNode.");
+            }
+
+            // remove from db
+            dataHelper.Delete(id);
+
+            // remove from state     
+            state.RemoveCountry(id);
         }
 
     }

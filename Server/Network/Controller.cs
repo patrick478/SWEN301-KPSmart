@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Common;
+using Server.Business;
 
 namespace Server.Network
 {
@@ -9,8 +11,25 @@ namespace Server.Network
     /// Passes information between the Server's Business components and the connected Clients.
     /// TODO Come up with a more logical name for the class.
     /// </summary>
-    public static class Controller
+    public class Controller
     {
+        private RouteService routeService;
+        private PriceService priceService;
+        private LocationService locationService;
+        private DeliveryService deliveryService;
+        private CountryService countryService;
+        private CompanyService companyService;
+
+        public Controller(CountryService countryService, CompanyService companyService, DeliveryService deliveryService, PriceService priceService, RouteService routeService, LocationService locationService)
+        {
+            this.countryService = countryService;
+            this.companyService = companyService;
+            this.deliveryService = deliveryService;
+            this.priceService = priceService;
+            this.routeService = routeService;
+            this.locationService = locationService;
+        }
+
         /// <summary>
         /// Actions to be performed when a Client first connects.
         /// </summary>
