@@ -18,12 +18,16 @@ namespace Server.Business
     /// </summary>
     public class RouteService: Service<Route>
     {
+        //TODO
+        private PathFinder pathfinder;
+
         public RouteService(CurrentState state) : base(state, new RouteDataHelper())
         {
             // initialise current routes
             //var routes = dataHelper.LoadAll();
             var routes = new Dictionary<int, Route>();
             state.InitialiseRoutes(routes);
+            pathfinder = new PathFinder(this);
         }
 
         public override Route Get(int id)
@@ -42,6 +46,12 @@ namespace Server.Business
         }
 
         public override void Delete(int id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        //TODO STUB returns all routes heading out of a routenode
+        public override IEnumerable<Route> GetAll(RouteNode)
         {
             throw new System.NotImplementedException();
         }
