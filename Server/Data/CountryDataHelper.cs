@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using Common;
 using Server.Gui;
 
@@ -132,27 +133,50 @@ namespace Server.Data
                 country.ID = id;
             }
 
+            string sql;
+
             // LOCK BEGINS HERE
             lock (Database.Instance)
-            {
-                // deactivate all previous records
-                var sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, country.ID);
-                Database.Instance.InsertQuery(sql);
+            {         
+                // create a transaction
+                SQLiteTransaction transaction = Database.Instance.BeginTransaction();
 
-                // insert new record
-                var fieldNames = new string[] {ID_COL_NAME, "active", "name", "code"};
-                var values = new string[] {country.ID.ToString(), "1", country.Name, country.Code};
-                sql = SQLQueryBuilder.InsertFields(TABLE_NAME, fieldNames, values);
-                Database.Instance.InsertQuery(sql);
+                try
+                {
 
-                // update lastEdited 
-                sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, country.ID.ToString(),
-                                                                   new string[] {"created"});
-                var row = Database.Instance.FetchRow(sql);
-                country.LastEdited = (DateTime) row[0];
+                    // deactivate all previous records
+                    sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME,
+                                        country.ID);
+                    Database.Instance.InsertQuery(sql, transaction);
+
+                    // insert new record
+                    var fieldNames = new string[] {ID_COL_NAME, "active", "name", "code"};
+                    var values = new string[] {country.ID.ToString(), "1", country.Name, country.Code};
+                    sql = SQLQueryBuilder.InsertFields(TABLE_NAME, fieldNames, values);
+                    Database.Instance.InsertQuery(sql, transaction);
+
+                    // commit transaction
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    Logger.WriteLine("Exception occured during Country.Update() - rolling back:");
+                    Logger.WriteLine(e.Message);
+                }
+                finally
+                {
+                    transaction.Dispose();
+                }
             }
             // LOCK ENDS HERE
 
+            // update lastEdited 
+            sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, country.ID.ToString(),
+                                                                   new string[] {"created"});
+            var row = Database.Instance.FetchRow(sql);
+            country.LastEdited = (DateTime) row[0];
+            
             Logger.WriteLine("Updated country: " + country);
         }
 
