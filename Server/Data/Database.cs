@@ -42,6 +42,8 @@ namespace Server.Data
 
         public Database()
         {
+            
+
             // set the tables to create
             tables.Add("countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT , country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))");
             tables.Add("companies",
@@ -96,7 +98,22 @@ namespace Server.Data
 
         public long InsertQuery(string sql)
         {
-            SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
+            return this.InsertQuery(sql, null);
+        }
+
+        public long InsertQuery(string sql, SQLiteTransaction transaction)
+        {
+
+            SQLiteCommand sqlCommand;
+            if (transaction != null)
+            {
+                sqlCommand = new SQLiteCommand(sql, this.connection, transaction);
+            }
+            else
+            {
+                sqlCommand = new SQLiteCommand(sql, this.connection);
+            }
+
             try
             {
                 int n_rows = sqlCommand.ExecuteNonQuery();
@@ -104,6 +121,10 @@ namespace Server.Data
             catch (Exception ex)
             {
                 Logger.WriteLine("Exception: {0}", ex);
+            }
+            finally
+            {
+                sqlCommand.Dispose();
             }
             return this.connection.LastInsertRowId;
         }
@@ -125,6 +146,10 @@ namespace Server.Data
             {
                 Logger.WriteLine("Exception: {0}", ex);
             }
+            finally
+            {
+                sqlCommand.Dispose();
+            }
 
             return returnValue;
         }
@@ -137,15 +162,26 @@ namespace Server.Data
         public object[] FetchRow(string sql)
         {
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
-            SQLiteDataReader reader = sqlCommand.ExecuteReader();
-
             List<object> row = new List<object>();
 
-            if (reader.HasRows)
+            try
             {
+                SQLiteDataReader reader = sqlCommand.ExecuteReader();
 
-                for (int i = 0; i < reader.VisibleFieldCount; i++)
-                    row.Add(reader.GetValue(i));
+                if (reader.HasRows)
+                {
+
+                    for (int i = 0; i < reader.VisibleFieldCount; i++)
+                        row.Add(reader.GetValue(i));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLine("Exception: {0}", ex.Message);
+            }
+            finally
+            {
+                sqlCommand.Dispose();
             }
 
             return row.ToArray();
@@ -154,23 +190,39 @@ namespace Server.Data
         public object[][] FetchRows(string sql)
         {
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
-            SQLiteDataReader reader = sqlCommand.ExecuteReader();
-
             List<object[]> allRows = new List<object[]>();
 
-            while (reader.Read())
+            try
             {
-                List<object> row = new List<object>();
+                SQLiteDataReader reader = sqlCommand.ExecuteReader();
 
-                for (int i = 0; i < reader.VisibleFieldCount; i++)
+                while (reader.Read())
                 {
-                    row.Add(reader.GetValue(i));
-                }
+                    List<object> row = new List<object>();
 
-                allRows.Add(row.ToArray());
+                    for (int i = 0; i < reader.VisibleFieldCount; i++)
+                    {
+                        row.Add(reader.GetValue(i));
+                    }
+
+                    allRows.Add(row.ToArray());
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLine("Exception: {0}", e.Message);
+            }
+            finally
+            {
+                sqlCommand.Dispose();
             }
 
             return allRows.ToArray();
+        }
+
+        public SQLiteTransaction BeginTransaction()
+        {
+            return connection.BeginTransaction();
         }
 
 

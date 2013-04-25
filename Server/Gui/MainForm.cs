@@ -19,11 +19,6 @@ namespace Server.Gui
             Logger.Instance.SetOutput(logBox);
             Logger.WriteLine("Server starting..");
 
-            // initialise network
-            Network.Network network = Network.Network.Instance;
-            network.Start();
-            network.Open();
-
             // initialise database
             Database.Instance.Connect();
 
@@ -42,6 +37,10 @@ namespace Server.Gui
             var controller = new Controller(countryService, companyService, deliveryService, priceService, routeService,
                                             locationService);
 
+            // initialise network
+            Network.Network network = Network.Network.Instance;
+            network.Start();
+            network.Open();
             // todo - pass controller to network
 
             BenDBTests(countryService);
@@ -70,9 +69,6 @@ namespace Server.Gui
                 // get latest version
                 Country loadedCountry = countryService.Get(country.ID);
 
-                // load all countries
-                var allCountries = countryService.GetAll();
-
                 // create new zealand
                 country = new Country { Name = "New Zealand", Code = "NZ" };
                 if (!countryService.Exists(country))
@@ -86,6 +82,9 @@ namespace Server.Gui
                 {
                     country = countryService.Create(country.Name, country.Code);
                 }
+
+                // load all countries
+                var allCountries = countryService.GetAll();
 
                 // delete australia
                 foreach (Country c in allCountries)
