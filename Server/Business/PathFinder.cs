@@ -15,6 +15,11 @@ namespace Server.Business
     {
         private RouteService routeService;
 
+        private NodeEvaluator time;
+        private NodeEvaluator cost;
+        private RouteExcluder airOnly;
+        private RouteExcluder allRoutes;
+
         private Dictionary<RouteNode, RouteInstance> originPath;
         private HashSet<RouteNode> closed;
         private SortedList<RouteNode, double> fringe;
@@ -23,33 +28,40 @@ namespace Server.Business
         public PathFinder(RouteService routeService)
         {
             this.routeService = routeService;
+            time = new TimeEvaluator(this);
+            cost = new CostEvaluator(this);
+            airOnly = new AirOnlyExcluder(this);
+            allRoutes = new NullExcluder(this);
         }
 
-        public IEnumerable<IEnumerable<RouteInstance>> findRoutes(Delivery delivery)
+        //indexed by the ordinal of the Common.PathType
+        public Dictionary<int, IEnumerable<RouteInstance>> findRoutes(Delivery delivery)
         {
 
-            //
+            Dictionary<int, IEnumerable<RouteInstance>> paths = new Dictionary<int, IEnumerable<RouteInstance>>();
 
+            paths.Add(PathType.Express.Ordinal, findPath(delivery, time, allRoutes));
+            paths.Add(PathType.Standard.Ordinal, findPath(delivery, cost, allRoutes));
+            paths.Add(PathType.AirExpress.Ordinal, findPath(delivery, time, airOnly));
+            paths.Add(PathType.AirStandard.Ordinal, findPath(delivery, cost, airOnly));
 
-            return null;
+            return paths;
         }
 
-        private IEnumerable<RouteInstance> findPath(Delivery delivery, NodeEvaluator evaluator)//, Excluder excluder) 
+        private IEnumerable<RouteInstance> findPath(Delivery delivery, NodeEvaluator evaluator, RouteExcluder excluder)//, Excluder excluder) 
         {
             RouteNode origin = delivery.Origin;
             RouteNode goal = delivery.Destination;
 
             originPath = new Dictionary<RouteNode, RouteInstance>();
             closed = new HashSet<RouteNode>();
-            
-            //TODO need to make a queue
             fringe = new SortedList<RouteNode, double>();
 
 
             //if the queue is empty return null (no path)
             while (fringe.Capacity > 0)
             {
-                //take new node of the top of the stack
+                //take new node off the top of the stack
                 RouteNode curNode = fringe.Keys[0];
                 fringe.RemoveAt(0);
                 closed.Add(curNode);
@@ -58,22 +70,13 @@ namespace Server.Business
                 if (curNode.Equals(goal))
                     return reconstructPath(curNode);
 
-
                 //grab a list of the next avaliable nodes
                 IEnumerable<Route> routes = routeService.GetAll(curNode);
 
                 //take each route/node and evaluate
-                foreach (Route path in routes)
+                foreach (Route path in excluder.Omit(routes))
                 {
-
-                    //route has both nodes
-                    //route provides routeinstance (certain time)
-                    //route service provides all routes associated witha  a certain node
-
                     RouteInstance nextInstance = evaluator.GetNextInstance(path);
-
-
-                    // Take next node from the intace route
                     RouteNode nextNode = path.Destination;
 
                     if(closed.Contains(nextNode))
@@ -95,8 +98,6 @@ namespace Server.Business
                         //fringe.Sort((System.Collections.IComparer)evaluator);
                     }
                 }
-
-
             }
             return null;
         }
@@ -183,6 +184,49 @@ namespace Server.Business
         }
 
 
+        private abstract class RouteExcluder
+        {
+            readonly PathFinder outer;
 
+            public RouteExcluder(PathFinder outer)
+            {
+                this.outer = outer;
+            }
+
+            public abstract IEnumerable<Route> Omit(IEnumerable<Route> original);
+        }
+
+        //class to omit all non air routes in a list
+        private class AirOnlyExcluder : RouteExcluder
+        {
+            public AirOnlyExcluder(PathFinder outer) : base(outer)
+            {
+            }
+
+            public IEnumerable<Route> Omit(IEnumerable<Route> original)
+            {
+                List<Route> result = new List<Route>();
+
+                foreach (Route route in original)
+                {
+                    if (route.TransportType.Equals(TransportType.Air))
+                        result.Add(route);
+                }
+                return result;
+            }
+        }
+
+        //class to omit no routes
+        private class NullExcluder : RouteExcluder
+        {
+            public NullExcluder(PathFinder outer) : base(outer) 
+            {
+            }
+
+            public IEnumerable<Route> Omit(IEnumerable<Route> original)
+            {
+                return new List<Route>(original);
+            }
+        }
     }
 }
