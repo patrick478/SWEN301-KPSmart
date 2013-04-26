@@ -33,6 +33,7 @@ namespace Common
                                                             // CHECK For Price Updates, are we going to store them by ID, or like above where we just search it on the fly.
 
         public const string CL_LOCATION_ADD = "la";       // Location Code (3char string) - Location Name (string)     TODO Later if we get really pro with maps integration: - Longitude - Latititude. Unless we just pass the name along to the api and it finds it itself.
+        //public const string CL_LOCATION_EDIT = "le";       // Location ID (int) - Location Code (3char string) - Location Name (string)
         public const string CL_LOCATION_DELETE = "ld";    // Location ID (int)
 
         public const string CL_COMPANY_ADD = "ca";       // Company Name (string)
@@ -61,5 +62,23 @@ namespace Common
 
         /// <summary>Character used to seperate tokens in a network message.</summary>
         public const char SEPARATOR = '\t';
+
+        /// <summary>
+        /// Creates a string out of all the string parameters, seperated by the seperator character. Ensures at least one string is given.
+        /// </summary>
+        /// <param name="first">First string</param>
+        /// <param name="rest">Remaining strings</param>
+        /// <returns></returns>
+        public static string BuildNetworkString(string first, params string[] rest)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append(first);
+            for (int i = 0; i < rest.Length; ++i)
+            {
+                builder.Append(NetCodes.SEPARATOR);
+                builder.Append(rest[i]);
+            }
+            return builder.ToString();
+        }
     }
 }

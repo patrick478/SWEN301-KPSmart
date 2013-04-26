@@ -97,7 +97,7 @@ namespace Server.Network
             //Delivery air = deliveryService.Build(originID, destinationID, NetCodes.PRIORITY_AIR, weight, volume);
             //Delivery standard = deliveryService.Build(originID, destinationID, NetCodes.PRIORITY_STANDARD, weight, volume);
             //client.StorePendingDelivery(air, standard);
-            //Transmit(client,BuildNetworkString(Common.NetCode.SV_DELIVERY_PRICES,air.TotalPrice,standard.TotalPrice));
+            //Transmit(client,NetCodes.BuildNetworkString(Common.NetCode.SV_DELIVERY_PRICES,air.TotalPrice,standard.TotalPrice));
         }
 
         private void DeliverySelect(Client client, string[] tokens)
@@ -114,7 +114,7 @@ namespace Server.Network
             //Delivery delivery = client.GetPendingDelivery(prio);
             //if (delivery != null)
             //DeliveryManager.Commit(delivery);
-            //Transmit(client, BuildNetworkString(NetCodes.SV_DELIVERY_CONFIRM));
+            //Transmit(client, NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_CONFIRM));
         }
 
         // Just does a full update at the moment, can do delta update later.
@@ -177,22 +177,5 @@ namespace Server.Network
             companyService.Delete(id);
         }
 
-        /// <summary>
-        /// Creates a string out of all the string parameters, seperated by spaces. Ensures at least one string is given.
-        /// </summary>
-        /// <param name="first">First string</param>
-        /// <param name="rest">Remaining strings</param>
-        /// <returns></returns>
-        private static string BuildNetworkString(string first, params string[] rest)
-        {
-            StringBuilder builder = new StringBuilder();
-            builder.Append(first);
-            for (int i = 0; i < rest.Length; ++i)
-            {
-                builder.Append(NetCodes.SEPARATOR);
-                builder.Append(rest[i]);
-            }
-            return builder.ToString();
-        }
     }
 }
