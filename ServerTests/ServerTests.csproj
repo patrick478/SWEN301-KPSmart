@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompanyDataHelperTest.cs" />
+    <Compile Include="CountryDataHelperTest.cs" />
     <Compile Include="DatabaseTest.cs" />
     <Compile Include="IzziTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

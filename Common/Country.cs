@@ -67,7 +67,6 @@ namespace Common
                return ((name != null ? name.GetHashCode() : 0) * 397) ^ (code != null ? code.GetHashCode() : 0);
            }
        }
-
     }
 
 

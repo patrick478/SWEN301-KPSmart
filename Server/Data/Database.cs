@@ -256,13 +256,34 @@ namespace Server.Data
                 var sql = String.Format("DROP TABLE IF EXISTS {0}", tableName);
                 SQLiteCommand command = new SQLiteCommand(sql, this.connection);
                 command.ExecuteNonQuery();
+                command.Dispose();
                 Logger.WriteLine(String.Format("Dropped table {0} from database {1}", tableName, databaseFileName));
-            }
-
-            connection.Close();
-            connection = null;
-            instance = null;
+            }         
         }
+
+
+        public void ClearTable(string tableName)
+        {
+            if (!testDB)
+                throw new DatabaseException("Cannot drop tables of live database.");
+
+            var sql = String.Format("DELETE from {0}", tableName);
+            SQLiteCommand command = new SQLiteCommand(sql, this.connection);
+            command.ExecuteNonQuery();
+            command.Dispose();
+
+            Logger.WriteLine("Deleted all entries from table '{0}'", tableName);
+        }
+
+        public object[][] GetLastRows(string tableName, int numRowsToGet)
+        {
+            var sql = String.Format("SELECT * FROM (SELECT * FROM {0} ORDER BY id DESC LIMIT {1}) ORDER BY id ASC",
+                                    tableName,
+                                    numRowsToGet);
+
+            return FetchRows(sql);
+        }
+
         #endregion
 
     }

@@ -25,7 +25,7 @@ namespace Server.Data
         private const string ID_COL_NAME = "country_id";
 
         /// <summary>
-        /// Loads the Country of the given id.
+        /// Loads the Country of the given id.  If no country exists, returns null.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -254,6 +254,9 @@ namespace Server.Data
         /// <returns></returns>
         public override void Delete(int id)
         {
+            if(Load(id) == null)
+                throw new DatabaseException(String.Format("There is no active record with country_id='{0}'", id));
+
             // LOCK BEGINS HERE
             lock (Database.Instance)
             {
