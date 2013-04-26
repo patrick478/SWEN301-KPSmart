@@ -105,9 +105,11 @@ namespace Common
 
             // find next departure time
             WeeklyTime nextDeparture = null;
-            foreach (WeeklyTime departureTime in departureTimes) {
+            foreach (WeeklyTime departureTime in departureTimes)
+            {
 
-                if (asWeeklyTime.CompareTo(departureTime) <= 0) 
+                var value = asWeeklyTime.CompareTo(departureTime);
+                if ( value <= 0) 
                 {
                     nextDeparture = departureTime;
                     break;

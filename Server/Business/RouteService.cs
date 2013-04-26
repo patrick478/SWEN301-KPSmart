@@ -51,7 +51,7 @@ namespace Server.Business
         }
 
         //TODO STUB returns all routes heading out of a routenode
-        public override IEnumerable<Route> GetAll(RouteNode node)
+        public IEnumerable<Route> GetAll(RouteNode node)
         {
             throw new System.NotImplementedException();
         }

@@ -148,8 +148,17 @@ namespace Common
         }
 
 
-        public int CompareTo(WeeklyTime other) {
-            return (int)(this.Value.Ticks - other.Value.Ticks);
+        public int CompareTo(WeeklyTime other)
+        {
+
+            var value = (this.Value.Ticks - other.Value.Ticks);
+
+            if (value < 0)
+                return -1;
+            if (value > 0)
+                return 1;
+
+            return 0;
         }
 
     }

@@ -135,13 +135,37 @@ namespace Server.Business
         //compare based on cost (money)
         private class CostEvaluator : NodeEvaluator
         {
-            
+            public CostEvaluator(PathFinder outer) : base(outer)
+            {
+            }
+
+            public override double GetValue(RouteNode start, RouteInstance route, RouteNode end)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public override RouteInstance GetNextInstance(Route routes)
+            {
+                throw new System.NotImplementedException();
+            }
         }
 
         //compare based on time
         private class TimeEvaluator : NodeEvaluator
         {
-            
+            public TimeEvaluator(PathFinder outer) : base(outer)
+            {
+            }
+
+            public override double GetValue(RouteNode start, RouteInstance route, RouteNode end)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public override RouteInstance GetNextInstance(Route routes)
+            {
+                throw new System.NotImplementedException();
+            }
         }
 
 
