@@ -16,7 +16,6 @@ namespace ServerTests
     public class CountryDataHelperTest
     {
 
-
         private TestContext testContextInstance;
 
         /// <summary>
@@ -40,7 +39,8 @@ namespace ServerTests
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
-            var db = new Database("test.db", new Dictionary<string, string>() { { "countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT , country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))" } });
+            var db = new Database("test.db", new Dictionary<string, string>() { { "countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))" },
+            {"events", "CREATE TABLE 'events' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP), 'object_type' VARCHAR(20), 'event_type' VARCHAR(10))"}});
             dataHelper = new CountryDataHelper();
         }
         
@@ -56,6 +56,7 @@ namespace ServerTests
         public void MyTestInitialize()
         {
             Database.Instance.ClearTable("countries");
+            Database.Instance.ClearTable("events");
         }
         //
         //Use TestCleanup to run code after each test has run
@@ -63,6 +64,7 @@ namespace ServerTests
         public void MyTestCleanup()
         {
             Database.Instance.ClearTable("countries");
+            Database.Instance.ClearTable("events");
         }    
         #endregion
 
@@ -92,7 +94,7 @@ namespace ServerTests
             dataHelper.Create(new Country() { Name = name, Code = code });
 
 
-            var expected = new object[] {0, countryId, created, active, name, code};
+            var expected = new object[] {0, 0, countryId, created, active, name, code};
             var actual = Database.Instance.GetLastRows("countries", 1)[0];
 
             AssertRowValuesMatch(expected, actual);
@@ -378,8 +380,8 @@ namespace ServerTests
             var actual = Database.Instance.GetLastRows("countries", 2);
 
             // what we expect them to look like
-            var expected1 = new object[] { 0, countryId, created, 0, name, code };
-            var expected2 = new object[] { 0, countryId, created, 1, name, "NB" };
+            var expected1 = new object[] { 0, 0, countryId, created, 0, name, code };
+            var expected2 = new object[] { 0, 0, countryId, created, 1, name, "NB" };
 
             // assert
             AssertRowValuesMatch(expected1, actual[0]);
@@ -400,7 +402,7 @@ namespace ServerTests
         /// <param name="actual">the row loaded from DB</param>
         private void AssertRowValuesMatch(object[] expected, object[] actual)
         {
-            for (int i = 1; i < expected.Length; i++)
+            for (int i = 2; i < expected.Length; i++)
             {
                 var valExpected = expected[i];
                 var valActual = actual[i];
