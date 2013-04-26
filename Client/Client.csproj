@@ -55,8 +55,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Countries\AddCountryDialogBox.xaml.cs">
+    <Compile Include="DialogBoxes\AddCountryDialogBox.xaml.cs">
       <DependentUpon>AddCountryDialogBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialogBoxes\AddCompanyDialogBox.xaml.cs">
+      <DependentUpon>AddCompanyDialogBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
@@ -64,9 +67,13 @@
     <Compile Include="Routes.xaml.cs">
       <DependentUpon>Routes.xaml</DependentUpon>
     </Compile>
-    <Page Include="Countries\AddCountryDialogBox.xaml">
+    <Page Include="DialogBoxes\AddCountryDialogBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DialogBoxes\AddCompanyDialogBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Home.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -115,6 +122,19 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="header.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{270A123A-E233-4D74-B434-2C984B95A3A1}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Server\Server.csproj">
+      <Project>{0C8EBACD-2928-4DF6-AF5A-024134F16E9F}</Project>
+      <Name>Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

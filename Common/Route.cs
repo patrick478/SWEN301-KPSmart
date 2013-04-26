@@ -20,7 +20,7 @@ namespace Common
             Company = company;
             TransportType = transportType;
             Origin = origin;
-            RouteNode = routeNode;
+            Destination = routeNode;
 
             this.departureTimes = new List<WeeklyTime>();
         }
@@ -30,7 +30,7 @@ namespace Common
         public Company Company { get; private set; }
         public TransportType TransportType { get; private set; }
         public RouteNode Origin { get; private set; }
-        public RouteNode RouteNode { get; private set; }
+        public RouteNode Destination { get; private set; }
 
 
         // other fields
