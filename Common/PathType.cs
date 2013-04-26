@@ -7,14 +7,11 @@
 
 namespace Common
 {
-    /// <summary>
-    /// Represents the type of the path or List of RouteInstances
-    /// </summary>
-    enum PathType 
+    enum PathType
     {
-        Express, 
-        Standard, 
-        AirExpress, 
-        AirStandard
+        Standard,
+        Express,
+        AirStandard,
+        AirExpress
     }
 }
