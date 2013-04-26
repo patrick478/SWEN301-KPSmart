@@ -144,16 +144,21 @@ namespace Server.Data
                 try
                 {
 
+                    // get event number
+                    sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Update);
+                    long eventId = Database.Instance.InsertQuery(sql, transaction);        
+
                     // deactivate all previous records
                     sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME,
                                         country.ID);
                     Database.Instance.InsertQuery(sql, transaction);
 
                     // insert new record
-                    var fieldNames = new string[] {ID_COL_NAME, "active", "name", "code"};
-                    var values = new string[] {country.ID.ToString(), "1", country.Name, country.Code};
+                    var fieldNames = new string[] {EVENT_ID, ID_COL_NAME, "active", "name", "code"};
+                    var values = new string[] {eventId.ToString(), country.ID.ToString(), "1", country.Name, country.Code};
                     sql = SQLQueryBuilder.InsertFields(TABLE_NAME, fieldNames, values);
                     Database.Instance.InsertQuery(sql, transaction);
+
 
                     // commit transaction
                     transaction.Commit();
@@ -201,11 +206,16 @@ namespace Server.Data
                 if (Load(country.Code) != null)
                     throw new DatabaseException("A country with that code already exists");
 
+
+                // get event number
+                var sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Create);
+                long eventId = Database.Instance.InsertQuery(sql);  
+
                 // insert the record
-                var sql = SQLQueryBuilder.CreateNewRecord(TABLE_NAME,
+                sql = SQLQueryBuilder.CreateNewRecord(TABLE_NAME,
                                                           ID_COL_NAME,
-                                                          new string[] {"name, code"},
-                                                          new string[] {country.Name, country.Code});
+                                                          new string[] {EVENT_ID, "name, code"},
+                                                          new string[] {eventId.ToString(), country.Name, country.Code});
                 long inserted_id = Database.Instance.InsertQuery(sql);
 
                 // get id and LastEdited
@@ -260,14 +270,18 @@ namespace Server.Data
             // LOCK BEGINS HERE
             lock (Database.Instance)
             {
+                // get event number
+                var sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Delete);
+                long eventId = Database.Instance.InsertQuery(sql); 
+                
                 // set all entries to inactive
-                var sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, id);
+                sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, id);
                 Database.Instance.InsertQuery(sql);
 
                 // insert new 'deleted' row
                 sql = SQLQueryBuilder.InsertFields(TABLE_NAME,
-                                                   new string[] {ID_COL_NAME, "active", "name", "code"},
-                                                   new string[] {id.ToString(), "-1", "", ""});
+                                                   new string[] {EVENT_ID, ID_COL_NAME, "active", "name", "code"},
+                                                   new string[] {eventId.ToString(), id.ToString(), "-1", "", ""});
                 Database.Instance.InsertQuery(sql);
             }
             // LOCK ENDS HERE

@@ -38,7 +38,14 @@ namespace Server.Data
             return sql;
         }
 
-
+        /// <summary>
+        /// "SELECT 'requiredFieldNames' FROM `'tableName'` WHERE active=1 AND 'fieldName' LIKE 'fieldValue'"
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="fieldValue"></param>
+        /// <param name="requiredFieldNames"></param>
+        /// <returns></returns>
         public static string SelectFieldsWhereFieldLike(string tableName, string fieldName, string fieldValue, string[] requiredFieldNames)
         {
             // String.Format("SELECT {1}, name, created FROM `{0}` WHERE active=1 AND code LIKE '{2}'", TABLE_NAME, ID_COL_NAME, code);
@@ -78,9 +85,7 @@ namespace Server.Data
             // build the query
             var sql = String.Format("SELECT {1} FROM `{0}` WHERE active=1", tableName, fields);
 
-            return sql;
-        
-        
+            return sql;            
         }
 
         public static string InsertFields(string tableName, string[] fieldNames, string[] values) {
@@ -138,10 +143,14 @@ namespace Server.Data
 
 
             return String.Format("INSERT INTO `{0}` ({1}, active, {2}) VALUES (coalesce((SELECT MAX({1})+1 FROM `{0}`), 1), 1, '{3})", tableName, idFieldName, fields, values);
-
         }
 
 
+        public static string SaveEvent(ObjectType objType, EventType eventType)
+        {
+            return String.Format("INSERT INTO `events` (object_type, event_type) VALUES ('{0}', '{1}')", objType.ToString(),
+                                 eventType.ToString());
+        }
 
 
     }
