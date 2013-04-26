@@ -25,9 +25,6 @@ namespace Client.Network
                 case NetCodes.SV_CONFIRM:
                     //stuff
                     return;
-                case NetCodes.CL_DELIVERY_SELECT:
-                    DeliverySelect(client, tokens);
-                    return;
             }
         }
     }
