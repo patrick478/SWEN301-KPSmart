@@ -25,16 +25,17 @@ namespace Common
         public const string CL_DELIVERY_REQUEST = "dr";   // Origin Location ID (int) - Destination Location ID (int) - Weight (int) - Volume (int)
         public const string CL_DELIVERY_SELECT = "ds";    // Priority (PRIORITY_ / CANCEL)
 
-        public const string CL_ROUTE_EDIT = "re";         // Route ID (int) - Company ID (int) - Transport Type (TRANSPORT_) - Origin Location ID (int) - Destination Location ID (int) - Cost/gram (int) - Cost/cm3 (int) TODO Add Times and Max Weight/Volume per trip etc.
+        public const string CL_ROUTE_ADD = "rd";       // Origin Location ID (int) - Destination Location ID (int) - Company ID (int) - Transport Type (TRANSPORT_)
+        public const string CL_ROUTE_EDIT = "re";         // Route ID (int) - Cost/gram (int) - Cost/cm3 (int) - Max Weight (int) - Max Capacity (int) - TODO Add Times
         public const string CL_ROUTE_DELETE = "rd";       // Route ID (int)
 
         public const string CL_PRICE_EDIT = "pe";         // Origin Location ID (int) - Destination Location ID (int) - Priority (PRIORITY_) - Price/gram (int) - Price/cm3 (int)
                                                             // CHECK For Price Updates, are we going to store them by ID, or like above where we just search it on the fly.
 
-        public const string CL_LOCATION_ADD = "la";       // Location Code (3char string) - Location Name (string ...)     TODO Later if we get really pro with maps integration: - Longitude - Latititude. Unless we just pass the name along to the api and it finds it itself.
+        public const string CL_LOCATION_ADD = "la";       // Location Code (3char string) - Location Name (string)     TODO Later if we get really pro with maps integration: - Longitude - Latititude. Unless we just pass the name along to the api and it finds it itself.
         public const string CL_LOCATION_DELETE = "ld";    // Location ID (int)
 
-        public const string CL_COMPANY_ADD = "ca";       // Company Name (string ...)
+        public const string CL_COMPANY_ADD = "ca";       // Company Name (string)
         public const string CL_COMPANY_DELETE = "cd";    // Company ID (int)    CHECK Or just the name again? Depends if we use IDs for Company.
 
 
