@@ -7,7 +7,7 @@
 
 namespace Common
 {
-    enum PathType
+    public enum PathType
     {
         Standard,
         Express,

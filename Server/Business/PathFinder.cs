@@ -5,6 +5,7 @@
 // 
 //////////////////////
 
+using System;
 using System.Collections.Generic;
 using Common;
 using Server.Data;
@@ -40,10 +41,10 @@ namespace Server.Business
 
             Dictionary<int, IEnumerable<RouteInstance>> paths = new Dictionary<int, IEnumerable<RouteInstance>>();
 
-            paths.Add(PathType.Express.Ordinal, findPath(delivery, time, allRoutes));
-            paths.Add(PathType.Standard.Ordinal, findPath(delivery, cost, allRoutes));
-            paths.Add(PathType.AirExpress.Ordinal, findPath(delivery, time, airOnly));
-            paths.Add(PathType.AirStandard.Ordinal, findPath(delivery, cost, airOnly));
+            paths.Add((int)PathType.Express, findPath(delivery, time, allRoutes));
+            paths.Add((int)PathType.Standard, findPath(delivery, cost, allRoutes));
+            paths.Add((int)PathType.AirExpress, findPath(delivery, time, airOnly));
+            paths.Add((int)PathType.AirStandard, findPath(delivery, cost, airOnly));
 
             return paths;
         }
@@ -203,7 +204,7 @@ namespace Server.Business
             {
             }
 
-            public IEnumerable<Route> Omit(IEnumerable<Route> original)
+            public override IEnumerable<Route> Omit(IEnumerable<Route> original)
             {
                 List<Route> result = new List<Route>();
 
@@ -223,7 +224,7 @@ namespace Server.Business
             {
             }
 
-            public IEnumerable<Route> Omit(IEnumerable<Route> original)
+            public override IEnumerable<Route> Omit(IEnumerable<Route> original)
             {
                 return new List<Route>(original);
             }
