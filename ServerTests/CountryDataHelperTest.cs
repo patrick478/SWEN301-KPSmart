@@ -71,12 +71,14 @@ namespace ServerTests
         private static CountryDataHelper dataHelper;
 
         /// <summary>
-        ///A test for Create - runs without failing
+        ///A test for Create - runs without failing and events work
         ///</summary>
         [TestMethod()]
         public void CreateTest1()
         {
             dataHelper.Create(new Country(){Name = "New Zealand", Code = "NZ"});
+            VerifyEvent(EventType.Create);
+            VerifyNumberOfEvents(1);
         }
 
         /// <summary>
@@ -93,7 +95,6 @@ namespace ServerTests
          
             dataHelper.Create(new Country() { Name = name, Code = code });
 
-
             var expected = new object[] {0, 0, countryId, created, active, name, code};
             var actual = Database.Instance.GetLastRows("countries", 1)[0];
 
@@ -101,7 +102,7 @@ namespace ServerTests
         }
 
         /// <summary>
-        ///A test for Create - fails if same name and code already exists.
+        ///A test for Create - fails if same name and code already exists. Also checks that event isn't saved if fails
         ///</summary>
         [TestMethod()]
         public void CreateFailsIfAlreadyExistsTest1()
@@ -115,6 +116,7 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                VerifyNumberOfEvents(1);
             }
       
         }
@@ -134,6 +136,7 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                VerifyNumberOfEvents(1);
             }
         }
 
@@ -152,6 +155,7 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                VerifyNumberOfEvents(1);
             }
         }
 
@@ -163,6 +167,8 @@ namespace ServerTests
         {
             dataHelper.Create(new Country() { Name = "New Zealand", Code = "NZ" });
             dataHelper.Delete(1);
+            VerifyEvent(EventType.Delete);
+            VerifyNumberOfEvents(2);
         }
 
         /// <summary>
@@ -190,6 +196,7 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                VerifyNumberOfEvents(0);
             }
         }
 
@@ -337,6 +344,9 @@ namespace ServerTests
 
             country.Code = "NB";
             dataHelper.Update(country);
+
+            VerifyEvent(EventType.Update);
+            VerifyNumberOfEvents(2);
         }
 
         /// <summary>
@@ -353,6 +363,7 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                VerifyNumberOfEvents(0);
             }
         }
 
@@ -429,6 +440,32 @@ namespace ServerTests
                 }
             }
         }
+
+        /// <summary>
+        /// Private method to verify the event was saved correctly.
+        /// </summary>
+        /// <param name="eventType"></param>
+        private void VerifyEvent(EventType eventType)
+        {
+            var actual = Database.Instance.GetLastRows("events", 1);
+
+            var expected = new object[] {null, null, "Country", eventType.ToString()};
+
+            AssertRowValuesMatch(expected, actual[0]);
+        }
+
+        /// <summary>
+        /// Private method to verify the event was saved correctly.
+        /// </summary>
+        /// <param name="eventType"></param>
+        private void VerifyNumberOfEvents(int number)
+        {
+            var actual = Database.Instance.GetLastRows("events", 10);
+          
+            Assert.AreEqual(number, actual.Length);
+        }
+
+
 
 
     }
