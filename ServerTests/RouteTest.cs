@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System.Collections.Generic;
+using Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -63,6 +64,8 @@ namespace ServerTests
         //
         #endregion
 
+
+
         private Route getRoute()
         {
             Company company = new Company() {Name = "NZPost"};
@@ -76,6 +79,20 @@ namespace ServerTests
 
             return target;
         }
+
+        private Route getRoute2()
+        {
+            Company company = new Company() { Name = "NZPost" };
+            TransportType transportType = TransportType.Sea;
+            RouteNode origin = new DistributionCentre("Wellington");
+            RouteNode destination = new DistributionCentre("Christchurch");
+            Route target = new Route(company, transportType, origin, destination);
+
+            target.AddDepartureTime(new WeeklyTime(DayOfWeek.Monday, 15, 0));
+
+            return target;
+        }
+
 
         /// <summary>
         ///A test for GetNextDeparture - if next departure is later in the week.
@@ -115,6 +132,16 @@ namespace ServerTests
             // make sure the date is correct
             Assert.AreEqual(expectedTime, routeInstance.DepartureTime);
         }
+
+
+        [TestMethod()]
+        public void RouteServiceGetAllTest()
+        {
+            var routes = new List<Route>() {getRoute(), getRoute2()};
+
+            
+        }
+
 
     }
 }

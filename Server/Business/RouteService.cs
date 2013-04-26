@@ -6,6 +6,7 @@
 //////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using Common;
 using Server.Data;
 
@@ -24,10 +25,13 @@ namespace Server.Business
         public RouteService(CurrentState state) : base(state, new RouteDataHelper())
         {
             // initialise current routes
-            //var routes = dataHelper.LoadAll();
-            var routes = new Dictionary<int, Route>();
-            state.InitialiseRoutes(routes);
-            pathfinder = new PathFinder(this);
+            if (!state.RoutesInitialised)
+            {
+                //var routes = dataHelper.LoadAll();
+                var routes = new Dictionary<int, Route>();
+                state.InitialiseRoutes(routes);
+                pathfinder = new PathFinder(this);
+            }
         }
 
         public override Route Get(int id)
@@ -50,10 +54,22 @@ namespace Server.Business
             throw new System.NotImplementedException();
         }
 
-        //TODO STUB returns all routes heading out of a routenode
-        public IEnumerable<Route> GetAll(RouteNode node)
+       
+        /// <summary>
+        /// This is a method for pathfinder class to use.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public IList<Route> GetAll(RouteNode node)
         {
-            throw new System.NotImplementedException();
+            // get all routes as queryable
+            var routes = state.GetAllRoutes().AsQueryable();
+
+            // find relevant ones
+            var releventRoutes = routes.Where(r => r.Origin.Equals(node));
+
+            // return
+            return releventRoutes.ToList();
         }
     }
 }

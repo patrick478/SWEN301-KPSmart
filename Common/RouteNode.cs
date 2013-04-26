@@ -10,7 +10,7 @@ namespace Common
     /// <summary>
     /// This class represents a RouteNode that mail can be sent to.
     /// </summary>
-    public abstract class RouteNode: DataObject
+    public abstract class RouteNode : DataObject
     {
 
         protected RouteNode(Country country)
@@ -20,5 +20,6 @@ namespace Common
 
         // the country that the RouteNode is in
         public Country Country { get; protected set; }
+
     }
 }

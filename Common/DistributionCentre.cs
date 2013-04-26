@@ -15,6 +15,8 @@ namespace Common
     /// </summary>
     public class DistributionCentre: RouteNode
     {
+
+
         private static readonly Country NEW_ZEALAND = new Country{Name="New Zealand"}; // should this go in some config file?
 
         public DistributionCentre(string name) : base(NEW_ZEALAND)
@@ -27,5 +29,25 @@ namespace Common
         {
             get; private set;
         }
+
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((DistributionCentre)obj);
+        }
+
+        protected bool Equals(DistributionCentre other)
+        {
+            return string.Equals(Name, other.Name);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Name != null ? Name.GetHashCode() : 0);
+        }
+
     }
 }

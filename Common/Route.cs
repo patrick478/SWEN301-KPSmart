@@ -21,7 +21,7 @@ namespace Common
             Company = company;
             TransportType = transportType;
             Origin = origin;
-            RouteNode = routeNode;
+            Destination = routeNode;
 
             this.departureTimes = new List<WeeklyTime>();
         }
@@ -31,7 +31,7 @@ namespace Common
         public Company Company { get; private set; }
         public TransportType TransportType { get; private set; }
         public RouteNode Origin { get; private set; }
-        public RouteNode RouteNode { get; private set; }
+        public RouteNode Destination { get; private set; }
 
 
         // other fields
@@ -131,5 +131,29 @@ namespace Common
             // create and return route instance
             return new RouteInstance(this, departureDateTime);
         }
+
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as Route;
+
+            // false if not Route
+            if (other == null)
+                return false;
+
+            // false if both ID's are initialised and they aren't the same
+            if (this.ID != 0 && other.ID != 0 && this.ID != other.ID)
+                return false;
+
+            // false if all these not the same
+            bool sameCompany = this.Company == other.Company;
+            bool sameOrigin = this.Origin == other.Origin;
+            bool sameDestination = this.Destination == other.Destination;
+            bool sameTransType = this.TransportType == other.TransportType;
+
+            return sameCompany && sameOrigin && sameDestination && sameTransType;
+        }
+
+
     }
 }

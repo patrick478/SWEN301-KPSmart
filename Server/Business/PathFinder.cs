@@ -72,7 +72,7 @@ namespace Server.Business
 
 
                     // Take next node from the intace route
-                    RouteNode nextNode = path.RouteNode;
+                    RouteNode nextNode = path.Destination;
 
                     if(closed.Contains(nextNode))
                         continue;

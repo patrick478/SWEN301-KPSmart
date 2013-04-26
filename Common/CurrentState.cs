@@ -53,6 +53,10 @@ namespace Common
 
             this.routes = new ConcurrentDictionary<int, Route>(routes);
         }
+
+        public bool RoutesInitialised {
+            get { return routes != null; }
+        }
         #endregion
 
 
