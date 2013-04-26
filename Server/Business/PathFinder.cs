@@ -15,10 +15,9 @@ namespace Server.Business
     {
         private RouteService routeService;
 
-        private Dictionary<RouteNode, double> cost;
-        private Dictionary<RouteNode, RouteNode> parent;
+        private Dictionary<RouteNode, RouteInstance> originPath;
         private HashSet<RouteNode> closed;
-        private List<RouteNode> fringe;
+        private SortedList<RouteNode, double> fringe;
 
 
         public PathFinder(RouteService routeService)
@@ -28,33 +27,36 @@ namespace Server.Business
 
         public IEnumerable<IEnumerable<RouteInstance>> findRoutes(Delivery delivery)
         {
+
+            //
+
+
             return null;
         }
 
-        private IEnumerable<Route> findPath(Delivery delivery, NodeEvaluator evaluator)//, Excluder excluder) 
+        private IEnumerable<RouteInstance> findPath(Delivery delivery, NodeEvaluator evaluator)//, Excluder excluder) 
         {
             RouteNode origin = delivery.Origin;
             RouteNode goal = delivery.Destination;
 
-            cost = new Dictionary<RouteNode, double>();
-            parent = new Dictionary<RouteNode, RouteNode>();
+            originPath = new Dictionary<RouteNode, RouteInstance>();
             closed = new HashSet<RouteNode>();
             
             //TODO need to make a queue
-            fringe = new List<RouteNode>();
+            fringe = new SortedList<RouteNode, double>();
 
 
             //if the queue is empty return null (no path)
             while (fringe.Capacity > 0)
             {
                 //take new node of the top of the stack
-                RouteNode curNode = fringe[0];
+                RouteNode curNode = fringe.Keys[0];
                 fringe.RemoveAt(0);
                 closed.Add(curNode);
 
                 //if it's the goal node exit and send path
                 if (curNode.Equals(goal))
-                    return null; //TODO
+                    return reconstructPath(curNode);
 
 
                 //grab a list of the next avaliable nodes
@@ -77,24 +79,19 @@ namespace Server.Business
                     if(closed.Contains(nextNode))
                         continue;
 
-                    //TODO
-                    double currentCost = cost[curNode];//cost of the current node
-                    double transitionCost = 0;
-                    double pathCost = 0; //path cost
-                    double totalCost = currentCost + transitionCost + pathCost;
+                    double totalCost = evaluator.GetValue(curNode, nextInstance, curNode);
 
                     //if node not exists
-                    if (cost.ContainsKey(nextNode))
+                    if (fringe.ContainsKey(nextNode))
                     {
-                        if (cost[nextNode] > totalCost) //TODO
+                        if (fringe[nextNode] > totalCost) //TODO
                             continue;
                     }
                     //else
                     else
                     {
-                        cost.Add(nextNode, totalCost);
-                        parent.Add(nextNode, curNode);
-                        fringe.Add(nextNode);
+                        originPath.Add(nextNode, nextInstance);
+                        fringe.Add(nextNode, totalCost);
                         //fringe.Sort((System.Collections.IComparer)evaluator);
                     }
                 }
@@ -102,6 +99,23 @@ namespace Server.Business
 
             }
             return null;
+        }
+
+        private IEnumerable<RouteInstance> reconstructPath(RouteNode goal)
+        {
+            List<RouteInstance> path = new List<RouteInstance>();
+            
+            RouteNode nextNode = goal;
+            RouteInstance nextInstance;
+
+            do
+            {
+                nextInstance = originPath[nextNode];
+                path.Add(nextInstance);
+                nextNode = nextInstance.Route.Origin;
+            }
+            while (originPath.ContainsKey(nextNode));
+            return path;
         }
 
         private abstract class NodeEvaluator : System.Collections.IComparer
@@ -121,8 +135,8 @@ namespace Server.Business
                 {
                     RouteNode r1 = (RouteNode)ob1;
                     RouteNode r2 = (RouteNode)ob2;
-                    if (outer.cost[r1] < outer.cost[r2]) retval = 1;
-                    if (outer.cost[r2] < outer.cost[r1]) retval = -1;
+                    if (outer.fringe[r1] < outer.fringe[r2]) retval = 1;
+                    if (outer.fringe[r2] < outer.fringe[r1]) retval = -1;
                 }
                 return (retval);
             }
