@@ -49,6 +49,7 @@
     <Compile Include="Delivery.cs" />
     <Compile Include="IllegalActionException.cs" />
     <Compile Include="InvalidObjectStateException.cs" />
+    <Compile Include="PathType.cs" />
     <Compile Include="RouteNode.cs" />
     <Compile Include="DistributionCentre.cs" />
     <Compile Include="InternationalPort.cs" />
