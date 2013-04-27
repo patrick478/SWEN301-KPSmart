@@ -57,14 +57,14 @@ namespace Common
 
        protected bool Equals(Country other)
        {
-           return string.Equals(name, other.name) && string.Equals(code, other.code);
+           return string.Equals(name, other.name);
        }
 
        public override int GetHashCode()
        {
            unchecked
            {
-               return ((name != null ? name.GetHashCode() : 0) * 397) ^ (code != null ? code.GetHashCode() : 0);
+               return ((name != null ? name.GetHashCode() : 0) * 397);
            }
        }
     }
