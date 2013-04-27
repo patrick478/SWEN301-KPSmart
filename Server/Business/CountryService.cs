@@ -10,9 +10,12 @@ namespace Server.Business
     {
         public CountryService(CurrentState state): base(state, new CountryDataHelper())
         {
-            // initialise the countries of the state
-            var countries = dataHelper.LoadAll();
-            state.InitialiseCountries(countries);
+            if (!state.CountriesInitialised)
+            {
+                // initialise the countries of the state
+                var countries = dataHelper.LoadAll();
+                state.InitialiseCountries(countries);
+            }
         }
 
         /// <summary>

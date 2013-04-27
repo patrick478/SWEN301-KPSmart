@@ -12,10 +12,13 @@ namespace Server.Business
 
         public CompanyService(CurrentState state) : base(state, new CompanyDataHelper())
         {
-            // initialise the companies of the state     
-            //var companies = dataHelper.LoadAll();
-            var companies = new Dictionary<int, Company>(); 
-            state.InitialiseCompanies(companies);
+            if (!state.CompaniesInitialised)
+            {
+                // initialise the companies of the state     
+                //var companies = dataHelper.LoadAll();
+                var companies = new Dictionary<int, Company>();
+                state.InitialiseCompanies(companies);
+            }
         }
 
         public override Company Get(int id)

@@ -25,12 +25,13 @@ namespace Server.Gui
             // initialise the state object
             var currentState = new CurrentState();
 
-            // initialise all the services (they set up the state themselves)
+            // initialise all the services (they set up the state themselves) and pathfinder
             var countryService = new CountryService(currentState);
             var companyService = new CompanyService(currentState);
-            var deliveryService = new DeliveryService(currentState);
-            var priceService = new PriceService(currentState);
             var routeService = new RouteService(currentState);
+            var pathFinder = new PathFinder(routeService); // pathfinder needs the RouteService
+            var deliveryService = new DeliveryService(currentState, pathFinder); // DeliveryService needs the PathFinder
+            var priceService = new PriceService(currentState);      
             var locationService = new LocationService(currentState);
 
             // create controller

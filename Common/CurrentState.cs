@@ -95,6 +95,11 @@ namespace Common
             this.routeNodes = new ConcurrentDictionary<int, RouteNode>(routeNodes);
 
         }
+
+        public bool RouteNodesInitialised
+        {
+            get { return routeNodes != null; }
+        }
         #endregion
 
 
@@ -134,6 +139,11 @@ namespace Common
 
             this.prices = new ConcurrentDictionary<int, Price>(prices);
         }
+
+        public bool PricesInitialised
+        {
+            get { return prices != null; }
+        }
         #endregion
 
 
@@ -170,6 +180,11 @@ namespace Common
             }
 
             this.countries = new ConcurrentDictionary<int, Country>(countries);
+        }
+
+        public bool CountriesInitialised
+        {
+            get { return countries != null; }
         }
         #endregion
 
@@ -208,6 +223,11 @@ namespace Common
 
             this.deliveries = new ConcurrentDictionary<int, Delivery>(deliveries);
         }
+
+        public bool DeliveriesInitialised
+        {
+            get { return deliveries != null; }
+        }
         #endregion
 
 
@@ -244,6 +264,11 @@ namespace Common
             }
 
             this.companies = new ConcurrentDictionary<int, Company>(companies);
+        }
+
+        public bool CompaniesInitialised
+        {
+            get { return companies != null; }
         }
         #endregion
 
