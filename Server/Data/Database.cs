@@ -47,7 +47,7 @@ namespace Server.Data
             // set the tables to create
             tables.Add("countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))");
             tables.Add("companies",
-                       "CREATE  TABLE 'companies' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, 'company_id' INTEGER NOT NULL , 'created' TIMESTAMP DEFAULT(CURRENT_TIMESTAMP) , 'active' INTEGER NOT NULL DEFAULT('0') ,'name' VARCHAR(20))");
+                       "CREATE  TABLE 'companies' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'company_id' INTEGER NOT NULL , 'event_id' INTEGER NOT NULL, 'created' TIMESTAMP DEFAULT(CURRENT_TIMESTAMP) , 'active' INTEGER NOT NULL DEFAULT('0') ,'name' VARCHAR(20))");
             tables.Add("events", "CREATE TABLE 'events' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP), 'object_type' VARCHAR(20), 'event_type' VARCHAR(10))");
 
             // set filename and version
@@ -113,20 +113,11 @@ namespace Server.Data
             {
                 sqlCommand = new SQLiteCommand(sql, this.connection);
             }
-
-            try
+            using (sqlCommand)
             {
                 int n_rows = sqlCommand.ExecuteNonQuery();
+                return this.connection.LastInsertRowId;
             }
-            catch (Exception ex)
-            {
-                Logger.WriteLine("Exception: {0}", ex);
-            }
-            finally
-            {
-                sqlCommand.Dispose();
-            }
-            return this.connection.LastInsertRowId;
         }
 
         public long FetchNumberQuery(string sql)

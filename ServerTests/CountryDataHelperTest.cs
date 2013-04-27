@@ -113,6 +113,7 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                Console.WriteLine(e);
             }
       
         }
@@ -132,6 +133,7 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                Console.WriteLine(e);
             }
         }
 
@@ -150,6 +152,7 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                Console.WriteLine(e);
             }
         }
 
@@ -188,6 +191,7 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                Console.WriteLine(e);
             }
         }
 
@@ -351,6 +355,7 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                Console.WriteLine(e);
             }
         }
 

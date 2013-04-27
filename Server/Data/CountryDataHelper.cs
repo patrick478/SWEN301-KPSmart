@@ -139,39 +139,40 @@ namespace Server.Data
             lock (Database.Instance)
             {         
                 // create a transaction
-                SQLiteTransaction transaction = Database.Instance.BeginTransaction();
 
-                try
+                using (SQLiteTransaction transaction = Database.Instance.BeginTransaction())
                 {
 
-                    // get event number
-                    sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Update);
-                    long eventId = Database.Instance.InsertQuery(sql, transaction);        
+                    try
+                    {
 
-                    // deactivate all previous records
-                    sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME,
-                                        country.ID);
-                    Database.Instance.InsertQuery(sql, transaction);
+                        // get event number
+                        sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Update);
+                        long eventId = Database.Instance.InsertQuery(sql, transaction);
 
-                    // insert new record
-                    var fieldNames = new string[] {EVENT_ID, ID_COL_NAME, "active", "name", "code"};
-                    var values = new string[] {eventId.ToString(), country.ID.ToString(), "1", country.Name, country.Code};
-                    sql = SQLQueryBuilder.InsertFields(TABLE_NAME, fieldNames, values);
-                    Database.Instance.InsertQuery(sql, transaction);
+                        // deactivate all previous records
+                        sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME,
+                                            country.ID);
+                        Database.Instance.InsertQuery(sql, transaction);
+
+                        // insert new record
+                        var fieldNames = new string[] { EVENT_ID, ID_COL_NAME, "active", "name", "code" };
+                        var values = new string[] { eventId.ToString(), country.ID.ToString(), "1", country.Name, country.Code };
+                        sql = SQLQueryBuilder.InsertFields(TABLE_NAME, fieldNames, values);
+                        Database.Instance.InsertQuery(sql, transaction);
+
+                        // Uncomment to demonstrate breaking everything!
+                        // Database.Instance.InsertQuery("INSERT INTO abc VALUES (ABC);", transaction);
 
 
-                    // commit transaction
-                    transaction.Commit();
-                }
-                catch (Exception e)
-                {
-                    transaction.Rollback();
-                    Logger.WriteLine("Exception occured during Country.Update() - rolling back:");
-                    Logger.WriteLine(e.Message);
-                }
-                finally
-                {
-                    transaction.Dispose();
+                        // commit transaction
+                        transaction.Commit();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.WriteLine("Exception occured during Country.Update() - rolling back:");
+                        Logger.WriteLine(e.Message);
+                    }
                 }
             }
             // LOCK ENDS HERE

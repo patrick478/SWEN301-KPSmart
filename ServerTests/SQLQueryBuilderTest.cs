@@ -89,7 +89,7 @@ namespace ServerTests
         {
             string code = "NZ";
             string tableName = "countries";
-            string idColumnName = "country_id";
+            // string idColumnName = "country_id";
             string[] requiredFieldNames = new string[] { "country_id", "name", "created" };
             string expected = "SELECT country_id, name, created FROM `countries` WHERE active=1 AND code LIKE 'NZ'";
 
