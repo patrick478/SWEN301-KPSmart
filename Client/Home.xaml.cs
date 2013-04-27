@@ -153,6 +153,7 @@ namespace Client
         private void deleteCountry_Click(object sender, RoutedEventArgs e)
         {
             try
+
             {
                 foreach (var c in _countryService.GetAll())
                 {
