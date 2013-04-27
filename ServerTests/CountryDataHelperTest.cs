@@ -16,7 +16,6 @@ namespace ServerTests
     public class CountryDataHelperTest
     {
 
-
         private TestContext testContextInstance;
 
         /// <summary>
@@ -40,7 +39,8 @@ namespace ServerTests
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
-            var db = new Database("test.db", new Dictionary<string, string>() { { "countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT , country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))" } });
+            var db = new Database("test.db", new Dictionary<string, string>() { { "countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))" },
+            {"events", "CREATE TABLE 'events' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP), 'object_type' VARCHAR(20), 'event_type' VARCHAR(10))"}});
             dataHelper = new CountryDataHelper();
         }
         
@@ -56,6 +56,7 @@ namespace ServerTests
         public void MyTestInitialize()
         {
             Database.Instance.ClearTable("countries");
+            Database.Instance.ClearTable("events");
         }
         //
         //Use TestCleanup to run code after each test has run
@@ -63,18 +64,21 @@ namespace ServerTests
         public void MyTestCleanup()
         {
             Database.Instance.ClearTable("countries");
+            Database.Instance.ClearTable("events");
         }    
         #endregion
 
         private static CountryDataHelper dataHelper;
 
         /// <summary>
-        ///A test for Create - runs without failing
+        ///A test for Create - runs without failing and events work
         ///</summary>
         [TestMethod()]
         public void CreateTest1()
         {
             dataHelper.Create(new Country(){Name = "New Zealand", Code = "NZ"});
+            VerifyEvent(EventType.Create);
+            VerifyNumberOfEvents(1);
         }
 
         /// <summary>
@@ -91,15 +95,14 @@ namespace ServerTests
          
             dataHelper.Create(new Country() { Name = name, Code = code });
 
-
-            var expected = new object[] {0, countryId, created, active, name, code};
+            var expected = new object[] {0, 0, countryId, created, active, name, code};
             var actual = Database.Instance.GetLastRows("countries", 1)[0];
 
             AssertRowValuesMatch(expected, actual);
         }
 
         /// <summary>
-        ///A test for Create - fails if same name and code already exists.
+        ///A test for Create - fails if same name and code already exists. Also checks that event isn't saved if fails
         ///</summary>
         [TestMethod()]
         public void CreateFailsIfAlreadyExistsTest1()
@@ -114,6 +117,7 @@ namespace ServerTests
             catch (DatabaseException e)
             {
                 Console.WriteLine(e);
+                VerifyNumberOfEvents(1);
             }
       
         }
@@ -134,6 +138,7 @@ namespace ServerTests
             catch (DatabaseException e)
             {
                 Console.WriteLine(e);
+                VerifyNumberOfEvents(1);
             }
         }
 
@@ -153,6 +158,7 @@ namespace ServerTests
             catch (DatabaseException e)
             {
                 Console.WriteLine(e);
+                VerifyNumberOfEvents(1);
             }
         }
 
@@ -164,6 +170,8 @@ namespace ServerTests
         {
             dataHelper.Create(new Country() { Name = "New Zealand", Code = "NZ" });
             dataHelper.Delete(1);
+            VerifyEvent(EventType.Delete);
+            VerifyNumberOfEvents(2);
         }
 
         /// <summary>
@@ -192,6 +200,7 @@ namespace ServerTests
             catch (DatabaseException e)
             {
                 Console.WriteLine(e);
+                VerifyNumberOfEvents(0);
             }
         }
 
@@ -339,6 +348,9 @@ namespace ServerTests
 
             country.Code = "NB";
             dataHelper.Update(country);
+
+            VerifyEvent(EventType.Update);
+            VerifyNumberOfEvents(2);
         }
 
         /// <summary>
@@ -356,6 +368,7 @@ namespace ServerTests
             catch (DatabaseException e)
             {
                 Console.WriteLine(e);
+                VerifyNumberOfEvents(0);
             }
         }
 
@@ -383,8 +396,8 @@ namespace ServerTests
             var actual = Database.Instance.GetLastRows("countries", 2);
 
             // what we expect them to look like
-            var expected1 = new object[] { 0, countryId, created, 0, name, code };
-            var expected2 = new object[] { 0, countryId, created, 1, name, "NB" };
+            var expected1 = new object[] { 0, 0, countryId, created, 0, name, code };
+            var expected2 = new object[] { 0, 0, countryId, created, 1, name, "NB" };
 
             // assert
             AssertRowValuesMatch(expected1, actual[0]);
@@ -405,7 +418,7 @@ namespace ServerTests
         /// <param name="actual">the row loaded from DB</param>
         private void AssertRowValuesMatch(object[] expected, object[] actual)
         {
-            for (int i = 1; i < expected.Length; i++)
+            for (int i = 2; i < expected.Length; i++)
             {
                 var valExpected = expected[i];
                 var valActual = actual[i];
@@ -432,6 +445,32 @@ namespace ServerTests
                 }
             }
         }
+
+        /// <summary>
+        /// Private method to verify the event was saved correctly.
+        /// </summary>
+        /// <param name="eventType"></param>
+        private void VerifyEvent(EventType eventType)
+        {
+            var actual = Database.Instance.GetLastRows("events", 1);
+
+            var expected = new object[] {null, null, "Country", eventType.ToString()};
+
+            AssertRowValuesMatch(expected, actual[0]);
+        }
+
+        /// <summary>
+        /// Private method to verify the event was saved correctly.
+        /// </summary>
+        /// <param name="eventType"></param>
+        private void VerifyNumberOfEvents(int number)
+        {
+            var actual = Database.Instance.GetLastRows("events", 10);
+          
+            Assert.AreEqual(number, actual.Length);
+        }
+
+
 
 
     }

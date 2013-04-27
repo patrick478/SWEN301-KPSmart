@@ -31,9 +31,17 @@ namespace Server.Data
         /// <returns></returns>
         public override Country Load(int id)
         {
-            var sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, id.ToString(), new string[] { "name", "code", "created" });
-            object[] row = Database.Instance.FetchRow(sql);
+            string sql;
+            object[] row;
 
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, id.ToString(), new string[] { "name", "code", "created" });
+                row = Database.Instance.FetchRow(sql);
+            }
+            // LOCK ENDS HERE
+            
             if (row.Length == 0)
             {
                 return null;
@@ -56,8 +64,17 @@ namespace Server.Data
         /// <returns></returns>
         public Country Load(String code)
         {
-            var sql = SQLQueryBuilder.SelectFieldsWhereFieldLike(TABLE_NAME, "code", code, new string[] { ID_COL_NAME, "name", "created" });             
-            object[] row = Database.Instance.FetchRow(sql);
+            string sql;
+            object[] row;
+
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldLike(TABLE_NAME, "code", code,
+                                                                     new string[] {ID_COL_NAME, "name", "created"});
+                row = Database.Instance.FetchRow(sql);
+            }
+            // LOCK ENDS HERE
 
             if (row.Length == 0)
             {
@@ -82,9 +99,17 @@ namespace Server.Data
         /// <returns></returns>
         public override IDictionary<int, Country> LoadAll()
         {
-            var sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[]{ID_COL_NAME, "name", "code", "created"});
-            object[][] rows = Database.Instance.FetchRows(sql);
+            string sql;
+            object[][] rows;
 
+            // BEGIN LOCK HERE
+            lock (Database.Instance)
+            {
+
+                sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[] {ID_COL_NAME, "name", "code", "created"});
+                rows = Database.Instance.FetchRows(sql);
+            }
+            // END LOCK HERE
             Logger.WriteLine("Loaded {0} countries:", rows.Length);
 
             var results = new Dictionary<int, Country>();
@@ -128,21 +153,22 @@ namespace Server.Data
             {
                 int id = GetId(country);
                 if (id == 0)
-                    throw new DatabaseException("Cannot update a country that doesn't exist: " + country); 
+                    throw new DatabaseException("Cannot update a country that doesn't exist: " + country);
 
                 country.ID = id;
             }
 
             string sql;
+            object[] row;
 
             // LOCK BEGINS HERE
             lock (Database.Instance)
-            {         
+            {  
+
                 // create a transaction
 
                 using (SQLiteTransaction transaction = Database.Instance.BeginTransaction())
                 {
-
                     try
                     {
 
@@ -174,15 +200,16 @@ namespace Server.Data
                         Logger.WriteLine(e.Message);
                     }
                 }
+
+                // get lastEdited 
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, country.ID.ToString(),
+                                                                       new string[] { "created" });
+                row = Database.Instance.FetchRow(sql);
             }
             // LOCK ENDS HERE
 
-            // update lastEdited 
-            sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, country.ID.ToString(),
-                                                                   new string[] {"created"});
-            var row = Database.Instance.FetchRow(sql);
-            country.LastEdited = (DateTime) row[0];
-            
+            // update last edited
+            country.LastEdited = (DateTime)row[0];
             Logger.WriteLine("Updated country: " + country);
         }
 
@@ -195,19 +222,19 @@ namespace Server.Data
             object[] row;
             int ID;
 
+            // check it is legal
+            int countryID = GetId(country);
+
+            if (countryID != 0)
+                throw new DatabaseException("A country with that name already exists");
+
+            if (Load(country.Code) != null)
+                throw new DatabaseException("A country with that code already exists");
+
+
             // LOCK BEGINS HERE
             lock (Database.Instance)
             {
-                // check it is legal
-                int countryID = GetId(country);
-
-                if (countryID != 0)
-                    throw new DatabaseException("A country with that name already exists");
-
-                if (Load(country.Code) != null)
-                    throw new DatabaseException("A country with that code already exists");
-
-
                 // get event number
                 var sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Create);
                 long eventId = Database.Instance.InsertQuery(sql);  
@@ -246,15 +273,24 @@ namespace Server.Data
         /// <returns></returns>
         public override int GetId(Country country)
         {
-            // get id of matching record
-            var sql = SQLQueryBuilder.SelectFieldsWhereFieldLike(TABLE_NAME, "name", country.Name, new []{ID_COL_NAME});           
-            long id = Database.Instance.FetchNumberQuery(sql);
+            long id = 0;
+
+            //LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                // get id of matching record
+                var sql = SQLQueryBuilder.SelectFieldsWhereFieldLike(TABLE_NAME, "name", country.Name,
+                                                                     new[] {ID_COL_NAME});
+                id = Database.Instance.FetchNumberQuery(sql);
+            }
+            //LOCK ENDS HERE
 
             // set id in country
-            country.ID = (int) id;
+                country.ID = (int) id;
 
-            // return result
-            return country.ID;
+                // return result
+                return country.ID;
+            
         }
 
         /// <summary>
