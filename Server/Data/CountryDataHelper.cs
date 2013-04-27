@@ -181,15 +181,14 @@ namespace Server.Data
                                             country.ID);
                         Database.Instance.InsertQuery(sql, transaction);
 
+                        // Uncomment to demonstrate breaking everything!
+                        //Database.Instance.InsertQuery("INSERT INTO abc VALUES (ABC);", transaction);
+
                         // insert new record
                         var fieldNames = new string[] { EVENT_ID, ID_COL_NAME, "active", "name", "code" };
                         var values = new string[] { eventId.ToString(), country.ID.ToString(), "1", country.Name, country.Code };
                         sql = SQLQueryBuilder.InsertFields(TABLE_NAME, fieldNames, values);
                         Database.Instance.InsertQuery(sql, transaction);
-
-                        // Uncomment to demonstrate breaking everything!
-                        // Database.Instance.InsertQuery("INSERT INTO abc VALUES (ABC);", transaction);
-
 
                         // commit transaction
                         transaction.Commit();

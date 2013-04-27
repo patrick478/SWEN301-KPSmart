@@ -33,7 +33,6 @@ namespace Server.Business
 
             state.SaveCountry(newCountry);
 
-            // does it return the country, or 
             return newCountry;
         }
 
@@ -101,6 +100,5 @@ namespace Server.Business
             // remove from state     
             state.RemoveCountry(id);
         }
-
     }
 }

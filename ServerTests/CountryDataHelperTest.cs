@@ -1,4 +1,5 @@
-﻿using Server.Data;
+﻿using System.Data.SQLite;
+using Server.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Common;
@@ -369,6 +370,28 @@ namespace ServerTests
             {
                 Console.WriteLine(e);
                 VerifyNumberOfEvents(0);
+            }
+        }
+
+
+        /// <summary>
+        ///A test for Update - should pass if you force an error in Update
+        ///</summary>
+        [TestMethod()]
+        public void UpdateTestForTransactionRollback()
+        {
+            var country = new Country() { Name = "Wellington", Code = "NZ" };
+            dataHelper.Create(country);
+
+            try
+            {           
+                dataHelper.Update(country);
+                throw new AssertFailedException("Should have thrown a DatabaseException");
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e);
+                VerifyNumberOfEvents(1);
             }
         }
 
