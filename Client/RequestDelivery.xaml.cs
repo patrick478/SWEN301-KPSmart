@@ -15,13 +15,18 @@ using System.Windows.Shapes;
 namespace Client
 {
     /// <summary>
-    /// Interaction logic for Routes.xaml
+    /// Interaction logic for RequestDelivery.xaml
     /// </summary>
-    public partial class RoutesPage : Page
+    public partial class RequestDelivery : Page
     {
-        public RoutesPage()
+        public RequestDelivery()
         {
             InitializeComponent();
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

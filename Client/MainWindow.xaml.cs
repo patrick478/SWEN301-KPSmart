@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Client.Countries;
 
 namespace Client
 {
@@ -22,6 +23,16 @@ namespace Client
         public MainWindow()
         {
             InitializeComponent();
+
+            // Instantiate the dialog box
+            var dlg = new Login();
+
+            // Open the dialog box modally 
+            dlg.ShowDialog();
+            if (dlg.DialogResult != false)
+            {
+
+            }
         }
 
         private void NavigationWindow_Loaded(object sender, RoutedEventArgs e)

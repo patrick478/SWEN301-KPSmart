@@ -16,7 +16,7 @@ namespace Client
     /// </summary>
     public partial class Home
     {
-        private CountryService _countryService;
+        private readonly CountryService _countryService;
 
         public Home()
         {
@@ -85,7 +85,7 @@ namespace Client
         {
             countriesList.Items.Clear();
 
-            foreach (var c in _countryService.GetAllCountries())
+            foreach (var c in _countryService.GetAll())
             {
                 countriesList.Items.Add(c);
             }
@@ -108,7 +108,7 @@ namespace Client
                 {
                     if (!_countryService.Exists(country))
                     {
-                        _countryService.CreateCountry(name, code);
+                        _countryService.Create(name, code);
                     }
                 }
                 catch (Exception ex)
@@ -140,7 +140,7 @@ namespace Client
                 var code = dlg.countryCode.Text;
                 try
                 {
-                    _countryService.EditCountry(((Country) countriesList.SelectedItem).ID, name, code);
+                    _countryService.Update(((Country) countriesList.SelectedItem).ID, name, code);
                 }
                 catch (Exception ex)
                 {
@@ -152,23 +152,26 @@ namespace Client
 
         private void deleteCountry_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var c in _countryService.GetAllCountries())
+            try
             {
-                try
+                foreach (var c in _countryService.GetAll())
                 {
+
                     if (c.Name.Equals(((Country) countriesList.SelectedItem).Name))
                     {
-                        _countryService.DeleteCountry(c.ID);
+                        _countryService.Delete(c.ID);
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
+            }
+            catch (Exception ex)
+            {
+               MessageBox.Show(ex.Message);
             }
             ReloadCountries();
-
         }
+            
+
+        
 
         private void countriesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -197,6 +200,11 @@ namespace Client
         private void reload_Click(object sender, RoutedEventArgs e)
         {
             ReloadCountries();
+        }
+
+        private void requestDelivery_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate( new System.Uri("RequestDelivery.xaml", UriKind.RelativeOrAbsolute));
         }
 
 
