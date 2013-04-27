@@ -19,6 +19,35 @@ namespace Common
         {
         }
 
+        #region events
+
+        /// <summary>
+        /// This can only be called if the number of events is zero.
+        /// </summary>
+        /// <param name="newNumber"></param>
+        public void SetNumberOfEvents(int newNumber)
+        {
+            if (EventsInitialised())
+                throw new IllegalActionException("Cannot reset NumberOfEvents as it has already been initialised.");
+
+            if(newNumber == 0)
+                throw new ArgumentException("Cannot set number of events to zero for current state.");
+            
+            NumberOfEvents = newNumber;
+        }
+
+        public void IncrementNumberOfEvents()
+        {
+            NumberOfEvents += 1;
+        }
+
+        public bool EventsInitialised()
+        {
+            return NumberOfEvents != 0;
+        }
+
+        #endregion
+
         #region route
         public void SaveRoute(Route route)
         {

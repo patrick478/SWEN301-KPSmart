@@ -10,7 +10,7 @@ namespace Server.Data
         // The singleton instance
         private static volatile Database instance;
         // Locking object for the singleton. Thread safety!
-        private static object syncRoot = new Database();
+        private static object syncRoot = new Database("kpsmart.db", false);
 
         // The variable to fetches the instance, it's all magical. Uses C# Get. 
         public static Database Instance
@@ -22,7 +22,7 @@ namespace Server.Data
                     lock (syncRoot)
                     {
                         if (instance == null)
-                            instance = new Database();
+                            instance = new Database("kpsmart.db", false);
                     }
                 }
 
@@ -40,10 +40,9 @@ namespace Server.Data
             get { return testDB; }
         }
 
-        public Database()
+        private Database(string databaseFileName, bool testDatabase)
         {
             
-
             // set the tables to create
             tables.Add("countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))");
             tables.Add("companies",
@@ -52,18 +51,9 @@ namespace Server.Data
 
             // set filename and version
             // TODO: Use a config value for database to be opened.
-            databaseFileName = "kpsmart.db";
+            this.databaseFileName = databaseFileName;
             versionNumber = 3;
-            testDB = false;
-        }
-
-
-        // Question from Isabel - is theis method going to be used????
-        public static void CreateDatabase()
-        {
-            // TODO: Use a config value for the name of the database
-            // TODO: Check if the file already exists.
-            SQLiteConnection.CreateFile("kpsmart.db");
+            testDB = testDatabase;
         }
 
         public void Connect()
@@ -223,13 +213,8 @@ namespace Server.Data
         /// Constructor for Unit tests.  Let me know if this is a bad idea ben.
         /// </summary>
         /// <param name="databaseFileName"></param>
-        /// <param name="version"></param>
-        /// <param name="tables"></param>
-        public Database(string databaseFileName, IDictionary<string, string> tables)
+        public Database(string databaseFileName):this(databaseFileName, true)
         {
-            this.tables = tables;
-            this.databaseFileName = databaseFileName;
-            this.testDB = true;
             instance = this;
             Connect();
         }

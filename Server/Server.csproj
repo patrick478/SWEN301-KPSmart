@@ -54,6 +54,7 @@
     <Compile Include="Business\CompanyService.cs" />
     <Compile Include="Business\CountryService.cs" />
     <Compile Include="Business\DeliveryService.cs" />
+    <Compile Include="Business\EventService.cs" />
     <Compile Include="Business\LocationService.cs" />
     <Compile Include="Business\PathFinder.cs" />
     <Compile Include="Business\PriceService.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="Data\DatabaseException.cs" />
     <Compile Include="Data\DataHelper.cs" />
     <Compile Include="Data\DeliveryDataHelper.cs" />
+    <Compile Include="Data\EventDataHelper.cs" />
     <Compile Include="Data\EventType.cs" />
     <Compile Include="Data\ObjectType.cs" />
     <Compile Include="Data\PriceDataHelper.cs" />

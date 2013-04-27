@@ -40,8 +40,7 @@ namespace ServerTests
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
-            var db = new Database("test.db", new Dictionary<string, string>() { { "countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))" },
-            {"events", "CREATE TABLE 'events' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP), 'object_type' VARCHAR(20), 'event_type' VARCHAR(10))"}});
+            var db = new Database("test.db");
             dataHelper = new CountryDataHelper();
         }
         

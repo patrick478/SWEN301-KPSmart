@@ -1,19 +1,20 @@
-﻿using Server.Data;
+﻿using System.Collections.Generic;
+using Server.Business;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using Server.Gui;
+using Common;
+using Server.Data;
 
 namespace ServerTests
 {
     
     
     /// <summary>
-    ///This is a test class for DatabaseTest and is intended
-    ///to contain all DatabaseTest Unit Tests
+    ///This is a test class for CountryServiceTest and is intended
+    ///to contain all CountryServiceTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class DatabaseTest
+    public class CountryServiceTest
     {
 
 
@@ -57,48 +58,52 @@ namespace ServerTests
         //{
         //}
         //
-
-       
-        [TestCleanup()]
-        public void MyTestCleanup()
-        {
-            if(target != null)
-                target.DropAllTables();
-        }
-
+        //Use TestCleanup to run code after each test has run
+        //[TestCleanup()]
+        //public void MyTestCleanup()
+        //{
+        //}
+        //
         #endregion
 
 
-        private Database target;
 
-        /// <summary>
-        ///A test for Test Database Constructor
-        ///</summary>
-        [TestMethod()]
-        public void DatabaseConstructorTest()
+        //Use ClassInitialize to run code before running the first test in the class
+        [ClassInitialize()]
+        public static void MyClassInitialize(TestContext testContext)
         {
-            string databaseFileName = "testDB1.db";
-            IDictionary<string, string> tables = new Dictionary<string, string>(); 
+            var countries = new Dictionary<int,Country> {{1, new Country {Name = "New Zealand", Code = "NZ", ID = 1}}};
 
-            target = new Database(databaseFileName, tables);
+            state = new CurrentState();
+            state.InitialiseCountries(countries);
+            state.InitialiseRouteNodes(new Dictionary<int, RouteNode>());
+            service = new CountryService(state);
+
+            new Database("test.db");
+
         }
 
+        private static CountryService service;
+        private static CurrentState state;
 
         /// <summary>
-        ///A test for Test Database Constructor
+        ///A test for Exists
         ///</summary>
         [TestMethod()]
-        public void CheckThatDatabaseInstanceIsTestDBWhenUsingTestConstructor()
+        public void ExistsTest()
         {
-            string databaseFileName = "testDB1.db";
-            IDictionary<string, string> tables = new Dictionary<string, string>();
-
-            target = new Database(databaseFileName, tables);
-            Assert.IsTrue(Database.Instance.IsTestDatabase);
+            Assert.IsTrue(service.Exists(new Country{Name="New Zealand"}));
         }
 
-
-
+        /// <summary>
+        ///A test for Delete
+        ///</summary>
+        [TestMethod()]
+        public void DeleteTest()
+        {
+            service.Delete(1);
+            Assert.IsTrue(state.GetAllCountries().Count == 0);
+        }
 
 
     }
