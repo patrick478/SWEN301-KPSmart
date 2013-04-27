@@ -11,7 +11,8 @@
     <RootNamespace>Server</RootNamespace>
     <AssemblyName>Server</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -53,6 +54,7 @@
     <Compile Include="Business\CompanyService.cs" />
     <Compile Include="Business\CountryService.cs" />
     <Compile Include="Business\DeliveryService.cs" />
+    <Compile Include="Business\EventService.cs" />
     <Compile Include="Business\LocationService.cs" />
     <Compile Include="Business\PathFinder.cs" />
     <Compile Include="Business\PriceService.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="Data\DatabaseException.cs" />
     <Compile Include="Data\DataHelper.cs" />
     <Compile Include="Data\DeliveryDataHelper.cs" />
+    <Compile Include="Data\EventDataHelper.cs" />
     <Compile Include="Data\EventType.cs" />
     <Compile Include="Data\ObjectType.cs" />
     <Compile Include="Data\PriceDataHelper.cs" />
@@ -94,7 +97,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

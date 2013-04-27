@@ -10,7 +10,7 @@ namespace Server.Data
         // The singleton instance
         private static volatile Database instance;
         // Locking object for the singleton. Thread safety!
-        private static object syncRoot = new Database();
+        private static object syncRoot = new Database("kpsmart.db", false);
 
         // The variable to fetches the instance, it's all magical. Uses C# Get. 
         public static Database Instance
@@ -22,7 +22,7 @@ namespace Server.Data
                     lock (syncRoot)
                     {
                         if (instance == null)
-                            instance = new Database();
+                            instance = new Database("kpsmart.db", false);
                     }
                 }
 
@@ -40,30 +40,20 @@ namespace Server.Data
             get { return testDB; }
         }
 
-        public Database()
+        private Database(string databaseFileName, bool testDatabase)
         {
             
-
             // set the tables to create
             tables.Add("countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))");
             tables.Add("companies",
-                       "CREATE  TABLE 'companies' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, 'company_id' INTEGER NOT NULL , 'created' TIMESTAMP DEFAULT(CURRENT_TIMESTAMP) , 'active' INTEGER NOT NULL DEFAULT('0') ,'name' VARCHAR(20))");
+                       "CREATE  TABLE 'companies' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'company_id' INTEGER NOT NULL , 'event_id' INTEGER NOT NULL, 'created' TIMESTAMP DEFAULT(CURRENT_TIMESTAMP) , 'active' INTEGER NOT NULL DEFAULT('0') ,'name' VARCHAR(20))");
             tables.Add("events", "CREATE TABLE 'events' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP), 'object_type' VARCHAR(20), 'event_type' VARCHAR(10))");
 
             // set filename and version
             // TODO: Use a config value for database to be opened.
-            databaseFileName = "kpsmart.db";
+            this.databaseFileName = databaseFileName;
             versionNumber = 3;
-            testDB = false;
-        }
-
-
-        // Question from Isabel - is theis method going to be used????
-        public static void CreateDatabase()
-        {
-            // TODO: Use a config value for the name of the database
-            // TODO: Check if the file already exists.
-            SQLiteConnection.CreateFile("kpsmart.db");
+            testDB = testDatabase;
         }
 
         public void Connect()
@@ -103,30 +93,24 @@ namespace Server.Data
 
         public long InsertQuery(string sql, SQLiteTransaction transaction)
         {
-
-            SQLiteCommand sqlCommand;
-            if (transaction != null)
-            {
-                sqlCommand = new SQLiteCommand(sql, this.connection, transaction);
-            }
+            Console.WriteLine("Is this a transaction? {0}", sql);
+            if (transaction == null)
+                Console.WriteLine("----Not in a transaction");
             else
-            {
-                sqlCommand = new SQLiteCommand(sql, this.connection);
-            }
+                Console.WriteLine("----In a transaction");
 
-            try
+            long last_inserted = -1;
+            using (SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection))
             {
+                if (transaction != null)
+                    sqlCommand.Transaction = transaction;
+
                 int n_rows = sqlCommand.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                Logger.WriteLine("Exception: {0}", ex);
-            }
-            finally
-            {
+                last_inserted = this.connection.LastInsertRowId;
+
                 sqlCommand.Dispose();
             }
-            return this.connection.LastInsertRowId;
+            return last_inserted;
         }
 
         public long FetchNumberQuery(string sql)
@@ -220,8 +204,20 @@ namespace Server.Data
             return allRows.ToArray();
         }
 
+
+
+        public int GetNumRows(string p)
+        {
+            var sql = String.Format("SELECT COUNT(*) FROM `{0}`", p);
+            SQLiteCommand cmd = new SQLiteCommand(sql, this.connection);
+            int result = (int)((long)cmd.ExecuteScalar());
+            cmd.Dispose();
+            return result;
+        }
+
         public SQLiteTransaction BeginTransaction()
         {
+            Console.WriteLine("Beginning the stupid fucking transaction");
             return connection.BeginTransaction();
         }
 
@@ -232,13 +228,8 @@ namespace Server.Data
         /// Constructor for Unit tests.  Let me know if this is a bad idea ben.
         /// </summary>
         /// <param name="databaseFileName"></param>
-        /// <param name="version"></param>
-        /// <param name="tables"></param>
-        public Database(string databaseFileName, IDictionary<string, string> tables)
+        public Database(string databaseFileName):this(databaseFileName, true)
         {
-            this.tables = tables;
-            this.databaseFileName = databaseFileName;
-            this.testDB = true;
             instance = this;
             Connect();
         }
@@ -285,6 +276,5 @@ namespace Server.Data
         }
 
         #endregion
-
     }
 }

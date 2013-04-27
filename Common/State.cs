@@ -21,7 +21,6 @@ namespace Common
         protected IDictionary<int, Company> companies;
         protected IDictionary<int, Country> countries;
 
-
         protected State()
         {
         }
@@ -36,13 +35,17 @@ namespace Common
             this.countries = countries;
         }
 
+        #region events
+        public int NumberOfEvents { get; protected set; }
+        #endregion
+
         #region routes
         public Route GetRoute(int id)
         {
             return routes.ContainsKey(id)? routes[id]:null;
         }
 
-        public IEnumerable<Route> GetAllRoutes()
+        public IList<Route> GetAllRoutes()
         {
             return new List<Route>(routes.Values);
         }
@@ -55,7 +58,7 @@ namespace Common
             return routeNodes.ContainsKey(id) ? routeNodes[id] : null;
         }
 
-        public IEnumerable<RouteNode> GetAllRouteNodes()
+        public IList<RouteNode> GetAllRouteNodes()
         {
             return new List<RouteNode>(routeNodes.Values);
         }
@@ -68,7 +71,7 @@ namespace Common
             return prices.ContainsKey(id)? prices[id]:null;
         }
 
-        public IEnumerable<Price> GetAllPrices()
+        public IList<Price> GetAllPrices()
         {
             return new List<Price>(prices.Values);
         }
@@ -80,7 +83,7 @@ namespace Common
             return countries.ContainsKey(id) ? countries[id] : null;
         }
 
-        public IEnumerable<Country> GetAllCountries()
+        public IList<Country> GetAllCountries()
         {
             return new List<Country>(countries.Values);
         }
@@ -93,7 +96,7 @@ namespace Common
             return deliveries.ContainsKey(id) ? deliveries[id] : null;
         }
 
-        public IEnumerable<Delivery> GetAllDeliveries()
+        public IList<Delivery> GetAllDeliveries()
         {
             return new List<Delivery>(deliveries.Values);
         }
@@ -106,7 +109,7 @@ namespace Common
             return companies.ContainsKey(id) ? companies[id] : null;
         }
 
-        public IEnumerable<Company> GetAllCompanies()
+        public IList<Company> GetAllCompanies()
         {
             return new List<Company>(companies.Values);
         }

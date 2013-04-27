@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteTest", "SQLiteTest\SQLiteTest.csproj", "{6AF3C338-4AAD-46AD-9151-E5B89D99F1F0}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = KPSmart.vsmdi
@@ -69,6 +71,16 @@ Global
 		{746BF609-1CB6-4CF5-8787-45B9B4C7DCBA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{746BF609-1CB6-4CF5-8787-45B9B4C7DCBA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{746BF609-1CB6-4CF5-8787-45B9B4C7DCBA}.Release|x86.ActiveCfg = Release|Any CPU
+		{6AF3C338-4AAD-46AD-9151-E5B89D99F1F0}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{6AF3C338-4AAD-46AD-9151-E5B89D99F1F0}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{6AF3C338-4AAD-46AD-9151-E5B89D99F1F0}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{6AF3C338-4AAD-46AD-9151-E5B89D99F1F0}.Debug|x86.ActiveCfg = Debug|x86
+		{6AF3C338-4AAD-46AD-9151-E5B89D99F1F0}.Debug|x86.Build.0 = Debug|x86
+		{6AF3C338-4AAD-46AD-9151-E5B89D99F1F0}.Release|Any CPU.ActiveCfg = Release|x86
+		{6AF3C338-4AAD-46AD-9151-E5B89D99F1F0}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{6AF3C338-4AAD-46AD-9151-E5B89D99F1F0}.Release|Mixed Platforms.Build.0 = Release|x86
+		{6AF3C338-4AAD-46AD-9151-E5B89D99F1F0}.Release|x86.ActiveCfg = Release|x86
+		{6AF3C338-4AAD-46AD-9151-E5B89D99F1F0}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,10 +11,13 @@ namespace Server.Business
     {
         public PriceService(CurrentState state) : base(state, new PriceDataHelper())
         {
-            // initialise current prices
-            //var prices = dataHelper.LoadAll();
-            var prices = new Dictionary<int, Price>();
-            state.InitialisePrices(prices);
+            // initialise current prices from DB
+            if (!state.PricesInitialised)
+            {
+                //var prices = dataHelper.LoadAll();
+                var prices = new Dictionary<int, Price>();
+                state.InitialisePrices(prices);
+            }
         }
 
         public override Price Get(int id)

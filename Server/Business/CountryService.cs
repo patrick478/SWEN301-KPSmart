@@ -10,13 +10,16 @@ namespace Server.Business
     {
         public CountryService(CurrentState state): base(state, new CountryDataHelper())
         {
-            // initialise the countries of the state
-            var countries = dataHelper.LoadAll();
-            state.InitialiseCountries(countries);
+            if (!state.CountriesInitialised)
+            {
+                // initialise the countries of the state
+                var countries = dataHelper.LoadAll();
+                state.InitialiseCountries(countries);
+            }
         }
 
         /// <summary>
-        /// 
+        /// Creates a new country with the given name and code.
         /// </summary>
         /// <param name="name">Country name</param>
         /// <param name="code">3 letter code</param>
@@ -31,9 +34,10 @@ namespace Server.Business
             // throws a database exception if invalid
             dataHelper.Create(newCountry);
 
+            // update state
             state.SaveCountry(newCountry);
+            state.IncrementNumberOfEvents();
 
-            // does it return the country, or 
             return newCountry;
         }
 
@@ -47,6 +51,7 @@ namespace Server.Business
 
             // save to state
             state.SaveCountry(newCountry);
+            state.IncrementNumberOfEvents();
 
             // return the country
             return newCountry;
@@ -100,7 +105,7 @@ namespace Server.Business
 
             // remove from state     
             state.RemoveCountry(id);
+            state.IncrementNumberOfEvents();
         }
-
     }
 }

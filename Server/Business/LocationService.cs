@@ -12,9 +12,12 @@ namespace Server.Business
         public LocationService(CurrentState state) : base(state, new RouteNodeDataHelper())
         {
             // initialise current routeNodes
-            //var routeNodes = dataHelper.LoadAll();
-            var routeNodes = new Dictionary<int, RouteNode>();
-            state.InitialiseRouteNodes(routeNodes);
+            if (!state.RouteNodesInitialised)
+            {
+                //var routeNodes = dataHelper.LoadAll();
+                var routeNodes = new Dictionary<int, RouteNode>();
+                state.InitialiseRouteNodes(routeNodes);
+            }
         }
 
         public override RouteNode Get(int id)

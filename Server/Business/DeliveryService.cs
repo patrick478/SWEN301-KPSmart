@@ -9,12 +9,20 @@ namespace Server.Business
 {
     public class DeliveryService: Service<Delivery>
     {
-        public DeliveryService(CurrentState state) : base(state, new DeliveryDataHelper())
+        private PathFinder pathFinder;
+        
+        public DeliveryService(CurrentState state, PathFinder pathfinder) : base(state, new DeliveryDataHelper())
         {
-            // initialise current deliveries
-            //var deliveries = dataHelper.LoadAll();
-            var deliveries = new Dictionary<int, Delivery>();
-            state.InitialiseDeliveries(deliveries);
+            // initialise current deliveries from DB
+            if (!state.DeliveriesInitialised)
+            {             
+                //var deliveries = dataHelper.LoadAll();
+                var deliveries = new Dictionary<int, Delivery>();
+                state.InitialiseDeliveries(deliveries);
+            }
+
+            // save reference to the pathfinder
+            this.pathFinder = pathfinder;
         }
 
         public override Delivery Get(int id)

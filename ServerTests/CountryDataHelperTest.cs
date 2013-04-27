@@ -1,4 +1,5 @@
-﻿using Server.Data;
+﻿using System.Data.SQLite;
+using Server.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Common;
@@ -39,8 +40,7 @@ namespace ServerTests
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
-            var db = new Database("test.db", new Dictionary<string, string>() { { "countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))" },
-            {"events", "CREATE TABLE 'events' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP), 'object_type' VARCHAR(20), 'event_type' VARCHAR(10))"}});
+            var db = new Database("test.db");
             dataHelper = new CountryDataHelper();
         }
         
@@ -71,12 +71,14 @@ namespace ServerTests
         private static CountryDataHelper dataHelper;
 
         /// <summary>
-        ///A test for Create - runs without failing
+        ///A test for Create - runs without failing and events work
         ///</summary>
         [TestMethod()]
         public void CreateTest1()
         {
             dataHelper.Create(new Country(){Name = "New Zealand", Code = "NZ"});
+            VerifyEvent(EventType.Create);
+            VerifyNumberOfEvents(1);
         }
 
         /// <summary>
@@ -93,7 +95,6 @@ namespace ServerTests
          
             dataHelper.Create(new Country() { Name = name, Code = code });
 
-
             var expected = new object[] {0, 0, countryId, created, active, name, code};
             var actual = Database.Instance.GetLastRows("countries", 1)[0];
 
@@ -101,7 +102,7 @@ namespace ServerTests
         }
 
         /// <summary>
-        ///A test for Create - fails if same name and code already exists.
+        ///A test for Create - fails if same name and code already exists. Also checks that event isn't saved if fails
         ///</summary>
         [TestMethod()]
         public void CreateFailsIfAlreadyExistsTest1()
@@ -115,6 +116,8 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                Console.WriteLine(e);
+                VerifyNumberOfEvents(1);
             }
       
         }
@@ -134,6 +137,8 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                Console.WriteLine(e);
+                VerifyNumberOfEvents(1);
             }
         }
 
@@ -152,6 +157,8 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                Console.WriteLine(e);
+                VerifyNumberOfEvents(1);
             }
         }
 
@@ -163,6 +170,8 @@ namespace ServerTests
         {
             dataHelper.Create(new Country() { Name = "New Zealand", Code = "NZ" });
             dataHelper.Delete(1);
+            VerifyEvent(EventType.Delete);
+            VerifyNumberOfEvents(2);
         }
 
         /// <summary>
@@ -190,6 +199,8 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                Console.WriteLine(e);
+                VerifyNumberOfEvents(0);
             }
         }
 
@@ -337,6 +348,9 @@ namespace ServerTests
 
             country.Code = "NB";
             dataHelper.Update(country);
+
+            VerifyEvent(EventType.Update);
+            VerifyNumberOfEvents(2);
         }
 
         /// <summary>
@@ -353,6 +367,31 @@ namespace ServerTests
             }
             catch (DatabaseException e)
             {
+                Console.WriteLine(e);
+                VerifyNumberOfEvents(0);
+            }
+        }
+
+
+        /// <summary>
+        ///A test for Update - should pass if you force an error in Update
+        ///</summary>
+        [TestMethod()]
+        public void UpdateTestForTransactionRollback()
+        {
+            var country = new Country() { Name = "Wellington", Code = "NZ" };
+            dataHelper.Create(country);
+
+            Console.WriteLine("Before update, there are {0} events", Database.Instance.GetNumRows("events"));
+            try
+            {           
+                dataHelper.Update(country);
+                throw new AssertFailedException("Should have thrown a DatabaseException");
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e);
+                VerifyNumberOfEvents(1);
             }
         }
 
@@ -429,6 +468,32 @@ namespace ServerTests
                 }
             }
         }
+
+        /// <summary>
+        /// Private method to verify the event was saved correctly.
+        /// </summary>
+        /// <param name="eventType"></param>
+        private void VerifyEvent(EventType eventType)
+        {
+            var actual = Database.Instance.GetLastRows("events", 1);
+
+            var expected = new object[] {null, null, "Country", eventType.ToString()};
+
+            AssertRowValuesMatch(expected, actual[0]);
+        }
+
+        /// <summary>
+        /// Private method to verify the event was saved correctly.
+        /// </summary>
+        /// <param name="eventType"></param>
+        private void VerifyNumberOfEvents(int number)
+        {
+            var actual = Database.Instance.GetLastRows("events", 10);
+          
+            Assert.AreEqual(number, actual.Length);
+        }
+
+
 
 
     }

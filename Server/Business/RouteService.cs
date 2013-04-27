@@ -19,18 +19,15 @@ namespace Server.Business
     /// </summary>
     public class RouteService: Service<Route>
     {
-        //TODO
-        private PathFinder pathfinder;
 
         public RouteService(CurrentState state) : base(state, new RouteDataHelper())
         {
-            // initialise current routes
+            // initialise current routes from DB
             if (!state.RoutesInitialised)
             {
                 //var routes = dataHelper.LoadAll();
                 var routes = new Dictionary<int, Route>();
                 state.InitialiseRoutes(routes);
-                pathfinder = new PathFinder(this);
             }
         }
 

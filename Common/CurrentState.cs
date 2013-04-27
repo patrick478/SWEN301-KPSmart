@@ -19,6 +19,35 @@ namespace Common
         {
         }
 
+        #region events
+
+        /// <summary>
+        /// This can only be called if the number of events is zero.
+        /// </summary>
+        /// <param name="newNumber"></param>
+        public void SetNumberOfEvents(int newNumber)
+        {
+            if (EventsInitialised())
+                throw new IllegalActionException("Cannot reset NumberOfEvents as it has already been initialised.");
+
+            if(newNumber == 0)
+                throw new ArgumentException("Cannot set number of events to zero for current state.");
+            
+            NumberOfEvents = newNumber;
+        }
+
+        public void IncrementNumberOfEvents()
+        {
+            NumberOfEvents += 1;
+        }
+
+        public bool EventsInitialised()
+        {
+            return NumberOfEvents != 0;
+        }
+
+        #endregion
+
         #region route
         public void SaveRoute(Route route)
         {
@@ -95,6 +124,11 @@ namespace Common
             this.routeNodes = new ConcurrentDictionary<int, RouteNode>(routeNodes);
 
         }
+
+        public bool RouteNodesInitialised
+        {
+            get { return routeNodes != null; }
+        }
         #endregion
 
 
@@ -134,6 +168,11 @@ namespace Common
 
             this.prices = new ConcurrentDictionary<int, Price>(prices);
         }
+
+        public bool PricesInitialised
+        {
+            get { return prices != null; }
+        }
         #endregion
 
 
@@ -170,6 +209,11 @@ namespace Common
             }
 
             this.countries = new ConcurrentDictionary<int, Country>(countries);
+        }
+
+        public bool CountriesInitialised
+        {
+            get { return countries != null; }
         }
         #endregion
 
@@ -208,6 +252,11 @@ namespace Common
 
             this.deliveries = new ConcurrentDictionary<int, Delivery>(deliveries);
         }
+
+        public bool DeliveriesInitialised
+        {
+            get { return deliveries != null; }
+        }
         #endregion
 
 
@@ -244,6 +293,11 @@ namespace Common
             }
 
             this.companies = new ConcurrentDictionary<int, Company>(companies);
+        }
+
+        public bool CompaniesInitialised
+        {
+            get { return companies != null; }
         }
         #endregion
 
