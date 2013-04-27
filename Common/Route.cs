@@ -16,6 +16,7 @@ namespace Common
     public class Route: DataObject
     {
 
+
         public Route()
         {
             this.departureTimes = new List<WeeklyTime>();
@@ -130,23 +131,27 @@ namespace Common
 
         public override bool Equals(object obj)
         {
-            var other = obj as Route;
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Route) obj);
+        }
 
-            // false if not Route
-            if (other == null)
-                return false;
+        protected bool Equals(Route other)
+        {
+            return Equals(Company, other.Company) && TransportType == other.TransportType && Equals(Origin, other.Origin) && Equals(Destination, other.Destination);
+        }
 
-            // false if both ID's are initialised and they aren't the same
-            if (this.ID != 0 && other.ID != 0 && this.ID != other.ID)
-                return false;
-
-            // false if all these not the same
-            bool sameCompany = this.Company == other.Company;
-            bool sameOrigin = this.Origin == other.Origin;
-            bool sameDestination = this.Destination == other.Destination;
-            bool sameTransType = this.TransportType == other.TransportType;
-
-            return sameCompany && sameOrigin && sameDestination && sameTransType;
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = (Company != null ? Company.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (int)TransportType;
+                hashCode = (hashCode * 397) ^ (Origin != null ? Origin.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Destination != null ? Destination.GetHashCode() : 0);
+                return hashCode;
+            }
         }
 
 

@@ -32,15 +32,23 @@ namespace SQLiteTest
                 transaction.Commit();
             }
 
-            using (SQLiteTransaction transaction = con.BeginTransaction())
-            {
-                for (int i = 0; i < 10; i++)
+            SQLiteTransaction transaction2 = con.BeginTransaction();         
+                try
                 {
-                    SQLiteCommand cmd2 = new SQLiteCommand("INSERT INTO `test` (iteration) VALUES (?);", con, transaction);
-                    cmd2.Parameters.Add(new SQLiteParameter("iteration", i));
-                    cmd2.ExecuteNonQuery();
+                    for (int i = 0; i < 10; i++)
+                    {
+                        SQLiteCommand cmd2 = new SQLiteCommand("INSERT INTO `blarg` (iteration) VALUES (?);", con,
+                                                               transaction2);
+                        cmd2.Parameters.Add(new SQLiteParameter("iteration", i));
+                        cmd2.ExecuteNonQuery();
+                    }
                 }
-            }
+                catch (Exception e)
+                {
+                    transaction2.Rollback();
+                    transaction2.Dispose();
+                }
+            
 
             SQLiteCommand cmd3 = new SQLiteCommand("SELECT COUNT(*) FROM `test`", con);
             long n = (long)cmd3.ExecuteScalar();

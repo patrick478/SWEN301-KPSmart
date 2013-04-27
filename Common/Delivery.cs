@@ -31,6 +31,10 @@ namespace Common
         // the routes included in the delivery
         public List<RouteInstance> Routes { get; set; }
 
+        public int WeightInGrams { get; set; }
+
+        public int VolumeInCm3 { get; set; }
+
         // total price charged to the customer
         public int TotalPrice { get; set; }
 

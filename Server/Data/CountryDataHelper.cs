@@ -172,8 +172,6 @@ namespace Server.Data
                 sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Update);
                 long eventId = Database.Instance.InsertQuery(sql, transaction);
 
-
-
                 // deactivate all previous records
                 sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME,
                                     country.ID);
