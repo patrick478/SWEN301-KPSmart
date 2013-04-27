@@ -78,8 +78,6 @@ namespace ServerTests
 
         }
 
-
-
         private static IDictionary<int, Route> getRoutes()
         {
             Company company = new Company() { Name = "NZPost" };
@@ -88,14 +86,14 @@ namespace ServerTests
             var routes = new Dictionary<int, Route>();
 
             // route1
-            Route route1 = new Route(company, TransportType.Air, origin, new DistributionCentre("Auckland"));
+            Route route1 = new Route{Company = company, TransportType = TransportType.Air, Origin = origin, Destination = new DistributionCentre("Auckland")};
             route1.AddDepartureTime(new WeeklyTime(DayOfWeek.Friday, 15, 0));
             route1.AddDepartureTime(new WeeklyTime(DayOfWeek.Wednesday, 5, 50));
             route1.ID = 1;
             routes[1] = route1;
 
             // route2
-            Route route2 = new Route(company, TransportType.Land, origin, new DistributionCentre("Christchurch"));         
+            Route route2 = new Route { Company = company, TransportType = TransportType.Land, Origin = origin, Destination = new DistributionCentre("Christchurch") };       
             route2.AddDepartureTime(new WeeklyTime(DayOfWeek.Monday, 15, 0));
             route2.ID = 2;
             routes[2] = route2;

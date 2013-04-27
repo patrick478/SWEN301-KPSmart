@@ -72,7 +72,7 @@ namespace ServerTests
             TransportType transportType = TransportType.Land;
             RouteNode origin = new DistributionCentre("Wellington");
             RouteNode destination = new DistributionCentre("Auckland");
-            Route target = new Route(company, transportType, origin, destination);
+            Route target = new Route{Company = company, TransportType = transportType, Origin = origin, Destination = destination};
 
             target.AddDepartureTime(new WeeklyTime(DayOfWeek.Friday, 15, 0));
             target.AddDepartureTime(new WeeklyTime(DayOfWeek.Wednesday, 5, 50));
@@ -86,7 +86,7 @@ namespace ServerTests
             TransportType transportType = TransportType.Sea;
             RouteNode origin = new DistributionCentre("Wellington");
             RouteNode destination = new DistributionCentre("Christchurch");
-            Route target = new Route(company, transportType, origin, destination);
+            Route target = new Route { Company = company, TransportType = transportType, Origin = origin, Destination = destination };
 
             target.AddDepartureTime(new WeeklyTime(DayOfWeek.Monday, 15, 0));
 

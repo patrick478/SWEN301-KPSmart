@@ -5,6 +5,7 @@
 // 
 //////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
@@ -22,6 +23,7 @@ namespace Server.Business
 
         public RouteService(CurrentState state) : base(state, new RouteDataHelper())
         {
+            
             // initialise current routes from DB
             if (!state.RoutesInitialised)
             {
@@ -31,24 +33,193 @@ namespace Server.Business
             }
         }
 
+        /// <summary>
+        /// Creates a new route for the given [transportType, company, origin, destination] combination.
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="originID"></param>
+        /// <param name="destinationID"></param>
+        /// <param name="transportType"></param>
+        /// <param name="scope"></param>
+        /// <param name="duration"></param>
+        /// <param name="maxWeight"></param>
+        /// <param name="maxVolume"></param>
+        /// <param name="costPerGram"></param>
+        /// <param name="costPerCm3"></param>
+        /// <returns>the created object, with ID field, and LastEdited initialised</returns>
+        /// <exception cref="DatabaseException">if it already exists</exception>
+        /// <exception cref="InvalidObjectStateException">if the fields are invalid</exception>
+        /// <exception cref="ArgumentException">if any of the objects referenced by id do not exist</exception>
+        public Route Create(TransportType transportType, int companyId, int originID, int destinationID, Scope scope, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
+        {
+            // load parameters from id
+            var origin = state.GetRouteNode(originID);
+            if(origin == null)
+                throw new ArgumentException(string.Format("There is no location with id = {0}", originID), "originID");
+
+            var destination = state.GetRouteNode(destinationID);
+            if (destination == null)
+                throw new ArgumentException(string.Format("There is no location with id = {0}", destinationID), "destinationID");
+
+            var company = state.GetCompany(companyId);
+            if (company == null)
+                throw new ArgumentException(string.Format("There is no company with id = {0}", companyId), "companyId");
+
+
+            // throws an exception if invalid
+            var newRoute = new Route { TransportType = transportType, Company = company, Origin = origin, Destination = destination, Scope = scope, Duration = duration, MaxWeight = maxWeight, MaxVolume = maxVolume, CostPerGram = costPerGram, CostPerCm3 = costPerCm3};
+
+            // throws a database exception if exists already
+            dataHelper.Create(newRoute);
+
+            // update state
+            state.SaveRoute(newRoute);
+            state.IncrementNumberOfEvents();
+
+            return newRoute;
+        }
+
+        /// <summary>
+        /// Updates the route for the given [transportType, company, origin, destination] combination.
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="originID"></param>
+        /// <param name="destinationID"></param>
+        /// <param name="transportType"></param>
+        /// <param name="scope"></param>
+        /// <param name="duration"></param>
+        /// <param name="maxWeight"></param>
+        /// <param name="maxVolume"></param>
+        /// <param name="costPerGram"></param>
+        /// <param name="costPerCm3"></param>
+        /// <returns>the updated object, with ID field, and LastEdited initialised</returns>
+        /// <exception cref="DatabaseException">if it doesn't exist</exception>
+        /// <exception cref="InvalidObjectStateException">if the fields are invalid</exception>
+        /// <exception cref="ArgumentException">if any of the objects referenced by id do not exist</exception>
+        public Route Update(TransportType transportType, int companyId, int originID, int destinationID, Scope scope, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
+        {
+            // load parameters from id
+            var origin = state.GetRouteNode(originID);
+            if (origin == null)
+                throw new ArgumentException(string.Format("There is no location with id = {0}", originID), "originID");
+
+            var destination = state.GetRouteNode(destinationID);
+            if (destination == null)
+                throw new ArgumentException(string.Format("There is no location with id = {0}", destinationID), "destinationID");
+
+            var company = state.GetCompany(companyId);
+            if (company == null)
+                throw new ArgumentException(string.Format("There is no company with id = {0}", companyId), "companyId");
+
+
+            // throws an exception if invalid
+            var newRoute = new Route { TransportType = transportType, Company = company, Origin = origin, Destination = destination, Scope = scope, Duration = duration, MaxWeight = maxWeight, MaxVolume = maxVolume, CostPerGram = costPerGram, CostPerCm3 = costPerCm3 };
+
+            // throws a database exception if doesn't exist
+            dataHelper.Update(newRoute);
+
+            // update state
+            state.SaveRoute(newRoute);
+            state.IncrementNumberOfEvents();
+
+            return newRoute;
+        }
+
+        /// <summary>
+        /// Adds the given delivery time to the route, and returns the new route.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="deliveryTime"></param>
+        /// <returns></returns>
+        /// <exception cref="DatabaseException">if the delivery time already exists in the route</exception>
+        /// <exception cref="ArgumentException">if delivery time is null, or if the route doesn't exist</exception>
+        public Route AddDeliveryTime(int id, WeeklyTime deliveryTime)
+        {
+            if (deliveryTime == null)
+            {
+                throw new ArgumentException("deliveryTime cannot be null");
+            }
+
+            var route = state.GetRoute(id);
+            if(route==null)
+                throw new ArgumentException("There is no route with id = " + id);
+
+            // throws database exception if already exists
+            ((RouteDataHelper)dataHelper).AddDeliveryTime(route, deliveryTime);
+
+            // update state
+            state.SaveRoute(route);
+            state.IncrementNumberOfEvents();
+
+            return route;
+        }
+
+        /// <summary>
+        /// Deletes the given delivery time from the route, and returns the updated route.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="deliveryTime"></param>
+        /// <returns></returns>
+        /// <exception cref="DatabaseException">if the delivery time already exists in the route</exception>
+        /// <exception cref="ArgumentException">if delivery time is null, or if the route doesn't exist</exception>
+        public Route DeleteDeliveryTime(int id, WeeklyTime deliveryTime)
+        {
+            if (deliveryTime == null)
+            {
+                throw new ArgumentException("deliveryTime cannot be null");
+            }
+
+            var route = state.GetRoute(id);
+            if (route == null)
+                throw new ArgumentException("There is no route with id = " + id);
+
+            // throws database exception if delivery time doesn't exist
+            ((RouteDataHelper)dataHelper).DeleteDeliveryTime(route, deliveryTime);
+
+            // update state
+            state.SaveRoute(route);
+            state.IncrementNumberOfEvents();
+
+            return route;
+        }
+
+
         public override Route Get(int id)
         {
-            throw new System.NotImplementedException();
+            if (id <= 0)
+            {
+                throw new ArgumentException("id cannot be less than or equal to 0");
+            }
+
+            return state.GetRoute(id);
         }
 
         public override IEnumerable<Route> GetAll()
         {
-            throw new System.NotImplementedException();
+            return state.GetAllRoutes();
         }
 
-        public override bool Exists(Route obj)
+        public override bool Exists(Route route)
         {
-            throw new System.NotImplementedException();
+            var countries = state.GetAllRoutes().AsQueryable();
+
+            return countries.Any(t => t.Equals(route));
         }
+
 
         public override void Delete(int id)
         {
-            throw new System.NotImplementedException();
+            if (id <= 0)
+            {
+                throw new ArgumentException("id cannot be less than or equal to 0");
+            }
+
+            // remove from db
+            dataHelper.Delete(id);
+
+            // remove from state     
+            state.RemoveRoute(id);
+            state.IncrementNumberOfEvents();
         }
 
        

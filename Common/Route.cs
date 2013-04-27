@@ -16,22 +16,17 @@ namespace Common
     public class Route: DataObject
     {
 
-        public Route(Company company, TransportType transportType, RouteNode origin, RouteNode routeNode)
+        public Route()
         {
-            Company = company;
-            TransportType = transportType;
-            Origin = origin;
-            Destination = routeNode;
-
             this.departureTimes = new List<WeeklyTime>();
         }
 
         // fields that determine uniqueness of the Route
         //----------------------------------------------
-        public Company Company { get; private set; }
-        public TransportType TransportType { get; private set; }
-        public RouteNode Origin { get; private set; }
-        public RouteNode Destination { get; private set; }
+        public Company Company { get; set; }
+        public TransportType TransportType { get; set; }
+        public RouteNode Origin { get; set; }
+        public RouteNode Destination { get; set; }
 
 
         // other fields

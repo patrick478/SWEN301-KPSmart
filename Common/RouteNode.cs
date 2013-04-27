@@ -12,7 +12,6 @@ namespace Common
     /// </summary>
     public abstract class RouteNode : DataObject
     {
-
         protected RouteNode(Country country)
         {
             Country = country;
@@ -21,5 +20,22 @@ namespace Common
         // the country that the RouteNode is in
         public Country Country { get; protected set; }
 
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((DistributionCentre)obj);
+        }
+
+        protected bool Equals(RouteNode other)
+        {
+            return Equals(Country, other.Country);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Country != null ? Country.GetHashCode() : 0);
+        }
     }
 }

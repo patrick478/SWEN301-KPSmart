@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
@@ -59,9 +60,9 @@ namespace Server.Business
 
         public override Country Get(int id)
         {
-            if (id == 0)
+            if (id <= 0)
             {
-                throw new IllegalActionException("id cannot be 0");
+                throw new ArgumentException("id cannot be less than or equal to 0");
             }
 
             return state.GetCountry(id);
@@ -73,8 +74,7 @@ namespace Server.Business
         }
 
         /// <summary>
-        /// Checks whether the country exists or not.  Returns true if a country with the same name is 
-        /// active.
+        /// Checks whether a country with the same name is currently active.
         /// </summary>
         /// <param name="country"></param>
         /// <returns></returns>
@@ -82,19 +82,21 @@ namespace Server.Business
         {
             var countries = state.GetAllCountries().AsQueryable();
 
-            return countries.Any(t => t.Name.ToLower() == country.Name.ToLower());
+            return countries.Any(t => t.Equals(country));
         }
 
         public override void Delete(int id)
         {
-            if (id == 0)
+            if (id <= 0)
             {
-                throw new IllegalActionException("id cannot be 0");
+                throw new ArgumentException("id cannot be less than or equal to 0");
             }
+
+            var country = state.GetCountry(id);
 
             // check the country isn't used in any routeNodes
             var routeNodes = state.GetAllRouteNodes();
-            bool isUsed = routeNodes.AsQueryable().Any(t => t.Country.ID == id);
+            bool isUsed = routeNodes.AsQueryable().Any(t => t.Country.Equals(country));
             if (isUsed)
             {
                 throw new IllegalActionException("Cannot remove country that is used in an active RouteNode.");

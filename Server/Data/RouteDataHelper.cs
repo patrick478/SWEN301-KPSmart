@@ -50,6 +50,16 @@ namespace Server.Data
             throw new NotImplementedException();
         }
 
+        public void AddDeliveryTime(Route route, WeeklyTime deliveryTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteDeliveryTime(Route route, WeeklyTime deliveryTime)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Create(Route obj)
         {
             throw new NotImplementedException();

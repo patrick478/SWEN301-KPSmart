@@ -18,12 +18,24 @@ namespace Server.Business
             this.dataHelper = dataHelper;
         }
 
+
+        /// <summary>
+        /// Gets the object from the system.
+        /// </summary>
+        /// <param name="id">the id of the object to get</param>
+        /// <exception cref="ArgumentException">if id is <= 0</exception>>
         public abstract T Get(int id);
 
         public abstract IEnumerable<T> GetAll();
 
         public abstract bool Exists(T obj);
 
+        /// <summary>
+        /// Deletes the object from the system.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <exception cref="IllegalActionException">If the object being deleted is used by another object</exception>>
+        /// <exception cref="ArgumentException">if id is <= 0</exception>>
         public abstract void Delete(int id);
 
     }

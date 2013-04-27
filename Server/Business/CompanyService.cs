@@ -21,11 +21,33 @@ namespace Server.Business
             }
         }
 
+        /// <summary>
+        /// Creates a new company with the given name.
+        /// </summary>
+        /// <param name="name">Company name</param>
+        /// <returns>the created object, with ID field, and LastEdited initialised</returns>
+        /// <exception cref="DatabaseException">if a company with the same name already exists</exception>
+        /// <exception cref="InvalidObjectStateException">if the name is illegal</exception>
+        public Company Create(string name)
+        {
+            // throws an exception if invalid
+            var newCompany = new Company{Name = name};
+
+            // throws a database exception if invalid
+            dataHelper.Create(newCompany);
+
+            // update state
+            state.SaveCompany(newCompany);
+            state.IncrementNumberOfEvents();
+
+            return newCompany;
+        }
+
         public override Company Get(int id)
         {
-            if (id == 0)
+            if (id <= 0)
             {
-                throw new IllegalActionException("id cannot be 0");
+                throw new ArgumentException("id cannot be less than or equal to 0");
             }
 
             return state.GetCompany(id);
@@ -45,7 +67,27 @@ namespace Server.Business
 
         public override void Delete(int id)
         {
-            throw new NotImplementedException();
+            if (id <= 0)
+            {
+                throw new ArgumentException("id cannot be less than or equal to 0");
+            }
+
+            var company = state.GetCompany(id);
+
+            // check the company doesn't offer any routes.
+            var routes = state.GetAllRoutes();
+            bool isUsed = routes.AsQueryable().Any(t => t.Company.Equals(company));
+            if (isUsed)
+            {
+                throw new IllegalActionException("Cannot remove a company that currently offers routes.");
+            }
+
+            // remove from db
+            dataHelper.Delete(id);
+
+            // remove from state     
+            state.RemoveCompany(id);
+            state.IncrementNumberOfEvents();
         }
     }
 }
