@@ -11,7 +11,7 @@ namespace SQLiteTest
     {
         static void Main(string[] args)
         {
-            if(File.Exists("test.sqlite"))
+            if (File.Exists("test.sqlite"))
                 File.Delete("test.sqlite");
 
             SQLiteConnection con = new SQLiteConnection(String.Format("Data Source={0};Version={1};", "test.sqlite", 3));
