@@ -57,9 +57,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompanyDataHelperTest.cs" />
+    <Compile Include="CountryDataHelperTest.cs" />
     <Compile Include="DatabaseTest.cs" />
     <Compile Include="IzziTests.cs" />
+    <Compile Include="PathFinderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RouteServiceTest.cs" />
+    <Compile Include="RouteTest.cs" />
+    <Compile Include="SQLQueryBuilderTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">

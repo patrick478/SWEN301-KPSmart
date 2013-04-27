@@ -67,8 +67,8 @@ namespace Server.Network
             IPAddress listenAddress = IPAddress.Any; // Should be fetched from config.
 
             // Setup the callbacks
-            acceptCallback = new AsyncCallback(this.onAccept);
-            recieveCallback = new AsyncCallback(this.onRecieve);
+            acceptCallback = new AsyncCallback(this.OnAccept);
+            recieveCallback = new AsyncCallback(this.OnReceive);
 
             // This actually creates the socket object and prepares it to be bound to a port
             this.listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -118,7 +118,7 @@ namespace Server.Network
         }
 
         // This function is called to accept a socket connection request on the listen socket.
-        private void onAccept(IAsyncResult ar)
+        private void OnAccept(IAsyncResult ar)
         {
             // TODO: Error catching!
             // This line ends the accept request. It returns the socket object referencing
@@ -150,7 +150,7 @@ namespace Server.Network
         }
 
         // This function is executed when a client socket recieves data.
-        private void onRecieve(IAsyncResult ar)
+        private void OnReceive(IAsyncResult ar)
         {
             // I previously set the AsyncState to the ID of the client, so get that back...
             int id = (int)ar.AsyncState;

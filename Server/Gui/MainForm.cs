@@ -2,6 +2,7 @@
 using Server.Business;
 using Server.Data;
 using Common;
+using Server.Network;
 
 namespace Server.Gui
 {
@@ -18,24 +19,35 @@ namespace Server.Gui
             Logger.Instance.SetOutput(logBox);
             Logger.WriteLine("Server starting..");
 
-            // initialise network
-            Network.Network network = Network.Network.Instance;
-            network.Start();
-            network.Open();
-
             // initialise database
             Database.Instance.Connect();
 
-            // initialise the state
+            // initialise the state object
             var currentState = new CurrentState();
 
             // initialise all the services (they set up the state themselves)
             var countryService = new CountryService(currentState);
+            var companyService = new CompanyService(currentState);
+            var deliveryService = new DeliveryService(currentState);
+            var priceService = new PriceService(currentState);
+            var routeService = new RouteService(currentState);
+            var locationService = new LocationService(currentState);
 
+            // create controller
+            var controller = new Controller(countryService, companyService, deliveryService, priceService, routeService,
+                                            locationService);
 
+            // initialise network
+            Network.Network network = Network.Network.Instance;
+            network.Start();
+            network.Open();
+            // todo - pass controller to network
 
             BenDBTests(countryService);
         }
+
+
+
 
         private void BenDBTests(CountryService countryService)
         {
@@ -47,45 +59,41 @@ namespace Server.Gui
                 Country country = new Country {Name = "Wellington", Code = "WLG"};
                 if (!countryService.Exists(country))
                 {
-                    country = countryService.CreateCountry("Wellington", "WLG");
+                    country = countryService.Create("Wellington", "WLG");
                 }
 
                 // perform updates
-                country = countryService.EditCountry(country.ID, country.Name, "WLN");
-                country = countryService.EditCountry(country.ID, country.Name, "BEN");
+                country = countryService.Update(country.ID, country.Name, "WLN");
+                country = countryService.Update(country.ID, country.Name, "BEN");
 
                 // get latest version
-                Country loadedCountry = countryService.LoadCountry(country.ID);
-
-                // load all countries
-                var allCountries = countryService.GetAllCountries();
+                Country loadedCountry = countryService.Get(country.ID);
 
                 // create new zealand
                 country = new Country { Name = "New Zealand", Code = "NZ" };
                 if (!countryService.Exists(country))
                 {
-                    country = countryService.CreateCountry(country.Name, country.Code);
+                    country = countryService.Create(country.Name, country.Code);
                 }
 
                 // create australia
                 country = new Country {Name = "Australia", Code = "AUS"};
                 if (!countryService.Exists(country))
                 {
-                    country = countryService.CreateCountry(country.Name, country.Code);
+                    country = countryService.Create(country.Name, country.Code);
                 }
+
+                // load all countries
+                var allCountries = countryService.GetAll();
 
                 // delete australia
                 foreach (Country c in allCountries)
                 {
                     if (c.Name == "Australia")
                     {
-                        countryService.DeleteCountry(c.ID);
+                        countryService.Delete(c.ID);
                     }
                 }
-
-
-
-
             }
             catch (DatabaseException e)
             {

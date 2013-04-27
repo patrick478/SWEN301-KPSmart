@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using Common;
 using Server.Gui;
 
@@ -24,15 +25,23 @@ namespace Server.Data
         private const string ID_COL_NAME = "country_id";
 
         /// <summary>
-        /// Loads the Country of the given id.
+        /// Loads the Country of the given id.  If no country exists, returns null.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         public override Country Load(int id)
         {
-            var sql = String.Format("SELECT name, code, created FROM `{0}` WHERE active=1 AND {1}={2}", TABLE_NAME, ID_COL_NAME, id);
-            object[] row = Database.Instance.FetchRow(sql);
+            string sql;
+            object[] row;
 
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, id.ToString(), new string[] { "name", "code", "created" });
+                row = Database.Instance.FetchRow(sql);
+            }
+            // LOCK ENDS HERE
+            
             if (row.Length == 0)
             {
                 return null;
@@ -55,8 +64,17 @@ namespace Server.Data
         /// <returns></returns>
         public Country Load(String code)
         {
-            var sql = String.Format("SELECT {1}, name, created FROM `{0}` WHERE active=1 AND code LIKE '{2}'", TABLE_NAME, ID_COL_NAME, code);
-            object[] row = Database.Instance.FetchRow(sql);
+            string sql;
+            object[] row;
+
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldLike(TABLE_NAME, "code", code,
+                                                                     new string[] {ID_COL_NAME, "name", "created"});
+                row = Database.Instance.FetchRow(sql);
+            }
+            // LOCK ENDS HERE
 
             if (row.Length == 0)
             {
@@ -81,9 +99,17 @@ namespace Server.Data
         /// <returns></returns>
         public override IDictionary<int, Country> LoadAll()
         {
-            var sql = String.Format("Select {1}, name, code, created FROM {0} WHERE active=1", TABLE_NAME, ID_COL_NAME);
-            object[][] rows = Database.Instance.FetchRows(sql);
+            string sql;
+            object[][] rows;
 
+            // BEGIN LOCK HERE
+            lock (Database.Instance)
+            {
+
+                sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[] {ID_COL_NAME, "name", "code", "created"});
+                rows = Database.Instance.FetchRows(sql);
+            }
+            // END LOCK HERE
             Logger.WriteLine("Loaded {0} countries:", rows.Length);
 
             var results = new Dictionary<int, Country>();
@@ -127,26 +153,62 @@ namespace Server.Data
             {
                 int id = GetId(country);
                 if (id == 0)
-                    throw new DatabaseException("Cannot update a country that doesn't exist: " + country); 
+                    throw new DatabaseException("Cannot update a country that doesn't exist: " + country);
 
                 country.ID = id;
-            }                     
-            
+            }
+
+            string sql;
+            object[] row;
+
             // LOCK BEGINS HERE
-            // deactivate all previous records
-            var sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, country.ID);
-            Database.Instance.InsertQuery(sql);
+            lock (Database.Instance)
+            {  
 
-            // insert new record
-            sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES ({2}, 1, '{3}', '{4}')", TABLE_NAME, ID_COL_NAME, country.ID, country.Name, country.Code);
-            Database.Instance.InsertQuery(sql);
+                // create a transaction
+                SQLiteTransaction transaction = Database.Instance.BeginTransaction();
 
-            // update lastEdited 
-            sql = String.Format("SELECT created FROM `{0}` WHERE active=1 AND {1}={2}", TABLE_NAME, ID_COL_NAME, country.ID);
-            var row = Database.Instance.FetchRow(sql);
-            country.LastEdited = (DateTime)row[0];
+                try
+                {
+                    // get event number
+                    sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Update);
+                    long eventId = Database.Instance.InsertQuery(sql, transaction);        
+
+                    // deactivate all previous records
+                    sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME,
+                                        country.ID);
+                    Database.Instance.InsertQuery(sql, transaction);
+
+                    // insert new record
+                    var fieldNames = new string[] {EVENT_ID, ID_COL_NAME, "active", "name", "code"};
+                    var values = new string[] {eventId.ToString(), country.ID.ToString(), "1", country.Name, country.Code};
+                    sql = SQLQueryBuilder.InsertFields(TABLE_NAME, fieldNames, values);
+                    Database.Instance.InsertQuery(sql, transaction);
+
+
+                    // commit transaction
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    Logger.WriteLine("Exception occured during Country.Update() - rolling back:");
+                    Logger.WriteLine(e.Message);
+                }
+                finally
+                {
+                    transaction.Dispose();
+                }
+
+                // get lastEdited 
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, country.ID.ToString(),
+                                                                       new string[] { "created" });
+                row = Database.Instance.FetchRow(sql);
+            }
             // LOCK ENDS HERE
 
+            // update last edited
+            country.LastEdited = (DateTime)row[0];
             Logger.WriteLine("Updated country: " + country);
         }
 
@@ -156,25 +218,44 @@ namespace Server.Data
         /// <param name="Country"></param>
         public override void Create(Country country)
         {
+            object[] row;
+            int ID;
+
             // check it is legal
             int countryID = GetId(country);
 
             if (countryID != 0)
                 throw new DatabaseException("A country with that name already exists");
 
-            if(Load(country.Code) != null)
+            if (Load(country.Code) != null)
                 throw new DatabaseException("A country with that code already exists");
 
-            // insert the record
-            var sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES (coalesce((SELECT MAX({1})+1 FROM `{0}`), 1), 1, '{2}', '{3}')", TABLE_NAME, ID_COL_NAME, country.Name, country.Code);
-            long inserted_id = Database.Instance.InsertQuery(sql);
 
-            // set id and LastEdited
-            sql = String.Format("SELECT {1}, created FROM `{0}` WHERE id={2}",TABLE_NAME, ID_COL_NAME, inserted_id);
-            var row = Database.Instance.FetchRow(sql);
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                // get event number
+                var sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Create);
+                long eventId = Database.Instance.InsertQuery(sql);  
 
-            long id = (long) row[0];
-            country.ID = (int) id;
+                // insert the record
+                sql = SQLQueryBuilder.CreateNewRecord(TABLE_NAME,
+                                                          ID_COL_NAME,
+                                                          new string[] {EVENT_ID, "name, code"},
+                                                          new string[] {eventId.ToString(), country.Name, country.Code});
+                long inserted_id = Database.Instance.InsertQuery(sql);
+
+                // get id and LastEdited
+                var fields = new string[] {ID_COL_NAME, "created"};
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, "id", inserted_id.ToString(), fields);
+                row = Database.Instance.FetchRow(sql);
+                long id = (long) row[0];
+                ID = (int) id;
+            }
+            // LOCK ENDS HERE
+
+            // set id and lastedited
+            country.ID = (int) ID;
             country.LastEdited = (DateTime) row[1];
 
             Logger.WriteLine("Created country: " + country);
@@ -182,20 +263,33 @@ namespace Server.Data
 
 
         /// <summary>
-        /// Returns the id of the country that is active and matches the given countries name.  Returns 0 if it doesn't exist.
+        /// Returns the id of the country that is active and matches the given countries name,
+        /// and also sets the ID field to that value.
+        /// 
+        /// Returns 0 if it doesn't exist in the Database.
         /// </summary>
         /// <param name="country"></param>
         /// <returns></returns>
         public override int GetId(Country country)
         {
-            var sql = String.Format("SELECT {1} FROM `{0}` WHERE active=1 AND name LIKE '{2}'", TABLE_NAME, ID_COL_NAME, country.Name);
-            long id = Database.Instance.FetchNumberQuery(sql);
+            long id = 0;
+
+            //LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                // get id of matching record
+                var sql = SQLQueryBuilder.SelectFieldsWhereFieldLike(TABLE_NAME, "name", country.Name,
+                                                                     new[] {ID_COL_NAME});
+                id = Database.Instance.FetchNumberQuery(sql);
+            }
+            //LOCK ENDS HERE
 
             // set id in country
-            country.ID = (int) id;
+                country.ID = (int) id;
 
-            // return result
-            return country.ID;
+                // return result
+                return country.ID;
+            
         }
 
         /// <summary>
@@ -206,13 +300,26 @@ namespace Server.Data
         /// <returns></returns>
         public override void Delete(int id)
         {
-            // LOCK BEGINS HERE
-            var sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, id);
-            Database.Instance.InsertQuery(sql);
+            if(Load(id) == null)
+                throw new DatabaseException(String.Format("There is no active record with country_id='{0}'", id));
 
-            // TODO: Should this insert the full row information?
-            sql = String.Format("INSERT INTO `{0}` ({1}, active, name, code) VALUES ({2}, -1, '{3}', '{4}')", TABLE_NAME, ID_COL_NAME, id, "", "");
-            Database.Instance.InsertQuery(sql);
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                // get event number
+                var sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Delete);
+                long eventId = Database.Instance.InsertQuery(sql); 
+                
+                // set all entries to inactive
+                sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, id);
+                Database.Instance.InsertQuery(sql);
+
+                // insert new 'deleted' row
+                sql = SQLQueryBuilder.InsertFields(TABLE_NAME,
+                                                   new string[] {EVENT_ID, ID_COL_NAME, "active", "name", "code"},
+                                                   new string[] {eventId.ToString(), id.ToString(), "-1", "", ""});
+                Database.Instance.InsertQuery(sql);
+            }
             // LOCK ENDS HERE
 
             Logger.WriteLine("Deleted country: " + id);

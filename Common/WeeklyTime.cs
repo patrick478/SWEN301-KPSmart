@@ -11,8 +11,10 @@ namespace Common
     /// <summary>
     /// This class represents a weekly time.  It has a day of the week component, an hour componenet, and a minute component.
     /// </summary>
-    public class WeeklyTime
+    public class WeeklyTime : IComparable<WeeklyTime>
     {
+
+        public static int MINUTES_IN_A_WEEK = 10080;
        
         /// <summary>
         /// Constructs a new WeeklyTime.
@@ -45,6 +47,13 @@ namespace Common
 
             // set the value
             Value = new TimeSpan(GetDayOfWeekNumberValue(day), hour, minute, 0);      
+        }
+
+        /// <summary>
+        /// Constructor to make a WeeklyTime from a DateTime.  It extracts out the DayOfWeek, Hour, and Minute component.
+        /// </summary>
+        /// <param name="datetime"></param>
+        public WeeklyTime(DateTime datetime): this(datetime.DayOfWeek, datetime.Hour, datetime.Minute) {
         }
 
 
@@ -139,7 +148,18 @@ namespace Common
         }
 
 
+        public int CompareTo(WeeklyTime other)
+        {
 
+            var value = (this.Value.Ticks - other.Value.Ticks);
+
+            if (value < 0)
+                return -1;
+            if (value > 0)
+                return 1;
+
+            return 0;
+        }
 
     }
 }

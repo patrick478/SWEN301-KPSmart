@@ -50,18 +50,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Business\CompanyService.cs" />
     <Compile Include="Business\CountryService.cs" />
-    <Compile Include="Business\IllegalActionException.cs" />
+    <Compile Include="Business\DeliveryService.cs" />
+    <Compile Include="Business\LocationService.cs" />
     <Compile Include="Business\PathFinder.cs" />
+    <Compile Include="Business\PriceService.cs" />
     <Compile Include="Business\RouteService.cs" />
     <Compile Include="Business\Service.cs" />
     <Compile Include="Data\CompanyDataHelper.cs" />
     <Compile Include="Data\CountryDataHelper.cs" />
     <Compile Include="Data\DatabaseException.cs" />
     <Compile Include="Data\DataHelper.cs" />
+    <Compile Include="Data\DeliveryDataHelper.cs" />
+    <Compile Include="Data\EventType.cs" />
+    <Compile Include="Data\ObjectType.cs" />
+    <Compile Include="Data\PriceDataHelper.cs" />
     <Compile Include="Data\RouteDataHelper.cs" />
+    <Compile Include="Data\RouteNodeDataHelper.cs" />
+    <Compile Include="Data\SQLQueryBuilder.cs" />
     <Compile Include="Network\Client.cs" />
     <Compile Include="Network\ConnectionManager.cs" />
+    <Compile Include="Network\Controller.cs" />
     <Compile Include="Data\Database.cs" />
     <Compile Include="Gui\Logger.cs" />
     <Compile Include="Gui\MainForm.cs">

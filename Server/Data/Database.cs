@@ -42,17 +42,19 @@ namespace Server.Data
 
         public Database()
         {
+            
+
             // set the tables to create
-            tables.Add("countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT , country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))");
+            tables.Add("countries", "CREATE TABLE 'countries' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, country_id INTEGER, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') ,'name' TEXT,'code' VARCHAR(3))");
             tables.Add("companies",
-                       "CREATE  TABLE 'companies' ('id' INTEGER PRIMARY KEY AUTOINCREMENT , 'company_id' INTEGER NOT NULL , 'created' TIMESTAMP DEFAULT(CURRENT_TIMESTAMP) , 'active' INTEGER NOT NULL DEFAULT('0') ,'name' VARCHAR(20))");
+                       "CREATE  TABLE 'companies' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, 'company_id' INTEGER NOT NULL , 'created' TIMESTAMP DEFAULT(CURRENT_TIMESTAMP) , 'active' INTEGER NOT NULL DEFAULT('0') ,'name' VARCHAR(20))");
+            tables.Add("events", "CREATE TABLE 'events' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP), 'object_type' VARCHAR(20), 'event_type' VARCHAR(10))");
 
             // set filename and version
             // TODO: Use a config value for database to be opened.
             databaseFileName = "kpsmart.db";
             versionNumber = 3;
             testDB = false;
-
         }
 
 
@@ -96,7 +98,22 @@ namespace Server.Data
 
         public long InsertQuery(string sql)
         {
-            SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
+            return this.InsertQuery(sql, null);
+        }
+
+        public long InsertQuery(string sql, SQLiteTransaction transaction)
+        {
+
+            SQLiteCommand sqlCommand;
+            if (transaction != null)
+            {
+                sqlCommand = new SQLiteCommand(sql, this.connection, transaction);
+            }
+            else
+            {
+                sqlCommand = new SQLiteCommand(sql, this.connection);
+            }
+
             try
             {
                 int n_rows = sqlCommand.ExecuteNonQuery();
@@ -104,6 +121,10 @@ namespace Server.Data
             catch (Exception ex)
             {
                 Logger.WriteLine("Exception: {0}", ex);
+            }
+            finally
+            {
+                sqlCommand.Dispose();
             }
             return this.connection.LastInsertRowId;
         }
@@ -125,6 +146,10 @@ namespace Server.Data
             {
                 Logger.WriteLine("Exception: {0}", ex);
             }
+            finally
+            {
+                sqlCommand.Dispose();
+            }
 
             return returnValue;
         }
@@ -137,15 +162,26 @@ namespace Server.Data
         public object[] FetchRow(string sql)
         {
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
-            SQLiteDataReader reader = sqlCommand.ExecuteReader();
-
             List<object> row = new List<object>();
 
-            if (reader.HasRows)
+            try
             {
+                SQLiteDataReader reader = sqlCommand.ExecuteReader();
 
-                for (int i = 0; i < reader.VisibleFieldCount; i++)
-                    row.Add(reader.GetValue(i));
+                if (reader.HasRows)
+                {
+
+                    for (int i = 0; i < reader.VisibleFieldCount; i++)
+                        row.Add(reader.GetValue(i));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLine("Exception: {0}", ex.Message);
+            }
+            finally
+            {
+                sqlCommand.Dispose();
             }
 
             return row.ToArray();
@@ -154,23 +190,39 @@ namespace Server.Data
         public object[][] FetchRows(string sql)
         {
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection);
-            SQLiteDataReader reader = sqlCommand.ExecuteReader();
-
             List<object[]> allRows = new List<object[]>();
 
-            while (reader.Read())
+            try
             {
-                List<object> row = new List<object>();
+                SQLiteDataReader reader = sqlCommand.ExecuteReader();
 
-                for (int i = 0; i < reader.VisibleFieldCount; i++)
+                while (reader.Read())
                 {
-                    row.Add(reader.GetValue(i));
-                }
+                    List<object> row = new List<object>();
 
-                allRows.Add(row.ToArray());
+                    for (int i = 0; i < reader.VisibleFieldCount; i++)
+                    {
+                        row.Add(reader.GetValue(i));
+                    }
+
+                    allRows.Add(row.ToArray());
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLine("Exception: {0}", e.Message);
+            }
+            finally
+            {
+                sqlCommand.Dispose();
             }
 
             return allRows.ToArray();
+        }
+
+        public SQLiteTransaction BeginTransaction()
+        {
+            return connection.BeginTransaction();
         }
 
 
@@ -204,13 +256,34 @@ namespace Server.Data
                 var sql = String.Format("DROP TABLE IF EXISTS {0}", tableName);
                 SQLiteCommand command = new SQLiteCommand(sql, this.connection);
                 command.ExecuteNonQuery();
+                command.Dispose();
                 Logger.WriteLine(String.Format("Dropped table {0} from database {1}", tableName, databaseFileName));
-            }
-
-            connection.Close();
-            connection = null;
-            instance = null;
+            }         
         }
+
+
+        public void ClearTable(string tableName)
+        {
+            if (!testDB)
+                throw new DatabaseException("Cannot drop tables of live database.");
+
+            var sql = String.Format("DELETE from {0}", tableName);
+            SQLiteCommand command = new SQLiteCommand(sql, this.connection);
+            command.ExecuteNonQuery();
+            command.Dispose();
+
+            Logger.WriteLine("Deleted all entries from table '{0}'", tableName);
+        }
+
+        public object[][] GetLastRows(string tableName, int numRowsToGet)
+        {
+            var sql = String.Format("SELECT * FROM (SELECT * FROM {0} ORDER BY id DESC LIMIT {1}) ORDER BY id ASC",
+                                    tableName,
+                                    numRowsToGet);
+
+            return FetchRows(sql);
+        }
+
         #endregion
 
     }

@@ -7,6 +7,8 @@ namespace Common
     /// </summary>
     public class Country: DataObject
     {
+
+
         /// <summary>
         ///  the country name
         /// </summary>
@@ -45,7 +47,29 @@ namespace Common
            return string.Format("[Name: {0}, Code: {1}, ID: {2}, LastModified: {3}]", name, code, ID, LastEdited);
        }
 
+       public override bool Equals(object obj)
+       {
+           if (ReferenceEquals(null, obj)) return false;
+           if (ReferenceEquals(this, obj)) return true;
+           if (obj.GetType() != this.GetType()) return false;
+           return Equals((Country) obj);
+       }
+
+       protected bool Equals(Country other)
+       {
+           return string.Equals(name, other.name) && string.Equals(code, other.code);
+       }
+
+       public override int GetHashCode()
+       {
+           unchecked
+           {
+               return ((name != null ? name.GetHashCode() : 0) * 397) ^ (code != null ? code.GetHashCode() : 0);
+           }
+       }
     }
+
+
 
 
 

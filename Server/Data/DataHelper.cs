@@ -20,5 +20,7 @@ namespace Server.Data
 
         public abstract int GetId(T country);
 
+        protected string EVENT_ID = "event_id";
+
     }
 }
