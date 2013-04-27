@@ -23,9 +23,9 @@ namespace Client
             InitializeComponent();
 
             // initialise network
-            Network network = Network.Instance;
-            network.Start();
-            network.Open();
+            //Network network = Network.Instance;
+            //network.Start();
+            //network.Open();
 
             // initialise database
             Database.Instance.Connect();

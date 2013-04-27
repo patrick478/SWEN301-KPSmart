@@ -65,15 +65,18 @@ namespace Client
                 ErrorOccured = true;
                 Error = NetworkError.ConnectionError;
                 ErrorMessage = se.Message;
+                return;
             }
             catch (Exception e)
             {
                 ErrorOccured = true;
                 Error = NetworkError.UnknownError;
                 ErrorMessage = e.Message;
+                return;
             }
 
             clientSocket.BeginReceive(buffer, 0, 1024, SocketFlags.None, onRecieveCallback, null);
+
 
             OnConnectComplete();
         }

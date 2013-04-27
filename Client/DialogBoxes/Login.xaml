@@ -7,7 +7,7 @@
         ResizeMode="CanResizeWithGrip"
         ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner" 
-        FocusManager.FocusedElement="{Binding ElementName=userName}">
+        FocusManager.FocusedElement="{Binding ElementName=userName}" Loaded="Window_Loaded">
     <Grid>
         <Label Content="Username" Height="28" HorizontalAlignment="Left" Margin="41,37,0,0" Name="label1" VerticalAlignment="Top" />
         <TextBox Height="23" HorizontalAlignment="Right" Margin="0,39,88,0" Name="userName" VerticalAlignment="Top" Width="120" AcceptsTab="True" />
