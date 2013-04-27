@@ -17,7 +17,7 @@ namespace Common
     public class Price: DataObject
     {
         public RouteNode Origin { get; set; }
-        public RouteNode RouteNode { get; set; }
+        public RouteNode Destination { get; set; }
         public Priority Priority { get; set; } 
 
         // in cents

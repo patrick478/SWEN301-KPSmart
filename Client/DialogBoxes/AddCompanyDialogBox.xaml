@@ -1,16 +1,16 @@
-﻿<Window x:Class="Client.Countries.AddCountryDialogBox"
+﻿<Window x:Class="Client.DialogBoxes.AddCompanyDialogBox"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Add Country" Height="192" Width="367"
+        Title="Add Company" Height="192" Width="367"
         MinHeight="10"
         MinWidth="300"
         ResizeMode="CanResizeWithGrip"
         ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner" 
-        FocusManager.FocusedElement="{Binding ElementName=countryName}">
+        FocusManager.FocusedElement="{Binding ElementName=companyName}">
     <Grid>
-        <Label Content="Country Name:" Height="28" HorizontalAlignment="Left" Margin="41,37,0,0" Name="label1" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="137,39,0,0" Name="countryName" VerticalAlignment="Top" Width="120" />
+        <Label Content="Company name:" Height="28" HorizontalAlignment="Left" Margin="41,37,0,0" Name="label1" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="137,39,0,0" Name="companyName" VerticalAlignment="Top" Width="120" />
         <Button Content="Enter" Height="23" HorizontalAlignment="Left" Margin="167,118,0,0" Name="okButton" VerticalAlignment="Top" Width="75" IsDefault="True" Click="okButton_Click" />
         <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,118,12,0" Name="button1" VerticalAlignment="Top" Width="75" IsCancel="True" />
     </Grid>

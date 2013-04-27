@@ -55,19 +55,38 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Countries\AddCountryDialogBox.xaml.cs">
+    <Compile Include="DialogBoxes\AddCountryDialogBox.xaml.cs">
       <DependentUpon>AddCountryDialogBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialogBoxes\AddCompanyDialogBox.xaml.cs">
+      <DependentUpon>AddCompanyDialogBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialogBoxes\Login.xaml.cs">
+      <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
     </Compile>
+<<<<<<< HEAD
     <Compile Include="Network.cs" />
     <Compile Include="Routes.xaml.cs">
       <DependentUpon>Routes.xaml</DependentUpon>
+=======
+    <Compile Include="RequestDelivery.xaml.cs">
+      <DependentUpon>RequestDelivery.xaml</DependentUpon>
+>>>>>>> b1f94221a1161c0e6adaf6f149d31e8742411413
     </Compile>
-    <Page Include="Countries\AddCountryDialogBox.xaml">
+    <Page Include="DialogBoxes\AddCountryDialogBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DialogBoxes\AddCompanyDialogBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DialogBoxes\Login.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Home.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -85,9 +104,9 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Routes.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="RequestDelivery.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +141,13 @@
       <Project>{270A123A-E233-4D74-B434-2C984B95A3A1}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Server\Server.csproj">
+      <Project>{0C8EBACD-2928-4DF6-AF5A-024134F16E9F}</Project>
+      <Name>Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
