@@ -382,6 +382,7 @@ namespace ServerTests
             var country = new Country() { Name = "Wellington", Code = "NZ" };
             dataHelper.Create(country);
 
+            Console.WriteLine("Before update, there are {0} events", Database.Instance.GetNumRows("events"));
             try
             {           
                 dataHelper.Update(country);

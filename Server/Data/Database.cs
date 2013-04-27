@@ -93,21 +93,24 @@ namespace Server.Data
 
         public long InsertQuery(string sql, SQLiteTransaction transaction)
         {
-
-            SQLiteCommand sqlCommand;
-            if (transaction != null)
-            {
-                sqlCommand = new SQLiteCommand(sql, this.connection, transaction);
-            }
+            Console.WriteLine("Is this a transaction? {0}", sql);
+            if (transaction == null)
+                Console.WriteLine("----Not in a transaction");
             else
+                Console.WriteLine("----In a transaction");
+
+            long last_inserted = -1;
+            using (SQLiteCommand sqlCommand = new SQLiteCommand(sql, this.connection))
             {
-                sqlCommand = new SQLiteCommand(sql, this.connection);
-            }
-            using (sqlCommand)
-            {
+                if (transaction != null)
+                    sqlCommand.Transaction = transaction;
+
                 int n_rows = sqlCommand.ExecuteNonQuery();
-                return this.connection.LastInsertRowId;
+                last_inserted = this.connection.LastInsertRowId;
+
+                sqlCommand.Dispose();
             }
+            return last_inserted;
         }
 
         public long FetchNumberQuery(string sql)
@@ -201,8 +204,20 @@ namespace Server.Data
             return allRows.ToArray();
         }
 
+
+
+        public int GetNumRows(string p)
+        {
+            var sql = String.Format("SELECT COUNT(*) FROM `{0}`", p);
+            SQLiteCommand cmd = new SQLiteCommand(sql, this.connection);
+            int result = (int)((long)cmd.ExecuteScalar());
+            cmd.Dispose();
+            return result;
+        }
+
         public SQLiteTransaction BeginTransaction()
         {
+            Console.WriteLine("Beginning the stupid fucking transaction");
             return connection.BeginTransaction();
         }
 
@@ -261,6 +276,5 @@ namespace Server.Data
         }
 
         #endregion
-
     }
 }
