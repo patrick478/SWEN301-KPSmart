@@ -19,6 +19,7 @@ namespace Client
     /// </summary>
     public partial class MainWindow : NavigationWindow
     {
+        Network network = new Network();
         public MainWindow()
         {
             InitializeComponent();
@@ -26,7 +27,20 @@ namespace Client
 
         private void NavigationWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            network.OnConnectComplete += new Network.OnConnectDelegate(network_OnConnect);
+            network.DataReady += new Network.DataReadyDelegate(network_DataReady);
+            network.BeginConnect("127.0.0.1", 23333);
+        }
 
+        void network_DataReady(string msg)
+        {
+            MessageBox.Show("Message from server: " + msg);
+        }
+
+        void network_OnConnect()
+        {
+            MessageBox.Show("Connected! Sending message..");
+            network.WriteLine("Hello from client!");
         }
     }
 }

@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using Server.Gui;
 
 namespace Server.Network
 {
@@ -50,6 +51,13 @@ namespace Server.Network
             int id = GetUnixTimestamp();
             connections.Add(id, new Client(id, clientSocket));
             return id;
+        }
+
+        public static void Remove(Client client)
+        {
+            int id = client.ID;
+            connections.Remove(id);
+            Logger.WriteLine("Client {0} removed (probably disconnected).", id);
         }
     }
 }

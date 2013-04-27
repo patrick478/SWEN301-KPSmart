@@ -90,7 +90,7 @@ namespace Server.Gui
             }
 
             // Detectings if this function is being executed by the main thread
-            if (this.target.InvokeRequired)
+            if (!this.target.InvokeRequired)
                 this.target.Text += s;
             else // if it's not, we need to invoke it.
                 this.target.Invoke(writerDelegate, s);

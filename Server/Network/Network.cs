@@ -11,6 +11,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using Server.Gui;
+using System.Text;
 
 namespace Server.Network
 {
@@ -53,6 +54,7 @@ namespace Server.Network
         // These are the callback objects used for the asynchronous listener.
         private AsyncCallback acceptCallback;
         private AsyncCallback recieveCallback;
+        private AsyncCallback sentCallback;
 
         /// <summary>
         /// Starts the networking system, and prepares to begin listening but doesn't actually
@@ -69,6 +71,7 @@ namespace Server.Network
             // Setup the callbacks
             acceptCallback = new AsyncCallback(this.OnAccept);
             recieveCallback = new AsyncCallback(this.OnReceive);
+            sentCallback = new AsyncCallback(this.OnSent);
 
             // This actually creates the socket object and prepares it to be bound to a port
             this.listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -149,6 +152,17 @@ namespace Server.Network
             Logger.WriteLine("Client {0} connected from {1}:{2}", id, remoteEndPoint.Address, remoteEndPoint.Port);
         }
 
+        private void OnSent(IAsyncResult ar)
+        {
+            // I previously set the AsyncState to the ID of the client, so get that back...
+            int id = (int)ar.AsyncState;
+
+            // ...and fetch the client object
+            Client client = ConnectionManager.Get(id);
+
+            int tx = client.Socket.EndSend(ar);
+        }
+
         // This function is executed when a client socket recieves data.
         private void OnReceive(IAsyncResult ar)
         {
@@ -160,18 +174,59 @@ namespace Server.Network
 
             // Now we've actually got the socket, we can end the recieve.
             // 'rx' will now contain the number of bytes recieved.
-            int rx = client.Socket.EndReceive(ar);
+            int rx = -1;
+            try
+            {
+                 rx = client.Socket.EndReceive(ar);
+            }
+            catch (SocketException se)
+            {
+                if (se.ErrorCode == 10054)
+                {
+                    client.Socket.Dispose();
+                    ConnectionManager.Remove(client);
+                    return;
+                }
+            }
+
+            if (rx == -1)
+            {
+                client.Socket.Dispose();
+                ConnectionManager.Remove(client);
+                return;
+            }
 
             // Clone the client buffer
-            byte[] recieved = client.Buffer;
+            byte[] recieved = new byte[rx];
+            Array.Copy(client.Buffer, recieved, rx);
 
             // Clear the client buffer to prevent overwrites causing confusion
             Array.Clear(client.Buffer, 0, client.Buffer.Length);
             
             // And mark the socket as recieving so as to get more data.
-            client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, recieveCallback, id);
 
-            Logger.WriteLine("Recieved {0} from {1}", rx, id);
+            try
+            {
+                client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, recieveCallback, id);
+            }
+            catch (SocketException se)
+            {
+                if (se.ErrorCode == 10054)
+                {
+                    client.Socket.Dispose();
+                    ConnectionManager.Remove(client);
+                    return;
+                }
+            }
+
+            string msg = Encoding.ASCII.GetString(recieved);
+            Logger.WriteLine("Recieved {0} bytes from {1}: '{2}'", rx, id, msg);
+            MessageHandler.PassMessage(msg, client);
+        }
+
+        internal void Send(Client client, byte[] bytes)
+        {
+            client.Socket.BeginSend(bytes, 0, bytes.Length, SocketFlags.None, sentCallback, client.ID);
         }
     }
 }

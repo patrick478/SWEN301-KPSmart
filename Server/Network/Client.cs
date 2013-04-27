@@ -11,6 +11,7 @@
 
 using System;
 using System.Net.Sockets;
+using System.Text;
 
 namespace Server.Network
 {
@@ -88,6 +89,12 @@ namespace Server.Network
             pendingStdDelivery = null;
 
             return selected;
+        }
+
+        public void SendMessage(string p)
+        {
+            byte[] bytes = Encoding.ASCII.GetBytes(p);
+            Network.Instance.Send(this, bytes);
         }
     }
 }
