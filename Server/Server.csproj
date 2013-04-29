@@ -56,6 +56,7 @@
     <Compile Include="Business\DeliveryService.cs" />
     <Compile Include="Business\EventService.cs" />
     <Compile Include="Business\LocationService.cs" />
+    <Compile Include="Business\NoChangeException.cs" />
     <Compile Include="Business\PathFinder.cs" />
     <Compile Include="Business\PriceService.cs" />
     <Compile Include="Business\RouteService.cs" />
