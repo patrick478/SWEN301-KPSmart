@@ -57,15 +57,15 @@ namespace Server.Gui
                 CountryDataHelper cdh = new CountryDataHelper();
 
                 // create country if doesn't exist
-                Country country = new Country {Name = "Wellington", Code = "WLG"};
+                Country country = new Country {ID=1, Name = "Wellington", Code = "WLG"};
                 if (!countryService.Exists(country))
                 {
                     country = countryService.Create("Wellington", "WLG");
                 }
 
                 // perform updates
-                country = countryService.Update(country.ID, country.Name, "WLN");
-                country = countryService.Update(country.ID, country.Name, "BEN");
+                country = countryService.Update(country.ID, "WLN");
+                country = countryService.Update(country.ID, "BEN");
 
                 // get latest version
                 Country loadedCountry = countryService.Get(country.ID);
@@ -96,7 +96,7 @@ namespace Server.Gui
                     }
                 }
             }
-            catch (DatabaseException e)
+            catch (Exception e)
             {
                 Logger.Write(e.Message);
             }

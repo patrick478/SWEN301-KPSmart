@@ -140,7 +140,7 @@ namespace Client
                 var code = dlg.countryCode.Text;
                 try
                 {
-                    _countryService.Update(((Country) countriesList.SelectedItem).ID, name, code);
+                    _countryService.Update(((Country) countriesList.SelectedItem).ID, code);
                 }
                 catch (Exception ex)
                 {

@@ -150,20 +150,24 @@ namespace Server.Data
         {
             // check it has an id, and fetch it if not
             if (country.ID == 0)
-            {
-                int id = GetId(country);
-                if (id == 0)
-                    throw new DatabaseException("Cannot update a country that doesn't exist: " + country);
+                    throw new DatabaseException("Cannot update a country with no ID.");
 
-                country.ID = id;
+            // check the key field isn't changing
+            var existingCountry = Load(country.ID);
+            if (country.Name != existingCountry.Name)
+            {
+                throw new DatabaseException("Cannot modify the key field 'Name' of the object.");
             }
+
+            // check that a country with the same code doesn't already exist.
+            var code = Load(country.Code);
+            if(code != null)
+                throw new DatabaseException("Another country with that code already exists: " + code);
 
             string sql;
             object[] row;
  
-
             // create a transaction
-
             SQLiteTransaction transaction = Database.Instance.BeginTransaction();
             try
             {

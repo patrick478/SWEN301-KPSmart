@@ -42,10 +42,24 @@ namespace Server.Business
             return newCountry;
         }
 
-        public Country Update(int id, string name, string code)
+        /// <summary>
+        /// Updates the country with the given ID to have the given code.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        ///<exception cref="DatabaseException">if</exception>
+        /// <exception cref="InvalidObjectStateException"></exception>
+        public Country Update(int id, string code)
         {
+            // get the name of the country
+            var country = state.GetCountry(id);
+            if(country == null)
+                throw new ArgumentException("No country with that ID was found: " + id, "id");
+            
             // throws an exception if invalid
-            var newCountry = new Country { ID=id, Name = name, Code = code };
+            var newCountry = new Country { ID=id, Name = country.Name, Code = code };
 
             // throws a database exception if invalid
             dataHelper.Update(newCountry);
