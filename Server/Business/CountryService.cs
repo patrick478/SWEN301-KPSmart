@@ -58,6 +58,10 @@ namespace Server.Business
             if(country == null)
                 throw new ArgumentException("No country with that ID was found: " + id, "id");
             
+            // see if anything changed
+            if (country.Code.Equals(code))
+                throw new NoChangeException();
+
             // throws an exception if invalid
             var newCountry = new Country { ID=id, Name = country.Name, Code = code };
 

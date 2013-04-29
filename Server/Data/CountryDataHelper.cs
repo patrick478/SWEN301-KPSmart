@@ -155,9 +155,10 @@ namespace Server.Data
             // check the key field isn't changing
             var existingCountry = Load(country.ID);
             if (country.Name != existingCountry.Name)
-            {
                 throw new DatabaseException("Cannot modify the key field 'Name' of the object.");
-            }
+            if (country.Code.Equals(existingCountry.Code))
+                throw new DatabaseException("There are no changes to the country");
+
 
             // check that a country with the same code doesn't already exist.
             var countryByCode = Load(country.Code);
