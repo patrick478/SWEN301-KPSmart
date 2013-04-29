@@ -160,9 +160,9 @@ namespace Server.Data
             }
 
             // check that a country with the same code doesn't already exist.
-            var code = Load(country.Code);
-            if(code != null)
-                throw new DatabaseException("Another country with that code already exists: " + code);
+            var countryByCode = Load(country.Code);
+            if((countryByCode.ID != country.ID) && countryByCode != null)
+                throw new DatabaseException("Another country with that code already exists: " + countryByCode);
 
             string sql;
             object[] row;
