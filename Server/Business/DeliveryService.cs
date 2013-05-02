@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting;
 using System.Text;
 using Common;
 using Server.Data;
@@ -10,7 +11,12 @@ namespace Server.Business
     public class DeliveryService: Service<Delivery>
     {
         private PathFinder pathFinder;
-        
+
+
+        private Dictionary<int, DeliveryOption> temporaryOptions;
+
+
+
         public DeliveryService(CurrentState state, PathFinder pathfinder) : base(state, new DeliveryDataHelper())
         {
             // initialise current deliveries from DB
@@ -23,118 +29,165 @@ namespace Server.Business
 
             // save reference to the pathfinder
             this.pathFinder = pathfinder;
+
+            this.temporaryOptions = new Dictionary<int, DeliveryOption>();
         }
 
 
-        public Dictionary<int, Delivery> GetBestRoutes()
+        public IDictionary<PathType, Delivery> GetBestRoutes(int clientId, int originId, int destinationId, int weightInGrams, int volumeInCm3)
         {
-            return null;
-        }
-
-        public Delivery Create(int originId, int destinationId, Priority priority, IEnumerable<RouteInstance> routes,
-                               int weightInGrams, int volumeInCm3)
-        {
-            //todo validate the list of deliveries is contiguous.
+            // prep result
+            var result = new Dictionary<PathType, Delivery>();   
+            
+            // get origin and destination
             var origin = state.GetRouteNode(originId);
             var destination = state.GetRouteNode(destinationId);
+            var timeOfRequest = DateTime.UtcNow;
+            var prices = state.GetAllPrices();
 
+            // check arguments
+            if(origin == null)
+                throw new ArgumentException("Could not find that origin", "originId");
 
-            var totalCost = GetTotalCost(routes, weightInGrams, volumeInCm3);
-            var totalPrice = GetTotalPrice(routes, priority, weightInGrams, volumeInCm3);
-            var scope = GetScope(routes);
-            var timeOfRequest = DateTime.Now; // should this be UTC?
-            var duration = GetDuration(routes);
-            var timeOfDelivery = routes.AsQueryable().Last().DepartureTime.Add(duration);
-            //todo really inefficient - need to put in one loop!!!
+            if (destination == null)
+                throw new ArgumentException("Could not find that destination", "destinationId");
 
-            var delivery = new Delivery
+            if (weightInGrams <= 0)
+                throw new ArgumentException("Weight cannot be less than or equal to zero", "weightInGrams");
+
+            if (volumeInCm3 <= 0)
+                throw new ArgumentException("Volume cannot be less than or equal to zero", "volumeInCm3");
+
+            // do pathfinding and get results
+            var deliveries =
+                pathFinder.findRoutes(new Delivery
+                    {
+                        Origin = origin,
+                        Destination = destination,
+                        WeightInGrams = weightInGrams,
+                        VolumeInCm3 = volumeInCm3
+                    });
+
+            // return empty result if none found
+            if (deliveries.Count == 0)
+            {
+                return result;
+            }
+
+            var deliveryOptions = new DeliveryOption(timeOfRequest);
+
+            // make deliveries of the paths found
+            foreach (var delivery in deliveries)
+            {
+                var pathType = delivery.Key;
+                var path = delivery.Value;
+
+                // make the delivery (will throw an exception if fields are incorrect)
+                var newDelivery = GetDeliveryFromRouteInstances(path, weightInGrams, volumeInCm3,
+                                                                timeOfRequest, pathType);
+                
+                // add delivery to deliveryOptions
+                deliveryOptions.AddOption(pathType, newDelivery);
+            }
+
+            // save options
+            temporaryOptions[clientId] = deliveryOptions;
+
+            // return result
+            return deliveryOptions.GetOptions();
+        }
+
+        private Delivery GetDeliveryFromRouteInstances(IList<RouteInstance> path, int weightInGrams, int volumeInCm3, DateTime timeOfRequest, PathType pathType)
+        {      
+            // check arguments
+            if (path.Count == 0)
+                throw new ArgumentException("Cannot have an empty path");
+            if (weightInGrams <= 0)
+                throw new ArgumentException("Weight cannot be less than or equal to zero", "weightInGrams");
+            if (volumeInCm3 <= 0)
+                throw new ArgumentException("Volume cannot be less than or equal to zero", "volumeInCm3");
+            
+            // initialise interesting variables
+            RouteNode origin = path.First().Route.Origin;
+            RouteNode destination = path.Last().Route.Destination;
+
+            Priority priority = pathType.GetPriority();
+            int totalCost = 0;
+            int totalPrice = 0;
+            Scope scope = Scope.Domestic;
+            DateTime timeOfDelivery;
+
+            // iterate through all routeInstances and calculate all the variables
+            RouteNode previousDestination = null;
+            foreach (RouteInstance routeInstance in path)
+            {
+                Route route = routeInstance.Route;
+
+                // check contiguous
+                if (previousDestination != null && route.Origin.Equals(previousDestination))
+                    throw new ArgumentException("Path isn't contiguous: " + path);
+
+                // add to cost
+                totalCost += route.CostPerGram * weightInGrams;
+                totalCost += route.CostPerCm3 * volumeInCm3;
+
+                // add to price
+                var prices = state.GetAllPrices();
+                var price =
+                prices.First(t =>
+                    t.Origin.Equals(route.Origin) && t.Destination.Equals(route.Destination) &&
+                    t.Priority.Equals(priority));
+                totalPrice += price.PricePerCm3 * volumeInCm3;
+                totalPrice += price.PricePerGram * weightInGrams;
+
+                // check scope
+                if (scope != Scope.International && route.Scope == Scope.International)
+                    scope = Scope.International;
+
+                previousDestination = route.Destination;
+            }
+
+            // calculate timeOfDelivery
+            var lastRouteInstance = path.Last();
+            timeOfDelivery = lastRouteInstance.DepartureTime.AddMinutes(lastRouteInstance.Route.Duration);
+
+            // calculate duration
+            var duration = timeOfDelivery.Subtract(timeOfRequest);
+
+            // make the delivery (will throw an exception if fields are incorrect)
+            var newDelivery = new Delivery
                 {
-                    Origin = origin,
-                    Destination = destination,
-                    Priority = priority,
-                    TimeOfDelivery = timeOfDelivery,
-                    TimeOfRequest = timeOfRequest,
-                    TotalCost = totalCost,
-                    TotalPrice = totalPrice,
+                    Origin = origin, 
+                    Destination = destination, 
+                    Routes = path, 
+                    VolumeInCm3 = volumeInCm3, 
+                    WeightInGrams = weightInGrams, 
+                    TotalCost = totalCost, 
+                    TotalPrice = totalPrice, 
+                    TimeOfRequest = timeOfRequest, 
+                    TimeOfDelivery = timeOfDelivery, 
+                    Priority = priority, 
                     Scope = scope
                 };
+
+            return newDelivery;
+        }
+
+        public Delivery SelectDeliveryOption(int clientId, PathType selection)
+        {
+
                 
             
-            // save in DB
-            dataHelper.Create(delivery);
+//            // save in DB
+//            dataHelper.Create(delivery);
+//
+//            // save state
+//            state.SaveDelivery(delivery);
+//            state.IncrementNumberOfEvents();
+//
+//            return delivery;
 
-            // save state
-            state.SaveDelivery(delivery);
-            state.IncrementNumberOfEvents();
-
-            return delivery;
-        }
-
-
-        private TimeSpan GetDuration(IEnumerable<RouteInstance> routes)
-        {
-            
-            TimeSpan total = new TimeSpan(0);
-            
-            foreach (RouteInstance r in routes)
-            {
-                var route = r.Route;
-                total = total.Add(new TimeSpan(0, 0, route.Duration, 0));
-            }
-
-            return total;
-        }
-
-        private Scope GetScope(IEnumerable<RouteInstance> routes)
-        {
-            foreach (RouteInstance r in routes)
-            {
-                if (r.Route.Origin.GetType() == typeof (InternationalPort))
-                {
-                    return Scope.International;
-                }
-            }
-
-            return Scope.Domestic;
-        }
-
-        private int GetTotalCost(IEnumerable<RouteInstance> delivery, int weightInGrams, int volumeInCm3 )
-        {
-            int totalCost = 0;
-            
-            foreach (RouteInstance r in delivery)
-            {
-                int costPerGram = r.Route.CostPerGram;
-                int costPerCm3 = r.Route.CostPerCm3;
-
-                totalCost += costPerGram*weightInGrams;
-                totalCost += costPerCm3*volumeInCm3;
-            }
-
-            return totalCost;
-        }
-
-
-        private int GetTotalPrice(IEnumerable<RouteInstance> delivery, Priority priority, int weightInGrams,
-                                  int volumeInCm3)
-        {
-            int totalPrice = 0;
-
-            var prices = state.GetAllPrices().AsQueryable();
-
-            foreach (RouteInstance r in delivery)
-            {
-                var route = r.Route;
-                var price =
-                    prices.First(t =>
-                        t.Origin.Equals(route.Origin) && t.Destination.Equals(route.Destination) &&
-                        t.Priority.Equals(priority));
-
-                totalPrice += price.PricePerCm3*volumeInCm3;
-                totalPrice += price.PricePerGram*weightInGrams;
-            }
-
-            return totalPrice;
+            return null;
         }
 
         public override Delivery Get(int id)

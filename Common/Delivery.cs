@@ -29,7 +29,7 @@ namespace Common
         public Scope Scope { get; set; }
 
         // the routes included in the delivery
-        public List<RouteInstance> Routes { get; set; }
+        public IList<RouteInstance> Routes { get; set; }
 
         public int WeightInGrams { get; set; }
 

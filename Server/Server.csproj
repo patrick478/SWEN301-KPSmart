@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Business\CompanyService.cs" />
     <Compile Include="Business\CountryService.cs" />
+    <Compile Include="Business\DeliveryOption.cs" />
     <Compile Include="Business\DeliveryService.cs" />
     <Compile Include="Business\EventService.cs" />
     <Compile Include="Business\LocationService.cs" />

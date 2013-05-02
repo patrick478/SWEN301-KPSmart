@@ -36,20 +36,21 @@ namespace Server.Business
         }
 
         //indexed by the ordinal of the Common.PathType
-        public Dictionary<int, IEnumerable<RouteInstance>> findRoutes(Delivery delivery)
+        public Dictionary<PathType, IList<RouteInstance>> findRoutes(Delivery delivery)
         {
 
-            Dictionary<int, IEnumerable<RouteInstance>> paths = new Dictionary<int, IEnumerable<RouteInstance>>();
-
-            paths.Add((int)PathType.Express, findPath(delivery, time, allRoutes));
-            paths.Add((int)PathType.Standard, findPath(delivery, cost, allRoutes));
-            paths.Add((int)PathType.AirExpress, findPath(delivery, time, airOnly));
-            paths.Add((int)PathType.AirStandard, findPath(delivery, cost, airOnly));
+            var paths = new Dictionary<PathType, IList<RouteInstance>>
+                {
+                    {PathType.Express, findPath(delivery, time, allRoutes)},
+                    {PathType.Standard, findPath(delivery, cost, allRoutes)},
+                    {PathType.AirExpress, findPath(delivery, time, airOnly)},
+                    {PathType.AirStandard, findPath(delivery, cost, airOnly)}
+                };
 
             return paths;
         }
 
-        private IEnumerable<RouteInstance> findPath(Delivery delivery, NodeEvaluator evaluator, RouteExcluder excluder)//, Excluder excluder) 
+        private IList<RouteInstance> findPath(Delivery delivery, NodeEvaluator evaluator, RouteExcluder excluder)//, Excluder excluder) 
         {
             RouteNode origin = delivery.Origin;
             RouteNode goal = delivery.Destination;
@@ -103,7 +104,7 @@ namespace Server.Business
             return null;
         }
 
-        private IEnumerable<RouteInstance> reconstructPath(RouteNode goal)
+        private IList<RouteInstance> reconstructPath(RouteNode goal)
         {
             List<RouteInstance> path = new List<RouteInstance>();
             
