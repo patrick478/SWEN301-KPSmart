@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting;
 using System.Text;
+using System.Threading;
 using Common;
 using Server.Data;
 
@@ -11,12 +12,10 @@ namespace Server.Business
     public class DeliveryService: Service<Delivery>
     {
         private PathFinder pathFinder;
-
-
         private Dictionary<int, DeliveryOption> temporaryOptions;
 
-
-
+        private TimerCallback timerDelegate; 
+        
         public DeliveryService(CurrentState state, PathFinder pathfinder) : base(state, new DeliveryDataHelper())
         {
             // initialise current deliveries from DB
@@ -31,6 +30,11 @@ namespace Server.Business
             this.pathFinder = pathfinder;
 
             this.temporaryOptions = new Dictionary<int, DeliveryOption>();
+
+            timerDelegate = ClearTemporaryOptions;
+            Timer timerItem = new Timer(timerDelegate, null, 3600000, 3600000);
+
+
         }
 
 
@@ -74,9 +78,8 @@ namespace Server.Business
                 return result;
             }
 
-            var deliveryOptions = new DeliveryOption(timeOfRequest);
-
             // make deliveries of the paths found
+            var deliveryOptions = new DeliveryOption(timeOfRequest);
             foreach (var delivery in deliveries)
             {
                 var pathType = delivery.Key;
@@ -175,19 +178,19 @@ namespace Server.Business
 
         public Delivery SelectDeliveryOption(int clientId, PathType selection)
         {
+            // get delivery
+            var delivery = temporaryOptions[clientId].GetOption(selection);
+            if (delivery == null)
+                throw new IllegalActionException("Cannot find your selection. You haven't requested us to find the best paths yet.");
+  
+            // save in DB
+            dataHelper.Create(delivery);
 
-                
-            
-//            // save in DB
-//            dataHelper.Create(delivery);
-//
-//            // save state
-//            state.SaveDelivery(delivery);
-//            state.IncrementNumberOfEvents();
-//
-//            return delivery;
+            // save state
+            state.SaveDelivery(delivery);
+            state.IncrementNumberOfEvents();
 
-            return null;
+            return delivery;
         }
 
         public override Delivery Get(int id)
@@ -205,14 +208,35 @@ namespace Server.Business
             return state.GetAllDeliveries();
         }
 
+        /// <summary>
+        /// Not implemented for this Service. There are no fields that are unique to a particular Delivery except ID.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public override bool Exists(Delivery obj)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("There are no fields that are unique to a particular Delivery except ID.");
         }
 
+        /// <summary>
+        /// Not implemented for this Service. Cannot delete a delivery.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public override void Delete(int id)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Cannot delete a delivery.");
         }
+
+
+        private static void ClearTemporaryOptions(object StateObj)
+        {
+
+
+        }
+
+
     }
 }
