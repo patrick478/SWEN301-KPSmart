@@ -159,10 +159,9 @@ namespace Server.Data
             if (country.Code.Equals(existingCountry.Code))
                 throw new DatabaseException("There are no changes to the country");
 
-
             // check that a country with the same code doesn't already exist.
             var countryByCode = Load(country.Code);
-            if((countryByCode.ID != country.ID) && countryByCode != null)
+            if(countryByCode != null && (countryByCode.ID != country.ID) )
                 throw new DatabaseException("Another country with that code already exists: " + countryByCode);
 
             string sql;
