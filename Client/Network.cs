@@ -11,6 +11,8 @@ namespace Client
     {
         NoError,
         ConnectionError,
+        TransmissionError,
+        Disconnect,
         UnknownError
     }
 
@@ -51,8 +53,10 @@ namespace Client
 
         public delegate void OnConnectDelegate();
         public delegate void DataReadyDelegate(string msg);
+        public delegate void NetworkErrorDelegate();
         public event OnConnectDelegate OnConnectComplete;
         public event DataReadyDelegate DataReady;
+        public event NetworkErrorDelegate NetworkErrorOccured;
 
         public bool ErrorOccured = false;
         public NetworkError Error = NetworkError.NoError;
@@ -89,6 +93,9 @@ namespace Client
                 ErrorOccured = true;
                 Error = NetworkError.ConnectionError;
                 ErrorMessage = se.Message;
+                if (NetworkErrorOccured != null)
+                    NetworkErrorOccured();
+
                 return;
             }
             catch (Exception e)
@@ -96,18 +103,50 @@ namespace Client
                 ErrorOccured = true;
                 Error = NetworkError.UnknownError;
                 ErrorMessage = e.Message;
+                if (NetworkErrorOccured != null)
+                    NetworkErrorOccured();
+
                 return;
             }
 
             clientSocket.BeginReceive(buffer, 0, 1024, SocketFlags.None, onRecieveCallback, null);
 
 
-            OnConnectComplete();
+            if(OnConnectComplete != null)
+                OnConnectComplete();
         }
 
         private void onSent(IAsyncResult ar)
         {
-            int tx = clientSocket.EndSend(ar);
+            int tx = -1;
+            try
+            {
+
+                tx = clientSocket.EndSend(ar);
+            }
+            catch (SocketException se)
+            {
+                ErrorOccured = true;
+                Error = NetworkError.TransmissionError;
+                ErrorMessage = se.Message;
+
+                if (NetworkErrorOccured != null)
+                    NetworkErrorOccured();
+
+                return;
+            }
+
+            if (tx < 0)
+            {
+                ErrorOccured = true;
+                Error = NetworkError.TransmissionError;
+                ErrorMessage = "Transmission recieve error, data recieved was zero bytes";
+
+                if (NetworkErrorOccured != null)
+                    NetworkErrorOccured();
+
+                return;
+            }
         }
 
         private void onRecieve(IAsyncResult ar)
@@ -121,7 +160,9 @@ namespace Client
             {
                 if (se.ErrorCode == 10054)
                 {
-                    // Shit - server went away!
+                    ErrorOccured = true;
+                    Error = NetworkError.Disconnect;
+                    ErrorMessage = se.Message;    
                     return;
                 }
             }

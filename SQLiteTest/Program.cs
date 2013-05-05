@@ -10,8 +10,31 @@ namespace SQLiteTest
 {
     class Program
     {
+        class MyClass
+        {
+            public delegate void MyDelegate();
+            public event MyDelegate MyEvent;
+
+            public void FireEvent()
+            {
+                if (MyEvent != null)
+                    MyEvent();
+            }
+
+            public MyClass()
+            {
+                MyEvent += new MyDelegate(MyClass_MyEvent);
+            }
+
+            void MyClass_MyEvent()
+            {
+                Console.WriteLine("Event fired!");
+            }
+        }
+
         static void Main(string[] args)
         {
+
             //if (File.Exists("test.sqlite"))
             //    File.Delete("test.sqlite");
 

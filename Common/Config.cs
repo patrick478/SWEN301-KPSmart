@@ -16,7 +16,6 @@ namespace Common
 
         public Config(string path)
         {
-
         }
 
         public object Get(string name)
