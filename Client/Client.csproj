@@ -103,7 +103,8 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Compile Include="Network\ClientController.cs" />
+    <Compile Include="ClientController.cs" />
+	<Compile Include="ClientState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
