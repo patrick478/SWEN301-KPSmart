@@ -11,15 +11,17 @@ namespace Client
     /// </summary>
     public class ClientController
     {
-        Network network;
         ClientState state;
 
-        public ClientController(Network network)
-        {
-            this.network = network;
-        }
-
         #region Receiving
+        public delegate void StateUpdatedDelegate(Type type);
+        public event StateUpdatedDelegate Updated;
+
+        public ClientController(ClientState state)
+        {
+            this.state = state;
+            Network.Instance.DataReady += new Network.DataReadyDelegate(OnReceived);
+        }
 
         /// <summary>
         /// Reads a message received from the Server and performs the appropriate actions.
@@ -50,7 +52,11 @@ namespace Client
             switch (tokens[count++])
             {
                 case NetCodes.OBJECT_COUNTRY:
-
+                    string code = tokens[count++];
+                    string name = tokens[count++];
+                    state.SaveCountry(new Country() { Name = name, Code = code, ID = id });
+                    if (Updated != null)
+                        Updated(typeof(Country));
                     return;
             }
         }
@@ -95,7 +101,7 @@ namespace Client
         /// <param name="rest"></param>
         private void Send(string first, params string[] rest)
         {
-            network.WriteLine(NetCodes.BuildNetworkString(first, rest));
+            Network.Instance.WriteLine(NetCodes.BuildNetworkString(first, rest));
         }
 
         #endregion
