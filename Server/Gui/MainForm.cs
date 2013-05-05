@@ -44,13 +44,13 @@ namespace Server.Gui
             network.Open();
             // todo - pass controller to network
 
-            BenDBTests(countryService);
+            BenDBTests(countryService, routeService);
         }
 
 
 
 
-        private void BenDBTests(CountryService countryService)
+        private void BenDBTests(CountryService countryService, RouteService routeService)
         {
             try
             {
