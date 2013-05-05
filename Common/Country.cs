@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Common
 {
@@ -66,6 +67,11 @@ namespace Common
            {
                return ((name != null ? name.GetHashCode() : 0) * 397);
            }
+       }
+
+       public override string Transmit()
+       {
+           return NetCodes.BuildNetworkString(NetCodes.OBJECT_COUNTRY, base.Transmit(), code, name);
        }
     }
 

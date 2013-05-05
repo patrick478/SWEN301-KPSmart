@@ -60,29 +60,60 @@ namespace Server.Network
                     DeliverySelect(client, tokens);
                     return;
 
-                case NetCodes.CL_ROUTE_EDIT:
-                    RouteEdit(client, tokens);
-                    return;
-                case NetCodes.CL_ROUTE_DELETE:
-                    RouteDelete(client, tokens);
+                case NetCodes.CL_OBJECT_ADD:
+                    ObjectAdd(client, tokens);
                     return;
 
-                case NetCodes.CL_PRICE_EDIT:
-                    PriceEdit(client, tokens);
+                case NetCodes.CL_OBJECT_UPDATE:
+                    ObjectUpdate(client, tokens);
                     return;
 
-                case NetCodes.CL_LOCATION_ADD:
+                case NetCodes.CL_OBJECT_DELETE:
+                    ObjectDelete(client, tokens);
+                    return;
+            }
+        }
+
+        private void ObjectAdd(Client client, string[] tokens)
+        {
+            int count = 1;
+            switch (tokens[count++])
+            {
+                case NetCodes.OBJECT_COUNTRY:
                     LocationAdd(client, tokens);
                     return;
-                case NetCodes.CL_LOCATION_DELETE:
-                    LocationDelete(client, tokens);
-                    return;
+            } 
+        }
 
-                case NetCodes.CL_COMPANY_ADD:
-                    CompanyAdd(client, tokens);
+        private void ObjectUpdate(Client client, string[] tokens)
+        {
+            int count = 1;
+            int id = Convert.ToInt32(tokens[count++]);
+            switch (tokens[count++])
+            {
+                case NetCodes.OBJECT_COUNTRY:
+
                     return;
-                case NetCodes.CL_COMPANY_DELETE:
-                    CompanyDelete(client, tokens);
+            }
+        }
+
+        private void ObjectDelete(Client client, string[] tokens)
+        {
+            int count = 1;
+            int id = Convert.ToInt32(tokens[count++]);
+            switch (tokens[count++])
+            {
+                case NetCodes.OBJECT_COUNTRY:
+                    countryService.Delete(id);
+                    return;
+                case NetCodes.OBJECT_COMPANY:
+                    companyService.Delete(id);
+                    return;
+                case NetCodes.OBJECT_PRICE:
+                    priceService.Delete(id);
+                    return;
+                case NetCodes.OBJECT_ROUTE:
+                    routeService.Delete(id);
                     return;
             }
         }
@@ -97,7 +128,7 @@ namespace Server.Network
             //Delivery air = deliveryService.Build(originID, destinationID, NetCodes.PRIORITY_AIR, weight, volume);
             //Delivery standard = deliveryService.Build(originID, destinationID, NetCodes.PRIORITY_STANDARD, weight, volume);
             //client.StorePendingDelivery(air, standard);
-            //Transmit(client,NetCodes.BuildNetworkString(Common.NetCode.SV_DELIVERY_PRICES,air.TotalPrice,standard.TotalPrice));
+            //client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_PRICES,Convert.ToString(air.TotalPrice),Convert.ToString(standard.TotalPrice)));
         }
 
         private void DeliverySelect(Client client, string[] tokens)
@@ -139,13 +170,6 @@ namespace Server.Network
             //Route r = routeService.GetRoute(routeID);
         }
 
-        private void RouteDelete(Client client, string[] tokens)
-        {
-            int count = 1;
-            int routeID = Convert.ToInt32(tokens[count++]);
-            routeService.Delete(routeID);  // Might want a boolean return on DeleteRoute to know if there was a problem or not?
-        }
-
         private void PriceEdit(Client client, string[] tokens)
         {
             int count = 1;
@@ -156,26 +180,13 @@ namespace Server.Network
             int count = 1;
             string code = tokens[count++];
             string name = tokens[count++];
-            countryService.Create(name,code);
-        }
-
-        private void LocationDelete(Client client, string[] tokens)
-        {
-            int id = Convert.ToInt32(tokens[1]);
-            countryService.Delete(id);
+            countryService.Create(name, code);
         }
 
         private void CompanyAdd(Client client, string[] tokens)
         {
             string name = tokens[1];
-            //companyService.AddCompany(name);
+            companyService.Create(name);
         }
-
-        private void CompanyDelete(Client client, string[] tokens)
-        {
-            int id = Convert.ToInt32(tokens[1]);
-            companyService.Delete(id);
-        }
-
     }
 }

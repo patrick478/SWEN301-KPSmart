@@ -32,6 +32,11 @@ namespace Common
         public const string CL_PRICE_EDIT = "pe";         // Origin Location ID (int) - Destination Location ID (int) - Priority (PRIORITY_) - Price/gram (int) - Price/cm3 (int)
                                                             // CHECK For Price Updates, are we going to store them by ID, or like above where we just search it on the fly.
 
+        public const string CL_OBJECT_ADD = "oa";       // Type (OBJECT_) - See specific object for rest of protocol...
+        public const string CL_OBJECT_UPDATE = "ou";       // ID (int) - Type (OBJECT_) - See specific object for rest of protocol...
+        public const string CL_OBJECT_DELETE = "od";       // ID (int) - Type (OBJECT_)
+
+
         public const string CL_LOCATION_ADD = "la";       // Location Code (3char string) - Location Name (string)     TODO Later if we get really pro with maps integration: - Longitude - Latititude. Unless we just pass the name along to the api and it finds it itself.
         //public const string CL_LOCATION_EDIT = "le";       // Location ID (int) - Location Code (3char string) - Location Name (string)
         public const string CL_LOCATION_DELETE = "ld";    // Location ID (int)
@@ -39,17 +44,18 @@ namespace Common
         public const string CL_COMPANY_ADD = "ca";       // Company Name (string)
         public const string CL_COMPANY_DELETE = "cd";    // Company ID (int)    CHECK Or just the name again? Depends if we use IDs for Company.
 
-
         // Server to Client - First token of a message sent by the Server, identifies the information the Server is sending (and the format for the rest of the message).
 
         public const string SV_DELIVERY_PRICES = "dp";    // Standard Price (int) - Air Price (int)
-
-        public const string SV_CONFIRM = "ok";  // ??
         public const string SV_ERROR = "er"; // Error Message (string ...)   // CHECK unless we want to have error codes. Or have both; a code followed by a string.
-
+        public const string SV_OBJECT_UPDATE = "ou";    // ID (int) - Type (OBJECT_) - See specific object for rest of protocol...
+        public const string SV_OBJECT_DELETE = "od";    // ID (int) - Type (OBJECT_)
 
         // State Updates
-        public const string UPDATE_ROUTE = "ur";
+        public const string OBJECT_COUNTRY = "l";   // ... - Location Code (3char string) - Location Name (string)
+        public const string OBJECT_PRICE = "p";
+        public const string OBJECT_ROUTE = "r";
+        public const string OBJECT_COMPANY = "c";
 
         public const string PRIORITY_AIR = "a";
         public const string PRIORITY_STANDARD = "s";
@@ -57,8 +63,6 @@ namespace Common
         public const string TRANSPORT_AIR = "a";
         public const string TRANSPORT_LAND = "l";
         public const string TRANSPORT_SEA = "s";
-
-        public const string CANCEL = "x";
 
         /// <summary>Character used to seperate tokens in a network message.</summary>
         public const char SEPARATOR = '\t';

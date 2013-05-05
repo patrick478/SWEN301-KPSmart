@@ -15,5 +15,10 @@ namespace Common
 
         // the time it was last changed
         public DateTime LastEdited { get; set; }
+
+        public string Transmit()
+        {
+            return ID.ToString();
+        }
     }
 }
