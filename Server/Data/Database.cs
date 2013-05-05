@@ -48,6 +48,7 @@ namespace Server.Data
             tables.Add("companies",
                        "CREATE  TABLE 'companies' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'company_id' INTEGER NOT NULL , 'event_id' INTEGER NOT NULL, 'created' TIMESTAMP DEFAULT(CURRENT_TIMESTAMP) , 'active' INTEGER NOT NULL DEFAULT('0') ,'name' VARCHAR(20))");
             tables.Add("events", "CREATE TABLE 'events' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP), 'object_type' VARCHAR(20), 'event_type' VARCHAR(10))");
+            tables.Add("users", "CREATE TABLE users (id INT AUTO INCREMENT PRIMARY KEY, username TEXT, password TEXT, isAdmin INT)");
 
             // set filename and version
             // TODO: Use a config value for database to be opened.
@@ -169,6 +170,25 @@ namespace Server.Data
             }
 
             return row.ToArray();
+        }
+
+        public int CheckUserPassword(string username, string password)
+        {
+            var sql = String.Format("SELECT isAdmin FROM `users` WHERE username=\"{0}\" AND password=\"{1}\"", username, password);
+            SQLiteCommand cmd = new SQLiteCommand(sql);
+
+            object retValue = cmd.ExecuteScalar();
+            if (retValue == null)
+                return -1;
+            else
+            {
+                long val = (long)retValue;
+                if (val == 0)
+                    return 0;
+                else
+                    return 1;
+
+            }
         }
 
         public object[][] FetchRows(string sql)
