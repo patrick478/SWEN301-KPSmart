@@ -4,13 +4,31 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" 
-      d:DesignHeight="700" d:DesignWidth="1024"
+      d:DesignHeight="650" d:DesignWidth="1000"
 	Title="RequestDelivery" Loaded="Page_Loaded">
 
     <Grid>
         <Image Height="88" HorizontalAlignment="Left" Margin="23,12,0,0" Name="image1" Source="/Client;component/header.png" Stretch="Fill" VerticalAlignment="Top" Width="975" />
         <Label Content="Request Delivery" Height="68" HorizontalAlignment="Left" Margin="53,138,0,0" Name="label1" VerticalAlignment="Top" Width="392" FontSize="36" />
-        <Button Content="Back to home" Height="88" HorizontalAlignment="Left" Margin="833,12,0,0" Name="button1" VerticalAlignment="Top" Width="151" FontSize="20" />
-        <Canvas Height="491" HorizontalAlignment="Left" Margin="35,136,0,0" Name="canvas1" VerticalAlignment="Top" Width="949" />
+        <Button Content="Back to home" Height="88" HorizontalAlignment="Left" Margin="833,12,0,0" Name="backToHome" VerticalAlignment="Top" Width="151" FontSize="20" Click="button1_Click" />
+        <Canvas Height="491" HorizontalAlignment="Left" Margin="35,136,0,0" Name="canvas1" VerticalAlignment="Top" Width="917">
+            <Rectangle Canvas.Left="8" Canvas.Top="7" Height="484" Name="rectangle1" Stroke="Black" Width="909" Fill="White" />
+            <Label Canvas.Left="209" Canvas.Top="165" Content="Origin:" Height="28" Name="label2" Width="56" />
+            <Canvas Canvas.Left="10" Canvas.Top="10" Height="491" Name="canvas2" Width="917">
+                <Label Canvas.Left="199" Canvas.Top="189" Content="Destination:" Height="28" Name="label3" Width="109" />
+                <Label Canvas.Left="199" Canvas.Top="223" Content="Weight (gms):" Height="28" Name="label4" Width="109" />
+                <Label Canvas.Left="199" Canvas.Top="257" Content="Volume (cm^3):" Height="28" Name="label5" Width="109" />
+                <TextBox Canvas.Left="303" Canvas.Top="157" Height="23" Name="origin" Width="120" />
+                <TextBox Canvas.Left="303" Canvas.Top="194" Height="23" Name="destination" Width="120" />
+                <TextBox Canvas.Left="303" Canvas.Top="228" Height="23" Name="weight" Width="120" />
+                <TextBox Canvas.Left="303" Canvas.Top="262" Height="23" Name="volume" Width="120" />
+                <Button Canvas.Left="680" Canvas.Top="401" Content="Submit" Height="23" Name="submitButton" Width="75" Click="submitButton_Click" />
+                <RadioButton Canvas.Left="554" Canvas.Top="155" Content="RadioButton" Height="16" Name="standardCheap" GroupName="options" Visibility="Hidden" IsEnabled="True" />
+                <RadioButton Canvas.Left="554" Canvas.Top="189" Content="RadioButton" Height="16" Name="standardFast" GroupName="options" Visibility="Hidden" IsEnabled="True" />
+                <RadioButton Canvas.Left="554" Canvas.Top="223" Content="RadioButton" Height="16" Name="airCheap" GroupName="options" Visibility="Hidden" IsEnabled="True" />
+                <RadioButton Canvas.Left="554" Canvas.Top="257" Content="RadioButton" Height="16" Name="airFast" GroupName="options" Visibility="Hidden" IsEnabled="True" />
+                <Label Canvas.Left="17" Canvas.Top="16" Content="Request Delivery" Height="56" Name="label6" FontSize="28" Width="266" />
+            </Canvas>
+        </Canvas>
     </Grid>
 </Page>

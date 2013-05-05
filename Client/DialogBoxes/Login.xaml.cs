@@ -18,8 +18,7 @@ namespace Client.Countries
     /// </summary>
     public partial class Login : Window
     {
-        Network network = new Network();
-
+        
         public Login()
         {
             InitializeComponent();
@@ -27,15 +26,18 @@ namespace Client.Countries
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
+
+            Network.Instance.BeginLogin(userName.Text, passwordBox1.Password);
+
             DialogResult = true;
            
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            network.OnConnectComplete += new Network.OnConnectDelegate(network_OnConnect);
-            network.DataReady += new Network.DataReadyDelegate(network_DataReady);
-            network.BeginConnect("127.0.0.1", 23333);
+            Network.Instance.OnConnectComplete += new Network.OnConnectDelegate(network_OnConnect);
+            Network.Instance.DataReady += new Network.DataReadyDelegate(network_DataReady);
+            Network.Instance.BeginConnect("127.0.0.1", 23333);
         }
 
         void network_DataReady(string msg)
@@ -46,7 +48,7 @@ namespace Client.Countries
         void network_OnConnect()
         {
             MessageBox.Show("Connected! Sending message..");
-            network.WriteLine("Hello from client!");       
+            Network.Instance.WriteLine("Hello from client!");       
         }
     }
 }

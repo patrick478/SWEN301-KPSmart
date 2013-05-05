@@ -23,9 +23,8 @@ namespace Client
             InitializeComponent();
 
             // initialise network
-            //Network network = Network.Instance;
-            //network.Start();
-            //network.Open();
+            Network network = Network.Instance;
+            network.BeginConnect("localhost", 8080);
 
             // initialise database
             Database.Instance.Connect();
@@ -76,6 +75,9 @@ namespace Client
 
 
             ReloadCountries();
+
+            
+
         }
 
 
@@ -203,9 +205,11 @@ namespace Client
             ReloadCountries();
         }
 
-        private void requestDelivery_Click(object sender, RoutedEventArgs e)
+       
+
+        private void button1_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate( new System.Uri("RequestDelivery.xaml", UriKind.RelativeOrAbsolute));
+            NavigationService.Navigate(new System.Uri("RequestDelivery.xaml", UriKind.RelativeOrAbsolute));
         }
 
 

@@ -31,7 +31,7 @@ namespace Client
             dlg.ShowDialog();
             if (dlg.DialogResult != false)
             {
-
+              
             }
         }
     }
