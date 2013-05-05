@@ -16,7 +16,18 @@ namespace Client
     /// </summary>
     public partial class Home
     {
-        private readonly CountryService _countryService;
+        private readonly ClientState _clientState;
+        private readonly ClientController _clientCon;
+        public void clientController_Updated(Type type)
+        {
+            if(type == typeof(Country)){
+                    ReloadCountries();
+            }
+
+        }
+
+
+
 
         public Home()
         {
@@ -30,13 +41,17 @@ namespace Client
             Database.Instance.Connect();
 
             // initialise the state
-            var currentState = new CurrentState();
+            _clientState = new ClientState();
+
+            _clientCon = new ClientController(_clientState);
 
             // initialise all the services (they set up the state themselves)
-            _countryService = new CountryService(currentState);
 
-            
-            
+
+
+
+
+            _clientCon.Updated += new ClientController.StateUpdatedDelegate(clientController_Updated);
 
 
             //set up Columns in all of the DataGrids
@@ -85,9 +100,10 @@ namespace Client
 
         private void ReloadCountries()
         {
+
             countriesList.Items.Clear();
 
-            foreach (var c in _countryService.GetAll())
+            foreach (var c in _clientState.GetAllCountries())
             {
                 countriesList.Items.Add(c);
             }
@@ -104,14 +120,10 @@ namespace Client
             {
                 var name = dlg.countryName.Text;
                 var code = dlg.countryCode.Text;
-
-                var country = new Country{Name = name, Code = code};
+                
                 try
                 {
-                    if (!_countryService.Exists(country))
-                    {
-                        _countryService.Create(name, code);
-                    }
+                    _clientCon.AddCountry(code, name);
                 }
                 catch (Exception ex)
                 {
@@ -142,7 +154,7 @@ namespace Client
                 var code = dlg.countryCode.Text;
                 try
                 {
-                    _countryService.Update(((Country) countriesList.SelectedItem).ID, code);
+                  //  _countryService.Update(((Country) countriesList.SelectedItem).ID, code);
                 }
                 catch (Exception ex)
                 {
@@ -157,14 +169,7 @@ namespace Client
             try
 
             {
-                foreach (var c in _countryService.GetAll())
-                {
-
-                    if (c.Name.Equals(((Country) countriesList.SelectedItem).Name))
-                    {
-                        _countryService.Delete(c.ID);
-                    }
-                }
+                _clientCon.DeleteCountry(((Country) countriesList.SelectedItem).ID);
             }
             catch (Exception ex)
             {

@@ -10,10 +10,10 @@
         FocusManager.FocusedElement="{Binding ElementName=countryName}">
     <Grid>
         <Label Content="Country name:" Height="28" HorizontalAlignment="Left" Margin="41,37,0,0" Name="label1" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="137,39,0,0" Name="countryName" VerticalAlignment="Top" Width="120" AcceptsTab="True" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="137,39,0,0" Name="countryName" VerticalAlignment="Top" Width="120" AcceptsTab="False" />
         <Button Content="Enter" Height="23" HorizontalAlignment="Left" Margin="167,118,0,0" Name="okButton" VerticalAlignment="Top" Width="75" IsDefault="True" Click="okButton_Click" />
         <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,118,12,0" Name="button1" VerticalAlignment="Top" Width="75" IsCancel="True" />
         <Label Content="Country code:" Height="28" HorizontalAlignment="Left" Margin="41,63,0,0" Name="label2" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="137,65,0,0" Name="countryCode" VerticalAlignment="Top" Width="120" AcceptsTab="True" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="137,65,0,0" Name="countryCode" VerticalAlignment="Top" Width="120" AcceptsTab="False" />
     </Grid>
 </Window>

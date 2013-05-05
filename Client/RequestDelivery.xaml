@@ -23,7 +23,7 @@
                 <TextBox Canvas.Left="303" Canvas.Top="228" Height="23" Name="weight" Width="120" />
                 <TextBox Canvas.Left="303" Canvas.Top="262" Height="23" Name="volume" Width="120" />
                 <Button Canvas.Left="680" Canvas.Top="401" Content="Submit" Height="23" Name="submitButton" Width="75" Click="submitButton_Click" />
-                <RadioButton Canvas.Left="554" Canvas.Top="155" Content="RadioButton" Height="16" Name="standardCheap" GroupName="options" Visibility="Hidden" IsEnabled="True" />
+                <RadioButton Canvas.Left="554" Canvas.Top="155" Content="RadioButton" Height="16" Name="standardCheap" GroupName="options" Visibility="Hidden" IsEnabled="True" Checked="standardCheap_Checked" />
                 <RadioButton Canvas.Left="554" Canvas.Top="189" Content="RadioButton" Height="16" Name="standardFast" GroupName="options" Visibility="Hidden" IsEnabled="True" />
                 <RadioButton Canvas.Left="554" Canvas.Top="223" Content="RadioButton" Height="16" Name="airCheap" GroupName="options" Visibility="Hidden" IsEnabled="True" />
                 <RadioButton Canvas.Left="554" Canvas.Top="257" Content="RadioButton" Height="16" Name="airFast" GroupName="options" Visibility="Hidden" IsEnabled="True" />
