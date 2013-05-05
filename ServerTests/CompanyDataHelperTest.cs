@@ -18,6 +18,7 @@ namespace ServerTests
 
 
         private TestContext testContextInstance;
+        private static CompanyDataHelper dataHelper;
 
         /// <summary>
         ///Gets or sets the test context which provides
@@ -36,126 +37,91 @@ namespace ServerTests
         }
 
         #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
+
+        [ClassInitialize()]
+        public static void MyClassInitialize(TestContext testContext)
+        {
+            var db = new Database("test.db");
+            dataHelper = new CompanyDataHelper();
+        }
+
         //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
+        [ClassCleanup()]
+        public static void MyClassCleanup()
+        {
+            Database.Instance.DropAllTables();
+        }
+
         //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
+        [TestInitialize()]
+        public void MyTestInitialize()
+        {
+            Database.Instance.ClearTable("companies");
+            Database.Instance.ClearTable("events");
+        }
         //
         //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
+        [TestCleanup()]
+        public void MyTestCleanup()
+        {
+            Database.Instance.ClearTable("companies");
+            Database.Instance.ClearTable("events");
+        }    
         #endregion
 
-
-        /// <summary>
-        ///A test for CompanyDataHelper Constructor
-        ///</summary>
-        [TestMethod()]
-        [DeploymentItem("Server.exe")]
-        public void CompanyDataHelperConstructorTest()
-        {
-            CompanyDataHelper_Accessor target = new CompanyDataHelper_Accessor();
-            Assert.Inconclusive("TODO: Implement code to verify target");
-        }
-
-        /// <summary>
-        ///A test for Create
-        ///</summary>
-        [TestMethod()]
-        [DeploymentItem("Server.exe")]
-        public void CreateTest()
-        {
-            CompanyDataHelper_Accessor target = new CompanyDataHelper_Accessor(); // TODO: Initialize to an appropriate value
-            Company Company = null; // TODO: Initialize to an appropriate value
-            target.Create(Company);
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
-        }
-
-        /// <summary>
-        ///A test for Delete
-        ///</summary>
-        [TestMethod()]
-        [DeploymentItem("Server.exe")]
-        public void DeleteTest()
-        {
-            CompanyDataHelper_Accessor target = new CompanyDataHelper_Accessor(); // TODO: Initialize to an appropriate value
-            Company obj = null; // TODO: Initialize to an appropriate value
-            target.Delete(obj);
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
-        }
-
-        /// <summary>
-        ///A test for Delete
-        ///</summary>
-        [TestMethod()]
-        [DeploymentItem("Server.exe")]
-        public void DeleteTest1()
-        {
-            CompanyDataHelper_Accessor target = new CompanyDataHelper_Accessor(); // TODO: Initialize to an appropriate value
-            int id = 0; // TODO: Initialize to an appropriate value
-            target.Delete(id);
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
-        }
-
-        /// <summary>
-        ///A test for GetId
-        ///</summary>
-        [TestMethod()]
-        [DeploymentItem("Server.exe")]
-        public void GetIdTest()
-        {
-            CompanyDataHelper_Accessor target = new CompanyDataHelper_Accessor(); // TODO: Initialize to an appropriate value
-            Company obj = null; // TODO: Initialize to an appropriate value
-            int expected = 0; // TODO: Initialize to an appropriate value
-            int actual;
-            actual = target.GetId(obj);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
 
         /// <summary>
         ///A test for Load
         ///</summary>
         [TestMethod()]
-        [DeploymentItem("Server.exe")]
         public void LoadTest()
         {
-            CompanyDataHelper_Accessor target = new CompanyDataHelper_Accessor(); // TODO: Initialize to an appropriate value
-            int id = 0; // TODO: Initialize to an appropriate value
-            Company expected = null; // TODO: Initialize to an appropriate value
-            Company actual;
-            actual = target.Load(id);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            dataHelper.Create(new Company { Name = "TestCompany" } );
+            Company expected = dataHelper.Load(1);
+        }
+
+        public void LoadTest2()
+        {
+            long companyID = 1;
+            DateTime created = DateTime.UtcNow;
+            string name = "TestCorp";
+
+            dataHelper.Create(new Company() { Name = name });
+            var actual = dataHelper.Load(1);
+
+            Assert.AreEqual(companyID, actual.ID);
+            Assert.AreEqual(name, actual.Name);
+            Assert.IsTrue(created.AddSeconds(1) > actual.LastEdited);
+        }
+
+        public void LoadTest3()
+        {
+            dataHelper.Create(new Company() { Name = "TestCorp" });
+            dataHelper.Delete(1);
+            var actual = dataHelper.Load(1);
+
+            Assert.IsNull(actual);
+        }
+
+        /// <summary>
+        ///A test for Update
+        ///</summary>
+        [TestMethod()]
+        public void UpdateTest()
+        {
+            CompanyDataHelper target = new CompanyDataHelper(); // TODO: Initialize to an appropriate value
+            Company company = null; // TODO: Initialize to an appropriate value
+            target.Update(company);
+            Assert.Inconclusive("A method that does not return a value cannot be verified.");
         }
 
         /// <summary>
         ///A test for LoadAll
         ///</summary>
         [TestMethod()]
-        [DeploymentItem("Server.exe")]
         public void LoadAllTest()
         {
-            CompanyDataHelper_Accessor target = new CompanyDataHelper_Accessor(); // TODO: Initialize to an appropriate value
+            CompanyDataHelper target = new CompanyDataHelper(); // TODO: Initialize to an appropriate value
             DateTime snapshotTime = new DateTime(); // TODO: Initialize to an appropriate value
             IDictionary<int, Company> expected = null; // TODO: Initialize to an appropriate value
             IDictionary<int, Company> actual;
@@ -168,10 +134,9 @@ namespace ServerTests
         ///A test for LoadAll
         ///</summary>
         [TestMethod()]
-        [DeploymentItem("Server.exe")]
         public void LoadAllTest1()
         {
-            CompanyDataHelper_Accessor target = new CompanyDataHelper_Accessor(); // TODO: Initialize to an appropriate value
+            CompanyDataHelper target = new CompanyDataHelper(); // TODO: Initialize to an appropriate value
             IDictionary<int, Company> expected = null; // TODO: Initialize to an appropriate value
             IDictionary<int, Company> actual;
             actual = target.LoadAll();
@@ -180,15 +145,53 @@ namespace ServerTests
         }
 
         /// <summary>
-        ///A test for Update
+        ///A test for GetId
         ///</summary>
         [TestMethod()]
-        [DeploymentItem("Server.exe")]
-        public void UpdateTest()
+        public void GetIdTest()
         {
-            CompanyDataHelper_Accessor target = new CompanyDataHelper_Accessor(); // TODO: Initialize to an appropriate value
-            Company Company = null; // TODO: Initialize to an appropriate value
-            target.Update(Company);
+            CompanyDataHelper target = new CompanyDataHelper(); // TODO: Initialize to an appropriate value
+            Company company = null; // TODO: Initialize to an appropriate value
+            int expected = 0; // TODO: Initialize to an appropriate value
+            int actual;
+            actual = target.GetId(company);
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        /// <summary>
+        ///A test for Delete
+        ///</summary>
+        [TestMethod()]
+        public void DeleteTest()
+        {
+            CompanyDataHelper target = new CompanyDataHelper(); // TODO: Initialize to an appropriate value
+            Company obj = null; // TODO: Initialize to an appropriate value
+            target.Delete(obj);
+            Assert.Inconclusive("A method that does not return a value cannot be verified.");
+        }
+
+        /// <summary>
+        ///A test for Delete
+        ///</summary>
+        [TestMethod()]
+        public void DeleteTest1()
+        {
+            CompanyDataHelper target = new CompanyDataHelper(); // TODO: Initialize to an appropriate value
+            int id = 0; // TODO: Initialize to an appropriate value
+            target.Delete(id);
+            Assert.Inconclusive("A method that does not return a value cannot be verified.");
+        }
+
+        /// <summary>
+        ///A test for Create
+        ///</summary>
+        [TestMethod()]
+        public void CreateTest()
+        {
+            CompanyDataHelper target = new CompanyDataHelper(); // TODO: Initialize to an appropriate value
+            Company company = null; // TODO: Initialize to an appropriate value
+            target.Create(company);
             Assert.Inconclusive("A method that does not return a value cannot be verified.");
         }
     }
