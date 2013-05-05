@@ -12,6 +12,14 @@ namespace Client
     /// </summary>
     public class ClientState: CurrentState
     {
+        public ClientState()
+        {
+            this.countries = new Dictionary<int, Country>();
+            this.routes = new Dictionary<int, Route>();
+            this.prices = new Dictionary<int, Price>();
+            this.companies = new Dictionary<int, Company>();
+        }
+
         public override void SaveRouteNode(RouteNode routeNode) { throw new NotSupportedException(); }
 
         public override void RemoveRouteNode(int id) { throw new NotSupportedException(); }
