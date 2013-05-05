@@ -34,7 +34,7 @@ namespace Server.Business
         /// Deletes the object from the system.
         /// </summary>
         /// <param name="id"></param>
-        /// <exception cref="IllegalActionException">If the object being deleted is used by another object</exception>>
+        /// <exception cref="IllegalActionException">If the object being deleted is used by another object, or if the object doesn't exist</exception>>
         /// <exception cref="ArgumentException">if id is <= 0</exception>>
         public abstract void Delete(int id);
 

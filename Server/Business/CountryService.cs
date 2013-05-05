@@ -113,7 +113,7 @@ namespace Server.Business
             var country = state.GetCountry(id);
 
             // check the country isn't used in any routeNodes
-            var routeNodes = state.GetAllRouteNodes();
+            var routeNodes = state.GetAllRouteNodes();        
             bool isUsed = routeNodes.AsQueryable().Any(t => t.Country.Equals(country));
             if (isUsed)
             {

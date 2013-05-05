@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting;
 using System.Text;
-using System.Threading;
+using System.Timers;
 using Common;
 using Server.Data;
+using Server.Gui;
 
 namespace Server.Business
 {
     public class DeliveryService: Service<Delivery>
     {
         private PathFinder pathFinder;
-        private Dictionary<int, DeliveryOption> temporaryOptions;
-
-        private TimerCallback timerDelegate; 
+        private static Dictionary<int, DeliveryOption> temporaryOptions;
         
         public DeliveryService(CurrentState state, PathFinder pathfinder) : base(state, new DeliveryDataHelper())
         {
@@ -28,13 +27,13 @@ namespace Server.Business
 
             // save reference to the pathfinder
             this.pathFinder = pathfinder;
+            temporaryOptions = new Dictionary<int, DeliveryOption>();
 
-            this.temporaryOptions = new Dictionary<int, DeliveryOption>();
-
-            timerDelegate = ClearTemporaryOptions;
-            Timer timerItem = new Timer(timerDelegate, null, 3600000, 3600000);
-
-
+            // set up to clear cache every hour
+            var timerItem = new Timer(3600000);
+            timerItem.Elapsed += ClearTemporaryOptionsCacheOnTimedEvent;
+            timerItem.AutoReset = true;
+            timerItem.Start();
         }
 
 
@@ -231,10 +230,26 @@ namespace Server.Business
         }
 
 
-        private static void ClearTemporaryOptions(object StateObj)
+        private static void ClearTemporaryOptionsCacheOnTimedEvent(object source, ElapsedEventArgs e)
         {
+            Logger.WriteLine("Removing deliveryOptions older than one hour.");
 
+            var listOfKeysToRemove = new List<int>();
+            
+            foreach (var option in temporaryOptions)
+            {
+                if (option.Value.Timestamp.AddHours(1) < DateTime.UtcNow)
+                {
+                    listOfKeysToRemove.Add(option.Key);
+                }
+            }
 
+            Logger.WriteLine(String.Format("Removed {0} options",listOfKeysToRemove.Count));
+
+            foreach (int key in listOfKeysToRemove)
+            {
+                temporaryOptions.Remove(key);
+            }
         }
 
 
