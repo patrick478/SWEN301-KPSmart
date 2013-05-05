@@ -63,6 +63,7 @@ namespace Client
         public string ErrorMessage = "";
 
         public bool Connected = false;
+        public bool Usable = false;
 
         private AsyncCallback onConnectCompleteCallback;
         private AsyncCallback onSentCallback;
@@ -174,13 +175,23 @@ namespace Client
 
             clientSocket.BeginReceive(buffer, 0, 1024, SocketFlags.None, onRecieveCallback, null);
 
-            if(DataReady != null)
+            if (message.StartsWith("#LOGIN"))
+            {
+
+            }
+            else if(DataReady != null)
                 DataReady(message);
         }
 
         public void BeginConnect(string address, int port)
         {
             clientSocket.BeginConnect(address, port, onConnectCompleteCallback, null);
+        }
+
+        public void BeginLogin(string username, string password)
+        {
+            string loginRequest = String.Format("#LOGIN|{0}|{1}", username, password);
+            this.WriteLine(loginRequest);
         }
 
         public void WriteLine(string line)
