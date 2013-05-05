@@ -289,10 +289,10 @@ namespace Server.Data
             //LOCK ENDS HERE
 
             // set id in country
-                country.ID = (int) id;
+            country.ID = (int) id;
 
-                // return result
-                return country.ID;
+            // return result
+            return country.ID;
             
         }
 

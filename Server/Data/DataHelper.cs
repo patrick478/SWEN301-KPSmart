@@ -21,6 +21,14 @@ namespace Server.Data
         public abstract int GetId(T country);
 
         protected string EVENT_ID = "event_id";
+    }
 
+    public static class DatabaseExtensionMethods
+    {
+        public static int ToInt(this Object obj)
+        {
+            long asLong = (long) obj;
+            return (int) asLong;
+        }
     }
 }

@@ -7,6 +7,6 @@ namespace Server.Data
 {
     public enum ObjectType
     {
-        Location, Route, Price, Country, Company, Delivery
+        RouteNode, Route, Price, Country, Company, Delivery
     }
 }
