@@ -90,12 +90,12 @@ namespace Common
 
 
         #region route node
-        public void SaveRouteNode(RouteNode routeNode)
+        public virtual void SaveRouteNode(RouteNode routeNode)
         {
             routeNodes[routeNode.ID] = routeNode;
         }
 
-        public void RemoveRouteNode(int id)
+        public virtual void RemoveRouteNode(int id)
         {
             routeNodes.Remove(id);
         }
@@ -109,7 +109,7 @@ namespace Common
         /// <param name="routeNodes">the current routeNodes</param>
         /// <exception cref="IllegalActionException">if has already been initialised.</exception>
         /// <exception cref="ArgumentException">if 'routeNodes' is null</exception>
-        public void InitialiseRouteNodes(IDictionary<int, RouteNode> routeNodes)
+        public virtual void InitialiseRouteNodes(IDictionary<int, RouteNode> routeNodes)
         {
             if (this.routeNodes != null)
             {
@@ -125,7 +125,7 @@ namespace Common
 
         }
 
-        public bool RouteNodesInitialised
+        public virtual bool RouteNodesInitialised
         {
             get { return routeNodes != null; }
         }
@@ -219,12 +219,12 @@ namespace Common
 
 
         #region deliveries
-        public void SaveDelivery(Delivery delivery)
+        public virtual void SaveDelivery(Delivery delivery)
         {
             deliveries[delivery.ID] = delivery;
         }
 
-        public void RemoveDelivery(int id)
+        public virtual void RemoveDelivery(int id)
         {
             deliveries.Remove(id);
         }
@@ -238,7 +238,7 @@ namespace Common
         /// <param name="deliveries">the current deliveries</param>
         /// <exception cref="IllegalActionException">if has already been initialised.</exception>
         /// <exception cref="ArgumentException">if 'deliveries' is null</exception>
-        public void InitialiseDeliveries(IDictionary<int, Delivery> deliveries)
+        public virtual void InitialiseDeliveries(IDictionary<int, Delivery> deliveries)
         {
             if (this.deliveries != null)
             {
@@ -253,7 +253,7 @@ namespace Common
             this.deliveries = new ConcurrentDictionary<int, Delivery>(deliveries);
         }
 
-        public bool DeliveriesInitialised
+        public virtual bool DeliveriesInitialised
         {
             get { return deliveries != null; }
         }
