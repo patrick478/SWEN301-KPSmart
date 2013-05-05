@@ -225,16 +225,17 @@ namespace Server.Network
 
             if (msg.StartsWith("#LOGIN"))
             {
-                var segments = msg.Split('|');
-                var username = segments[1];
-                var password = segments[2];
-                int lgnValue = Database.Instance.CheckUserPassword(username, password);
-                if (lgnValue < 0)
-                    client.SendMessage("#LOGIN|false|false");
-                else if (lgnValue == 0)
-                    client.SendMessage("#LOGIN|true|false");
-                else if (lgnValue == 1)
-                    client.SendMessage("#LOGIN|true|true");
+                client.SendMessage("#LOGIN|true|true");
+                //var segments = msg.Split('|');
+                //var username = segments[1];
+                //var password = segments[2];
+                //int lgnValue = Database.Instance.CheckUserPassword(username, password);
+                //if (lgnValue < 0)
+                //    client.SendMessage("#LOGIN|false|false");
+                //else if (lgnValue == 0)
+                //    client.SendMessage("#LOGIN|true|false");
+                //else if (lgnValue == 1)
+                //    client.SendMessage("#LOGIN|true|true");
             }
 
             MessageHandler.PassMessage(msg, client);
