@@ -185,6 +185,7 @@ namespace Client
                 var success = (message.Split('|')[1] == "true" ? true : false);
                 if (success)
                 {
+                    var isAdmin = (message.Split('|')[2] == "true" ? true : false);
                     Usable = true;
                     if (LoginComplete != null)
                         LoginComplete(true);

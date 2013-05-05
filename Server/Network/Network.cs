@@ -12,6 +12,7 @@ using System.Net;
 using System.Net.Sockets;
 using Server.Gui;
 using System.Text;
+using Server.Data;
 
 namespace Server.Network
 {
@@ -221,7 +222,27 @@ namespace Server.Network
 
             string msg = Encoding.ASCII.GetString(recieved);
             Logger.WriteLine("Recieved {0} bytes from {1}: '{2}'", rx, id, msg);
+
+            if (msg.StartsWith("#LOGIN"))
+            {
+                var segments = msg.Split('|');
+                var username = segments[1];
+                var password = segments[2];
+                int lgnValue = Database.Instance.CheckUserPassword(username, password);
+                if (lgnValue < 0)
+                    client.SendMessage("#LOGIN|false|false");
+                else if (lgnValue == 0)
+                    client.SendMessage("#LOGIN|true|false");
+                else if (lgnValue == 1)
+                    client.SendMessage("#LOGIN|true|true");
+            }
+
             MessageHandler.PassMessage(msg, client);
+        }
+
+        public void SendMessageToAll(string message)
+        {
+
         }
 
         internal void Send(Client client, byte[] bytes)
