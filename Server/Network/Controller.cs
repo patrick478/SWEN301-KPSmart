@@ -178,7 +178,8 @@ namespace Server.Network
             int count = 1;
             string code = tokens[count++];
             string name = tokens[count++];
-            countryService.Create(name, code);
+            Country country = countryService.Create(name, code);
+            Network.Instance.SendMessageToAll(country.Transmit());
         }
 
         private void CompanyAdd(Client client, string[] tokens)

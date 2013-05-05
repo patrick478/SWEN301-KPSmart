@@ -74,5 +74,10 @@ namespace Client
            
         }
 
+        private void standardCheap_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
     }
 }

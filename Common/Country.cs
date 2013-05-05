@@ -71,7 +71,7 @@ namespace Common
 
        public override string Transmit()
        {
-           return NetCodes.BuildNetworkString(NetCodes.OBJECT_COUNTRY, base.Transmit(), code, name);
+           return NetCodes.BuildNetworkString(base.Transmit(), NetCodes.OBJECT_COUNTRY, code, name);
        }
     }
 
