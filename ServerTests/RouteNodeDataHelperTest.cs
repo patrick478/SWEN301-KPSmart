@@ -252,8 +252,137 @@ namespace ServerTests
         }
 
 
+        /// <summary>
+        ///A test for Delete - it runs without failing
+        ///</summary>
+        [TestMethod()]
+        public void DeleteTestInternationalPort()
+        {
+            routeNodeDataHelper.Create(new InternationalPort(aus));
+            routeNodeDataHelper.Delete(1);
+            VerifyEvent(EventType.Delete);
+            VerifyNumberOfEvents(2);
+        }
+
+        /// <summary>
+        ///A test for Delete - it runs without failing
+        ///</summary>
+        [TestMethod()]
+        public void DeleteTestDistributionCentre()
+        {
+            routeNodeDataHelper.Create(new DistributionCentre("Christchurch"));
+            routeNodeDataHelper.Delete(1);
+            VerifyEvent(EventType.Delete);
+            VerifyNumberOfEvents(2);
+        }
 
 
+        /// <summary>
+        ///A test for Delete - loading it after deleting returns null.
+        ///</summary>
+        [TestMethod()]
+        public void DeleteTest2()
+        {
+            routeNodeDataHelper.Create(new DistributionCentre("Christchurch"));
+            routeNodeDataHelper.Delete(1);
+
+            Assert.IsNull(routeNodeDataHelper.Load(1));
+        }
+
+        /// <summary>
+        ///A test for Delete 
+        ///</summary>
+        [TestMethod()]
+        public void DeleteFailsIfNoCountryWithMatchingIdActive()
+        {
+            try
+            {
+                routeNodeDataHelper.Delete(1);
+                throw new AssertFailedException("Should have thrown a DatabaseException");
+            }
+            catch (DatabaseException e)
+            {
+                Console.WriteLine(e);
+                VerifyNumberOfEvents(0);
+            }
+        }
+
+        /// <summary>
+        ///A test for GetId
+        ///</summary>
+        [TestMethod()]
+        public void GetIdTestInternationalPort()
+        {
+            routeNodeDataHelper.Create(new InternationalPort(aus));
+
+            var actual = routeNodeDataHelper.GetId(new InternationalPort(aus));
+
+            Assert.AreEqual(1, actual);
+        }
+
+        /// <summary>
+        ///A test for GetId
+        ///</summary>
+        [TestMethod()]
+        public void GetIdTestDistributionCentre()
+        {
+            routeNodeDataHelper.Create(new DistributionCentre("Christchurch"));
+
+            var actual = routeNodeDataHelper.GetId(new DistributionCentre("Christchurch"));
+
+            Assert.AreEqual(1, actual);
+        }
+
+
+        /// <summary>
+        ///A test for LoadAll - runs without failing
+        ///</summary>
+        [TestMethod()]
+        public void LoadAllTest()
+        {
+            routeNodeDataHelper.Create(new InternationalPort(aus));
+            routeNodeDataHelper.Create(new DistributionCentre("Christchurch"));
+
+            var result = routeNodeDataHelper.LoadAll();
+
+            Assert.IsTrue(result.Keys.Count == 2);
+        }
+
+        /// <summary>
+        ///A test for LoadAll - runs when table is empty
+        ///</summary>
+        [TestMethod()]
+        public void LoadAllTest1()
+        {
+            var result = routeNodeDataHelper.LoadAll();
+
+            Assert.IsTrue(result.Keys.Count == 0);
+        }
+
+        /// <summary>
+        ///A test for LoadAll - values are correct
+        ///</summary>
+        [TestMethod()]
+        public void LoadAllTest2()
+        {
+            routeNodeDataHelper.Create(new InternationalPort(aus));
+            routeNodeDataHelper.Create(new DistributionCentre("Christchurch"));
+
+            var result = routeNodeDataHelper.LoadAll();
+
+            var country1 = result[1] as InternationalPort;
+            var country2 = result[2] as DistributionCentre;
+
+            // international port
+            Assert.AreEqual(1, country1.ID);
+            Assert.AreEqual(aus, country1.Country);
+            Assert.IsTrue(country1.LastEdited.AddSeconds(1) > DateTime.UtcNow);
+
+            Assert.AreEqual(2, country2.ID);
+            Assert.AreEqual("Christchurch", country2.Name);
+            Assert.AreEqual(nz, country2.Country);
+            Assert.IsTrue(country2.LastEdited.AddSeconds(1) > DateTime.UtcNow);
+        }
 
         /// <summary>
         /// Super awesome private method to help verify that an update was correct.
