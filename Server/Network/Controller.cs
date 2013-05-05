@@ -13,7 +13,6 @@ namespace Server.Network
     /// </summary>
     public class Controller
     {
-        private Network network;
         private RouteService routeService;
         private PriceService priceService;
         private LocationService locationService;
@@ -21,9 +20,8 @@ namespace Server.Network
         private CountryService countryService;
         private CompanyService companyService;
 
-        public Controller(Network network, CountryService countryService, CompanyService companyService, DeliveryService deliveryService, PriceService priceService, RouteService routeService, LocationService locationService)
+        public Controller(CountryService countryService, CompanyService companyService, DeliveryService deliveryService, PriceService priceService, RouteService routeService, LocationService locationService)
         {
-            this.network = network;
             this.countryService = countryService;
             this.companyService = companyService;
             this.deliveryService = deliveryService;
