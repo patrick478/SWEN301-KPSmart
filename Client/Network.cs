@@ -23,6 +23,30 @@ namespace Client
 
     public class Network
     {
+        // The singleton instance
+        private static volatile Network instance;
+        // Locking object for the singleton. Thread safety!
+        private static object syncRoot = new Object();
+
+        // The variable to fetches the instance, it's all magical. Uses C# Get. 
+        public static Network Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    lock (syncRoot)
+                    {
+                        if (instance == null)
+                            instance = new Network();
+                    }
+                }
+
+
+                return instance;
+            }
+        }
+
         private Socket clientSocket;
 
         public delegate void OnConnectDelegate();
