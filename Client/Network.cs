@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Windows;
 
 namespace Client
 {
@@ -18,7 +19,8 @@ namespace Client
 
     public class NetworkException : Exception
     {
-        public NetworkException(string msg) : base(msg)
+        public NetworkException(string msg)
+            : base(msg)
         {
         }
     }
@@ -54,9 +56,12 @@ namespace Client
         public delegate void OnConnectDelegate();
         public delegate void DataReadyDelegate(string msg);
         public delegate void NetworkErrorDelegate();
+        public delegate void LoginCompleteDelegate(bool success);
+
         public event OnConnectDelegate OnConnectComplete;
         public event DataReadyDelegate DataReady;
         public event NetworkErrorDelegate NetworkErrorOccured;
+        public event LoginCompleteDelegate LoginComplete;
 
         public bool ErrorOccured = false;
         public NetworkError Error = NetworkError.NoError;
@@ -113,7 +118,7 @@ namespace Client
             clientSocket.BeginReceive(buffer, 0, 1024, SocketFlags.None, onRecieveCallback, null);
 
 
-            if(OnConnectComplete != null)
+            if (OnConnectComplete != null)
                 OnConnectComplete();
         }
 
@@ -163,7 +168,7 @@ namespace Client
                 {
                     ErrorOccured = true;
                     Error = NetworkError.Disconnect;
-                    ErrorMessage = se.Message;    
+                    ErrorMessage = se.Message;
                     return;
                 }
             }
@@ -177,9 +182,18 @@ namespace Client
 
             if (message.StartsWith("#LOGIN"))
             {
+                var success = (message.Split('|')[1] == "true" ? true : false);
+                if (success)
+                {
+                    Usable = true;
+                    if (LoginComplete != null)
+                        LoginComplete(true);
+                }
+                else if (LoginComplete != null)
+                    LoginComplete(false);
 
             }
-            else if(DataReady != null)
+            else if (DataReady != null)
                 DataReady(message);
         }
 
@@ -196,8 +210,11 @@ namespace Client
 
         public void WriteLine(string line)
         {
-            byte[] data = Encoding.ASCII.GetBytes(line);
-            clientSocket.BeginSend(data, 0, data.Length, SocketFlags.None, onSentCallback, null);
+            if (!Usable)
+            {
+                byte[] data = Encoding.ASCII.GetBytes(line);
+                clientSocket.BeginSend(data, 0, data.Length, SocketFlags.None, onSentCallback, null);
+            }
         }
     }
 }
