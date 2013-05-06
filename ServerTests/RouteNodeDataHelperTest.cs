@@ -376,12 +376,12 @@ namespace ServerTests
             // international port
             Assert.AreEqual(1, country1.ID);
             Assert.AreEqual(aus, country1.Country);
-            Assert.IsTrue(country1.LastEdited.AddSeconds(1) > DateTime.UtcNow);
+            Assert.IsTrue(country1.LastEdited.AddSeconds(10) > DateTime.UtcNow);
 
             Assert.AreEqual(2, country2.ID);
             Assert.AreEqual("Christchurch", country2.Name);
             Assert.AreEqual(nz, country2.Country);
-            Assert.IsTrue(country2.LastEdited.AddSeconds(1) > DateTime.UtcNow);
+            Assert.IsTrue(country2.LastEdited.AddSeconds(10) > DateTime.UtcNow);
         }
 
         /// <summary>
