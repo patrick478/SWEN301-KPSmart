@@ -70,7 +70,6 @@ namespace ServerTests
         {
             Database.Instance.ClearTable("route_nodes");
             Database.Instance.ClearTable("events");
-            Database.Instance.ClearTable("countries");
         }
         #endregion
 
@@ -370,18 +369,18 @@ namespace ServerTests
 
             var result = routeNodeDataHelper.LoadAll();
 
-            var country1 = result[1] as InternationalPort;
-            var country2 = result[2] as DistributionCentre;
+            var internationalPort = result[1] as InternationalPort;
+            var distributionCentre = result[2] as DistributionCentre;
 
             // international port
-            Assert.AreEqual(1, country1.ID);
-            Assert.AreEqual(aus, country1.Country);
-            Assert.IsTrue(country1.LastEdited.AddSeconds(10) > DateTime.UtcNow);
+            Assert.AreEqual(2, internationalPort.Country.ID);
+            Assert.AreEqual(aus, internationalPort.Country);
+            Assert.IsTrue(internationalPort.LastEdited.AddSeconds(10) > DateTime.UtcNow);
 
-            Assert.AreEqual(2, country2.ID);
-            Assert.AreEqual("Christchurch", country2.Name);
-            Assert.AreEqual(nz, country2.Country);
-            Assert.IsTrue(country2.LastEdited.AddSeconds(10) > DateTime.UtcNow);
+            Assert.AreEqual(1, distributionCentre.Country.ID);
+            Assert.AreEqual("Christchurch", distributionCentre.Name);
+            Assert.AreEqual(nz, distributionCentre.Country);
+            Assert.IsTrue(distributionCentre.LastEdited.AddSeconds(10) > DateTime.UtcNow);
         }
 
         /// <summary>

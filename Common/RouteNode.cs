@@ -25,7 +25,7 @@ namespace Common
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((DistributionCentre)obj);
+            return Equals((RouteNode)obj);
         }
 
         protected bool Equals(RouteNode other)

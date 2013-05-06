@@ -27,7 +27,7 @@ namespace Server.Data
             object[] row;
 
             // LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, id.ToString(), new string[] {"country_id", "name", "created" });
                 row = Database.Instance.FetchRow(sql);
@@ -68,7 +68,7 @@ namespace Server.Data
             object[][] rows;
 
             // BEGIN LOCK HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[] { ID_COL_NAME, "country_id", "name", "created" });
                 rows = Database.Instance.FetchRows(sql);
@@ -93,7 +93,7 @@ namespace Server.Data
                     results[id] = new InternationalPort(country){ID = id, LastEdited = created};
 
                 if(name != String.Empty)
-                    results[id] = new DistributionCentre(name);
+                    results[id] = new DistributionCentre(name) {ID=id, LastEdited = created};
 
                 Logger.WriteLine(results[id].ToString());
             }
@@ -112,7 +112,7 @@ namespace Server.Data
                 throw new DatabaseException(String.Format("There is no active record with country_id='{0}'", id));
 
             // LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 // get event number
                 var sql = SQLQueryBuilder.SaveEvent(ObjectType.RouteNode, EventType.Delete);
@@ -171,7 +171,7 @@ namespace Server.Data
             string name = distributionCentre == null ? "" : distributionCentre.Name; 
 
             // LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 // get event number
                 var sql = SQLQueryBuilder.SaveEvent(ObjectType.RouteNode, EventType.Create);
@@ -220,7 +220,7 @@ namespace Server.Data
             }
 
             //LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 id = Database.Instance.FetchNumberQuery(sql);
             }

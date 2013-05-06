@@ -35,7 +35,7 @@ namespace Server.Data
             object[] row;
 
             // LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, id.ToString(), new string[] { "name", "code", "created" });
                 row = Database.Instance.FetchRow(sql);
@@ -68,7 +68,7 @@ namespace Server.Data
             object[] row;
 
             // LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 sql = SQLQueryBuilder.SelectFieldsWhereFieldLike(TABLE_NAME, "code", code,
                                                                      new string[] {ID_COL_NAME, "name", "created"});
@@ -103,7 +103,7 @@ namespace Server.Data
             object[][] rows;
 
             // BEGIN LOCK HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
 
                 sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[] {ID_COL_NAME, "name", "code", "created"});
@@ -166,50 +166,55 @@ namespace Server.Data
 
             string sql;
             object[] row;
- 
-            // create a transaction
-            SQLiteTransaction transaction = Database.Instance.BeginTransaction();
-            try
+
+            //LOCK BEGINS HERE
+            lock (Database.Instance)
             {
+                // create a transaction
+                SQLiteTransaction transaction = Database.Instance.BeginTransaction();
+                try
+                {
 
-                // get event number
-                sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Update);
-                long eventId = Database.Instance.InsertQuery(sql, transaction);
+                    // get event number
+                    sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Update);
+                    long eventId = Database.Instance.InsertQuery(sql, transaction);
 
-                // deactivate all previous records
-                sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME,
-                                    country.ID);
-                Database.Instance.InsertQuery(sql, transaction);
+                    // deactivate all previous records
+                    sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME,
+                                        country.ID);
+                    Database.Instance.InsertQuery(sql, transaction);
 
-                // insert new record
-                var fieldNames = new string[] { EVENT_ID, ID_COL_NAME, "active", "name", "code" };
-                var values = new string[] { eventId.ToString(), country.ID.ToString(), "1", country.Name, country.Code };
-                sql = SQLQueryBuilder.InsertFields(TABLE_NAME, fieldNames, values);
-                Database.Instance.InsertQuery(sql, transaction);
+                    // insert new record
+                    var fieldNames = new string[] { EVENT_ID, ID_COL_NAME, "active", "name", "code" };
+                    var values = new string[] { eventId.ToString(), country.ID.ToString(), "1", country.Name, country.Code };
+                    sql = SQLQueryBuilder.InsertFields(TABLE_NAME, fieldNames, values);
+                    Database.Instance.InsertQuery(sql, transaction);
 
-                //Database.Instance.InsertQuery("invalid sql", transaction);
+                    //Database.Instance.InsertQuery("invalid sql", transaction);
 
-                // commit transaction
-                transaction.Commit();
+                    // commit transaction
+                    transaction.Commit();
+                }
+                catch (SQLiteException de)
+                {
+                    Console.WriteLine("Got here");
+                    transaction.Rollback();
+                    Console.WriteLine("Rollback complete");
+                    transaction.Dispose();
+                    throw de;
+                }
+                catch (Exception e)
+                {
+                    Logger.WriteLine("Exception occured during Country.Update() - rolling back:");
+                    Logger.WriteLine(e.Message);
+                }
+
+                // get lastEdited 
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, country.ID.ToString(),
+                                                                        new string[] { "created" });
+                row = Database.Instance.FetchRow(sql);
             }
-            catch (SQLiteException de)
-            {
-                Console.WriteLine("Got here");
-                transaction.Rollback();
-                Console.WriteLine("Rollback complete");
-                transaction.Dispose();
-                throw de;
-            }
-            catch (Exception e)
-            {
-                Logger.WriteLine("Exception occured during Country.Update() - rolling back:");
-                Logger.WriteLine(e.Message);
-            }
-
-            // get lastEdited 
-            sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, country.ID.ToString(),
-                                                                    new string[] { "created" });
-            row = Database.Instance.FetchRow(sql);
+            // LOCK ENDS HERE
 
             // update last edited
             country.LastEdited = (DateTime)row[0];
@@ -236,7 +241,7 @@ namespace Server.Data
 
 
             // LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 // get event number
                 var sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Create);
@@ -279,7 +284,7 @@ namespace Server.Data
             long id = 0;
 
             //LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 // get id of matching record
                 var sql = SQLQueryBuilder.SelectFieldsWhereFieldLike(TABLE_NAME, "name", country.Name,
@@ -308,7 +313,7 @@ namespace Server.Data
                 throw new DatabaseException(String.Format("There is no active record with country_id='{0}'", id));
 
             // LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 // get event number
                 var sql = SQLQueryBuilder.SaveEvent(ObjectType.Country, EventType.Delete);
