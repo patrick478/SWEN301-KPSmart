@@ -51,7 +51,8 @@ namespace Server.Data
             tables.Add("users", "CREATE TABLE users (id INT AUTO INCREMENT PRIMARY KEY, username TEXT, password TEXT, isAdmin INT)");
             tables.Add("route_nodes", "CREATE TABLE 'route_nodes' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, route_node_id INTEGER NOT NULL, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') , 'country_id' INTEGER NOT NULL, 'name' VARCHAR(20))");
             tables.Add("routes", "CREATE TABLE 'routes' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, route_id INTEGER NOT NULL, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') , 'origin_id' INTEGER NOT NULL, 'destination_id' INTEGER NOT NULL, 'company_id' INTEGER NOT NULL, 'transport_type'  VARCHAR(4), 'duration' INTEGER NOT NULL, 'max_weight' INTEGER NOT NULL, 'max_volume' INTEGER NOT NULL, 'cost_per_cm3' INTEGER NOT NULL, 'cost_per_gram' INTEGER NOT NULL)");
-
+            tables.Add("delivery_times", "CREATE TABLE 'delivery_times' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, route_id INTEGER NOT NULL, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') , 'weekly_time' TIMESTAMP)");
+            tables.Add("prices", "CREATE TABLE 'prices' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'event_id' INTEGER NOT NULL, price_id INTEGER NOT NULL, 'created' TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) ,'active' INT DEFAULT ('0') , 'origin_id' INTEGER NOT NULL, 'destination_id' INTEGER NOT NULL, 'transport_type' VARCHAR(4))");
 
             // set filename and version
             // TODO: Use a config value for database to be opened.

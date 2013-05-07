@@ -35,7 +35,7 @@ namespace Common
 
         // all the departure times this route offers
         private List<WeeklyTime> departureTimes;
-        public IEnumerable<WeeklyTime> DepartureTimes
+        public IList<WeeklyTime> DepartureTimes
         {
             get { return departureTimes; }
             set { this.departureTimes = new List<WeeklyTime>(value); }

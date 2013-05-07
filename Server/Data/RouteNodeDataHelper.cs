@@ -22,7 +22,6 @@ namespace Server.Data
 
         public override RouteNode Load(int id)
         {
-
             string sql;
             object[] row;
 
