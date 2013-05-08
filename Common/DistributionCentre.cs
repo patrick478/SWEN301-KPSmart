@@ -41,12 +41,18 @@ namespace Common
 
         protected bool Equals(DistributionCentre other)
         {
-            return string.Equals(Name, other.Name);
+            bool value = string.Equals(Name, other.Name);
+            return value;
         }
 
         public override int GetHashCode()
         {
             return (Name != null ? Name.GetHashCode() : 0);
+        }
+
+        public override string ToString ()
+        {
+            return string.Format("DistributionCentre[ID={0}, LastEdited={1}, Name={2}]", ID, LastEdited, Name);
         }
 
     }

@@ -41,7 +41,6 @@ namespace Server.Business
         /// <param name="destinationID"></param>
         /// <param name="transportType"></param>
         /// <param name="deliveryTimes"></param>
-        /// <param name="scope"></param>
         /// <param name="duration"></param>
         /// <param name="maxWeight"></param>
         /// <param name="maxVolume"></param>
@@ -51,7 +50,7 @@ namespace Server.Business
         /// <exception cref="DatabaseException">if it already exists</exception>
         /// <exception cref="InvalidObjectStateException">if the fields are invalid</exception>
         /// <exception cref="ArgumentException">if any of the objects referenced by id do not exist</exception>
-        public Route Create(TransportType transportType, int companyId, int originID, int destinationID, List<WeeklyTime> deliveryTimes, Scope scope, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
+        public Route Create(TransportType transportType, int companyId, int originID, int destinationID, IList<WeeklyTime> deliveryTimes, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
         {
             // load parameters from id
             var origin = state.GetRouteNode(originID);
@@ -68,7 +67,7 @@ namespace Server.Business
 
 
             // throws an exception if invalid
-            var newRoute = new Route { TransportType = transportType, Company = company, Origin = origin, Destination = destination, DepartureTimes = deliveryTimes, Scope = scope, Duration = duration, MaxWeight = maxWeight, MaxVolume = maxVolume, CostPerGram = costPerGram, CostPerCm3 = costPerCm3};
+            var newRoute = new Route { TransportType = transportType, Company = company, Origin = origin, Destination = destination, DepartureTimes = deliveryTimes, Duration = duration, MaxWeight = maxWeight, MaxVolume = maxVolume, CostPerGram = costPerGram, CostPerCm3 = costPerCm3};
 
             // throws a database exception if exists already
             dataHelper.Create(newRoute);
@@ -98,7 +97,7 @@ namespace Server.Business
         /// <exception cref="DatabaseException">if it doesn't exist</exception>
         /// <exception cref="InvalidObjectStateException">if the fields are invalid</exception>
         /// <exception cref="ArgumentException">if any of the objects referenced by id do not exist</exception>
-        public Route Update(TransportType transportType, int companyId, int originID, int destinationID, List<WeeklyTime> deliveryTimes, Scope scope, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
+        public Route Update(TransportType transportType, int companyId, int originID, int destinationID, List<WeeklyTime> deliveryTimes, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
         {
             // load parameters from id
             var origin = state.GetRouteNode(originID);
@@ -115,7 +114,7 @@ namespace Server.Business
 
 
             // throws an exception if invalid
-            var newRoute = new Route { TransportType = transportType, Company = company, Origin = origin, Destination = destination, DepartureTimes = deliveryTimes, Scope = scope, Duration = duration, MaxWeight = maxWeight, MaxVolume = maxVolume, CostPerGram = costPerGram, CostPerCm3 = costPerCm3 };
+            var newRoute = new Route { TransportType = transportType, Company = company, Origin = origin, Destination = destination, DepartureTimes = deliveryTimes, Duration = duration, MaxWeight = maxWeight, MaxVolume = maxVolume, CostPerGram = costPerGram, CostPerCm3 = costPerCm3 };
 
             // throws a database exception if doesn't exist
             dataHelper.Update(newRoute);
@@ -196,7 +195,7 @@ namespace Server.Business
             return state.GetRoute(id);
         }
 
-        public override IEnumerable<Route> GetAll()
+        public override IList<Route> GetAll()
         {
             return state.GetAllRoutes();
         }

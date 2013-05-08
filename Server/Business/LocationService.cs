@@ -14,8 +14,7 @@ namespace Server.Business
             // initialise current routeNodes
             if (!state.RouteNodesInitialised)
             {
-                //var routeNodes = dataHelper.LoadAll();
-                var routeNodes = new Dictionary<int, RouteNode>();
+                var routeNodes = dataHelper.LoadAll();
                 state.InitialiseRouteNodes(routeNodes);
             }
         }
@@ -80,7 +79,7 @@ namespace Server.Business
             return state.GetRouteNode(id);
         }
 
-        public override IEnumerable<RouteNode> GetAll()
+        public override IList<RouteNode> GetAll()
         {
             return state.GetAllRouteNodes();
         }
@@ -88,7 +87,8 @@ namespace Server.Business
         public override bool Exists(RouteNode routeNode)
         {
             var routeNodes = state.GetAllRouteNodes().AsQueryable();
-            return routeNodes.Any(t => t.Equals(routeNode));
+            bool result = routeNodes.Any(t => t.Equals(routeNode));
+            return result;
         }
 
         public override void Delete(int id)

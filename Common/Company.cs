@@ -19,5 +19,10 @@ namespace Common
         {
             return NetCodes.BuildNetworkString(base.ToNetString(), NetCodes.OBJECT_COMPANY, Name);
         }
+
+        public override string ToString ()
+        {
+            return string.Format("Company[ID={0}, LastEdited={1}, Name={2}]", ID, LastEdited, Name);
+        }
     }
 }

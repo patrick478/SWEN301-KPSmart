@@ -15,8 +15,7 @@ namespace Server.Business
             if (!state.CompaniesInitialised)
             {
                 // initialise the companies of the state     
-                //var companies = dataHelper.LoadAll();
-                var companies = new Dictionary<int, Company>();
+                var companies = dataHelper.LoadAll();
                 state.InitialiseCompanies(companies);
             }
         }
@@ -53,7 +52,7 @@ namespace Server.Business
             return state.GetCompany(id);
         }
 
-        public override IEnumerable<Company> GetAll()
+        public override IList<Company> GetAll()
         {
             return state.GetAllCompanies();
         }

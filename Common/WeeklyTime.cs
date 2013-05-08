@@ -56,6 +56,15 @@ namespace Common
         public WeeklyTime(DateTime datetime): this(datetime.DayOfWeek, datetime.Hour, datetime.Minute) {
         }
 
+        /// <summary>
+        /// Constructor to create a weekly time from ticks.
+        /// </summary>
+        /// <param name="ticks"></param>
+        public WeeklyTime (long ticks) 
+        {
+            this.Value = new TimeSpan(ticks);
+        }
+
 
         // the underlying field for this class. 
         // WeeklyTime is represented in minutes from Monday 00:00 to Sunday 23:59.  

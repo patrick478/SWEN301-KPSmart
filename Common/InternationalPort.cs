@@ -22,5 +22,11 @@ namespace Common
         {
          
         }
+
+        public override string ToString ()
+        {
+            return string.Format("InternationalPort[ID={0}, LastEdited={1}, Country={2}]", ID, LastEdited, Country);
+        }
+
     }
 }

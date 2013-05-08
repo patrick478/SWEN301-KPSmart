@@ -26,7 +26,7 @@ namespace Server.Business
         /// <exception cref="ArgumentException">if id is <= 0</exception>>
         public abstract T Get(int id);
 
-        public abstract IEnumerable<T> GetAll();
+        public abstract IList<T> GetAll();
 
         public abstract bool Exists(T obj);
 

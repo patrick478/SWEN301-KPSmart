@@ -202,7 +202,7 @@ namespace Server.Business
             return state.GetDelivery(id);
         }
 
-        public override IEnumerable<Delivery> GetAll()
+        public override IList<Delivery> GetAll()
         {
             return state.GetAllDeliveries();
         }

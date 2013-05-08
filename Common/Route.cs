@@ -42,7 +42,16 @@ namespace Common
         }
 
         // domestic or international
-        public Scope Scope { get; set; }
+        public Scope Scope 
+        {
+            get
+            {
+                if (Origin.GetType() == typeof(InternationalPort) || Destination.GetType() == typeof(InternationalPort))
+                    return Scope.International;
+                else
+                    return Scope.Domestic;
+            }
+        }
 
         //in minutes  
         public int Duration { get; set; }
@@ -60,10 +69,10 @@ namespace Common
         // in cents  
         public int CostPerCm3 { get; set; }
 
-        // in cents
+        // in cents - this isn't a property belonging to the Route itself.
         public int PricePerGram { get; set; }
 
-        // in cents
+        // in cents - this isn't a property belonging to the Route itself.
         public int PricePerCm3 {get; set; }
         
         public void AddDepartureTime(WeeklyTime weeklyTime)

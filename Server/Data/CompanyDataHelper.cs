@@ -21,7 +21,7 @@ namespace Server.Data
     /// </summary>
     public class CompanyDataHelper : DataHelper<Company>
     {
-        private const string TABLE_NAME = "company";
+        private const string TABLE_NAME = "companies";
         private const string ID_COL_NAME = "company_id";
 
         /// <summary>
@@ -70,11 +70,11 @@ namespace Server.Data
             //lock (Database.Instance)
             {
 
-                sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[] { ID_COL_NAME, "name", "code", "created" });
+                sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[] { ID_COL_NAME, "name", "created" });
                 rows = Database.Instance.FetchRows(sql);
             }
             // END LOCK HERE
-            Logger.WriteLine("Loaded {0} countries:", rows.Length);
+            Logger.WriteLine("Loaded {0} companies:", rows.Length);
 
             var results = new Dictionary<int, Company>();
             foreach (object[] row in rows)
@@ -82,8 +82,7 @@ namespace Server.Data
                 // extract data
                 long id = (long)row[0];
                 string name = row[1] as string;
-                string code = row[2] as string;
-                DateTime created = (DateTime)row[3];
+                DateTime created = (DateTime)row[2];
 
                 // make company
                 var company = new Company { ID = (int)id, Name = name, LastEdited = created };

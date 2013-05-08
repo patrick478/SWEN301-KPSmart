@@ -67,7 +67,7 @@
     <Compile Include="Data\DatabaseException.cs" />
     <Compile Include="Data\DataHelper.cs" />
     <Compile Include="Data\DeliveryDataHelper.cs" />
-    <Compile Include="Data\DeliveryTimeDataHelper.cs" />
+    <Compile Include="Data\DepartureTimeDataHelper.cs" />
     <Compile Include="Data\EventDataHelper.cs" />
     <Compile Include="Data\EventType.cs" />
     <Compile Include="Data\ObjectType.cs" />

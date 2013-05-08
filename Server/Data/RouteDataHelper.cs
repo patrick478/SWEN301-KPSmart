@@ -82,9 +82,9 @@ namespace Server.Data
             object[] row;
 
             // check it is legal
-            int routeNodeId = GetId(route);
-            if (routeNodeId != 0)
-                throw new DatabaseException(String.Format("That route already exists: {0}", routeNodeId));
+//            int routeNodeId = GetId(route);
+//            if (routeNodeId != 0)
+//                throw new DatabaseException(String.Format("That route already exists: {0}", routeNodeId));
 
             // load ids of fields
             int origin_id = routeNodeDataHelper.GetId(route.Origin);

@@ -86,7 +86,7 @@ namespace Server.Business
             return state.GetCountry(id);
         }
 
-        public override IEnumerable<Country> GetAll()
+        public override IList<Country> GetAll()
         {
             return state.GetAllCountries();
         }

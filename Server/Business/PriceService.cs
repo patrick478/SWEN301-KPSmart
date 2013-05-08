@@ -89,7 +89,7 @@ namespace Server.Business
             return state.GetPrice(id);
         }
 
-        public override IEnumerable<Price> GetAll()
+        public override IList<Price> GetAll()
         {
             return state.GetAllPrices();
         }

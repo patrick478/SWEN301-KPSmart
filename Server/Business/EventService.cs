@@ -18,7 +18,8 @@ namespace Server.Business
         public EventService(CurrentState state)
         {
             dataHelper = new EventDataHelper();
-            
+            this.state = state;
+
             if (!state.EventsInitialised())
             {
                 int currentNumberOfEvents = dataHelper.GetNumberOfEvents();
