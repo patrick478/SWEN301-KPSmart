@@ -62,8 +62,8 @@ namespace Server.Network
                     ObjectAdd(client, tokens);
                     return;
 
-                case NetCodes.CL_OBJECT_UPDATE:
-                    ObjectUpdate(client, tokens);
+                case NetCodes.CL_OBJECT_EDIT:
+                    ObjectEdit(client, tokens);
                     return;
 
                 case NetCodes.CL_OBJECT_DELETE:
@@ -78,18 +78,47 @@ namespace Server.Network
             switch (tokens[count++])
             {
                 case NetCodes.OBJECT_COUNTRY:
-                    LocationAdd(client, tokens);
+                    string countryCode = tokens[count++];
+                    string countryName = tokens[count++];
+                    Country country = countryService.Create(countryName, countryCode);
+                    SendObjectAdd(country.ToNetString());
+                    return;
+                case NetCodes.OBJECT_COMPANY:
+                    string companyName = tokens[count++];
+                    Company company = companyService.Create(companyName);
+                    SendObjectAdd(company.ToNetString());
+                    return;
+                case NetCodes.OBJECT_PRICE:
+                    int priceOriginId = Convert.ToInt32(tokens[count++]);
+                    int priceDestinationId = Convert.ToInt32(tokens[count++]);
+                    Priority pricePrio = PriorityExtensions.ParseNetString(tokens[count++]);
+                    int priceWeight = Convert.ToInt32(tokens[count++]);
+                    int priceVolume = Convert.ToInt32(tokens[count++]);
+                    Price price = priceService.Create(priceOriginId, priceDestinationId, pricePrio, priceWeight, priceVolume);
+                    SendObjectAdd(price.ToNetString());
                     return;
             } 
         }
 
-        private void ObjectUpdate(Client client, string[] tokens)
+        private void ObjectEdit(Client client, string[] tokens)
         {
             int count = 1;
             int id = Convert.ToInt32(tokens[count++]);
             switch (tokens[count++])
             {
                 case NetCodes.OBJECT_COUNTRY:
+                    string countryCode = tokens[count++];
+                    countryService.Update(id, countryCode);
+                    return;
+                case NetCodes.OBJECT_COMPANY:
+                    // send back error saying you can't edit companies. maybe?
+                    return;
+                case NetCodes.OBJECT_PRICE:
+                    int priceWeight = Convert.ToInt32(tokens[count++]);
+                    int priceVolume = Convert.ToInt32(tokens[count++]);
+                    //priceService.Update(
+                    return;
+                case NetCodes.OBJECT_ROUTE:
 
                     return;
             }
@@ -123,9 +152,8 @@ namespace Server.Network
             int destinationID = Convert.ToInt32(tokens[count++]);
             int weight = Convert.ToInt32(tokens[count++]);
             int volume = Convert.ToInt32(tokens[count++]);
-            //Delivery air = deliveryService.Build(originID, destinationID, NetCodes.PRIORITY_AIR, weight, volume);
-            //Delivery standard = deliveryService.Build(originID, destinationID, NetCodes.PRIORITY_STANDARD, weight, volume);
-            //client.StorePendingDelivery(air, standard);
+            var options = deliveryService.GetBestRoutes(client.ID, originID, destinationID, weight, volume);
+
             //client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_PRICES,Convert.ToString(air.TotalPrice),Convert.ToString(standard.TotalPrice)));
         }
 
@@ -133,17 +161,14 @@ namespace Server.Network
         {
             int count = 1;
             // TODO Implement the timeout stuff
-            Priority prio;
-            if (tokens[count] == NetCodes.PRIORITY_AIR)
-                prio = Priority.Air;
-            else if (tokens[count] == NetCodes.PRIORITY_STANDARD)
-                prio = Priority.Standard;
-            //else
-            //prio = null;
-            //Delivery delivery = client.GetPendingDelivery(prio);
-            //if (delivery != null)
-            //DeliveryManager.Commit(delivery);
-            //Transmit(client, NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_CONFIRM));
+            if (tokens[count] == NetCodes.PATH_CANCEL)
+            {
+                // client cancelled request TODO
+                return;
+            }
+            PathType type = PathTypeExtensions.ParseNetString(tokens[count]);
+            deliveryService.SelectDeliveryOption(client.ID, type);
+            //TODO Transmit success to client.
         }
 
         // Just does a full update at the moment, can do delta update later.
@@ -173,19 +198,15 @@ namespace Server.Network
             int count = 1;
         }
 
-        private void LocationAdd(Client client, string[] tokens)
-        {
-            int count = 1;
-            string code = tokens[count++];
-            string name = tokens[count++];
-            Country country = countryService.Create(name, code);
-            Network.Instance.SendMessageToAll(country.Transmit());
-        }
-
         private void CompanyAdd(Client client, string[] tokens)
         {
             string name = tokens[1];
             companyService.Create(name);
+        }
+
+        private void SendObjectAdd(string objectDef)
+        {
+            Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_UPDATE,objectDef));
         }
     }
 }

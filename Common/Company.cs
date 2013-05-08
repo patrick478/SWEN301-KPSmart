@@ -15,5 +15,9 @@ namespace Common
 
         public string Name { get; set; }
 
+        public override string ToNetString()
+        {
+            return NetCodes.BuildNetworkString(base.ToNetString(), NetCodes.OBJECT_COMPANY, Name);
+        }
     }
 }

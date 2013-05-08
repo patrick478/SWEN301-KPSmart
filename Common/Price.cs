@@ -5,6 +5,8 @@
 // 
 //////////////////////
 
+using System;
+
 namespace Common
 {
     /// <summary>
@@ -25,5 +27,10 @@ namespace Common
 
         // in cents
         public int PricePerCm3 { get; set; }
+
+        public override string ToNetString()
+        {
+            return NetCodes.BuildNetworkString(base.ToNetString(), NetCodes.OBJECT_PRICE, Convert.ToString(Origin.ID), Convert.ToString(Destination.ID), Priority.ToNetString(), Convert.ToString(PricePerGram), Convert.ToString(PricePerCm3));
+        }
     }
 }

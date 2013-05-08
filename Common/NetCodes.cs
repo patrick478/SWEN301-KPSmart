@@ -25,24 +25,9 @@ namespace Common
         public const string CL_DELIVERY_REQUEST = "dr";   // Origin Location ID (int) - Destination Location ID (int) - Weight (int) - Volume (int)
         public const string CL_DELIVERY_SELECT = "ds";    // Priority (PRIORITY_ / CANCEL)
 
-        public const string CL_ROUTE_ADD = "rd";       // Origin Location ID (int) - Destination Location ID (int) - Company ID (int) - Transport Type (TRANSPORT_)
-        public const string CL_ROUTE_EDIT = "re";         // Route ID (int) - Cost/gram (int) - Cost/cm3 (int) - Max Weight (int) - Max Capacity (int) - TODO Add Times
-        public const string CL_ROUTE_DELETE = "rd";       // Route ID (int)
-
-        public const string CL_PRICE_EDIT = "pe";         // Origin Location ID (int) - Destination Location ID (int) - Priority (PRIORITY_) - Price/gram (int) - Price/cm3 (int)
-                                                            // CHECK For Price Updates, are we going to store them by ID, or like above where we just search it on the fly.
-
         public const string CL_OBJECT_ADD = "oa";       // Type (OBJECT_) - See specific object for rest of protocol...
-        public const string CL_OBJECT_UPDATE = "ou";       // ID (int) - Type (OBJECT_) - See specific object for rest of protocol...
-        public const string CL_OBJECT_DELETE = "od";       // ID (int) - Type (OBJECT_)
-
-
-        public const string CL_LOCATION_ADD = "la";       // Location Code (3char string) - Location Name (string)     TODO Later if we get really pro with maps integration: - Longitude - Latititude. Unless we just pass the name along to the api and it finds it itself.
-        //public const string CL_LOCATION_EDIT = "le";       // Location ID (int) - Location Code (3char string) - Location Name (string)
-        public const string CL_LOCATION_DELETE = "ld";    // Location ID (int)
-
-        public const string CL_COMPANY_ADD = "ca";       // Company Name (string)
-        public const string CL_COMPANY_DELETE = "cd";    // Company ID (int)    CHECK Or just the name again? Depends if we use IDs for Company.
+        public const string CL_OBJECT_EDIT = "oe";    // ID (int) - Type (OBJECT_) - See specific object for rest of protocol...
+        public const string CL_OBJECT_DELETE = "od";    // ID (int) - Type (OBJECT_)
 
         // Server to Client - First token of a message sent by the Server, identifies the information the Server is sending (and the format for the rest of the message).
 
@@ -51,11 +36,17 @@ namespace Common
         public const string SV_OBJECT_UPDATE = "ou";    // ID (int) - Type (OBJECT_) - See specific object for rest of protocol...
         public const string SV_OBJECT_DELETE = "od";    // ID (int) - Type (OBJECT_)
 
-        // State Updates
-        public const string OBJECT_COUNTRY = "l";   // ... - Location Code (3char string) - Location Name (string)
-        public const string OBJECT_PRICE = "p";
-        public const string OBJECT_ROUTE = "r";
-        public const string OBJECT_COMPANY = "c";
+        // State Updates - Fields marked with astericks are for fields also used in EDITs
+        public const string OBJECT_COUNTRY = "l";   // ... - *Location Code (3char string) - Location Name (string)     TODO Later if we get really pro with maps integration: - Longitude - Latititude. Unless we just pass the name along to the api and it finds it itself.
+        public const string OBJECT_PRICE = "p";     // ... - Origin Location ID (int) - Destination Location ID (int) - Priority (PRIORITY_) - *Price/gram (int) - *Price/cm3 (int)
+        public const string OBJECT_ROUTE = "r";     // ... - Origin Location ID (int) - Destination Location ID (int) - Company ID (int) - Transport Type (TRANSPORT_) - *Cost/gram (int) - *Cost/cm3 (int) - *Max Weight (int) - *Max Capacity (int) - TODO Add Times
+        public const string OBJECT_COMPANY = "c";   // ... - Company Name (string)
+
+        public const string PATH_AIR = "a";
+        public const string PATH_STANDARD = "s";
+        public const string PATH_AIRXPRESS = "A";
+        public const string PATH_STANDARDXPRESS = "S";
+        public const string PATH_CANCEL = "c";
 
         public const string PRIORITY_AIR = "a";
         public const string PRIORITY_STANDARD = "s";
@@ -65,7 +56,7 @@ namespace Common
         public const string TRANSPORT_SEA = "s";
 
         /// <summary>Character used to seperate tokens in a network message.</summary>
-        public const char SEPARATOR = '\t';
+        public const char SEPARATOR = '|';
 
         /// <summary>
         /// Creates a string out of all the string parameters, seperated by the seperator character. Ensures at least one string is given.

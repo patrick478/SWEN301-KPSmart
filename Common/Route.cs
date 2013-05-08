@@ -154,6 +154,10 @@ namespace Common
             }
         }
 
+        public override string ToNetString()
+        {
+            return NetCodes.BuildNetworkString(base.ToNetString(), NetCodes.OBJECT_ROUTE, Convert.ToString(Origin.ID), Convert.ToString(Destination.ID), TransportType.ToNetString(), Convert.ToString(PricePerGram), Convert.ToString(PricePerCm3), Convert.ToString(MaxWeight), Convert.ToString(MaxVolume));
+        }
 
     }
 }

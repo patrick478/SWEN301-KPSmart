@@ -52,11 +52,17 @@ namespace Client
             switch (tokens[count++])
             {
                 case NetCodes.OBJECT_COUNTRY:
-                    string code = tokens[count++];
-                    string name = tokens[count++];
-                    state.SaveCountry(new Country() { Name = name, Code = code, ID = id });
+                    string countryCode = tokens[count++];
+                    string countryName = tokens[count++];
+                    state.SaveCountry(new Country() { Name = countryName, Code = countryCode, ID = id });
                     if (Updated != null)
                         Updated(typeof(Country));
+                    return;
+                case NetCodes.OBJECT_COMPANY:
+                    string companyName = tokens[count++];
+                    state.SaveCompany(new Company() { Name = companyName, ID = id });
+                    if (Updated != null)
+                        Updated(typeof(Company));
                     return;
             }
         }
@@ -86,12 +92,17 @@ namespace Client
         #region Sending Triggers (Called by GUI)
         public void AddCountry(string code, string name)
         {
-            Send(NetCodes.CL_LOCATION_ADD, code, name);
+            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_COUNTRY, code, name);
+        }
+
+        public void EditCountry(int id, string code)
+        {
+            Send(NetCodes.CL_OBJECT_EDIT, NetCodes.OBJECT_COUNTRY, code);
         }
 
         public void DeleteCountry(int id)
         {
-            Send(NetCodes.CL_LOCATION_DELETE, Convert.ToString(id));
+            Send(NetCodes.CL_OBJECT_DELETE, Convert.ToString(id), NetCodes.OBJECT_COUNTRY);
         }
 
         /// <summary>

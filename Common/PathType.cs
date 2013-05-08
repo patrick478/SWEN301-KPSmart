@@ -33,7 +33,26 @@ namespace Common
                 case PathType.AirExpress:
                     return Priority.Air;
                 default:
-                    throw new ArgumentException("This method doesn't know about that PathType");
+                    throw new ArgumentException("Unsupported enum value");
+            }
+        }
+
+        public static PathType ParseNetString(string raw)
+        {
+            switch (raw)
+            {
+                case NetCodes.PATH_AIR:
+                    return PathType.AirStandard;
+                case NetCodes.PATH_AIRXPRESS:
+                    return PathType.AirExpress;
+                case NetCodes.PATH_STANDARD:
+                    return PathType.Standard;
+                case NetCodes.PATH_STANDARDXPRESS:
+                    return PathType.Express;
+                case NetCodes.PATH_CANCEL:
+                    throw new ArgumentException("Cannot retrieve a PathType from the CANCEL token");
+                default:
+                    throw new ArgumentException("Unsupported network token");
             }
         }
     }

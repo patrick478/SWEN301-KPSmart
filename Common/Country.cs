@@ -69,9 +69,9 @@ namespace Common
            }
        }
 
-       public override string Transmit()
+       public override string ToNetString()
        {
-           return NetCodes.BuildNetworkString(base.Transmit(), NetCodes.OBJECT_COUNTRY, code, name);
+           return NetCodes.BuildNetworkString(base.ToNetString(), NetCodes.OBJECT_COUNTRY, Code, Name);
        }
     }
 

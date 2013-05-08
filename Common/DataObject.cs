@@ -16,7 +16,7 @@ namespace Common
         // the time it was last changed
         public DateTime LastEdited { get; set; }
 
-        public virtual string Transmit()
+        public virtual string ToNetString()
         {
             return ID.ToString();
         }
