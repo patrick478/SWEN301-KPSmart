@@ -123,12 +123,14 @@ namespace Server.Data
             if (route.CostPerCm3 <= 0)
                 throw new DatabaseException(String.Format("Route costPerCm3 cannot be less than or equal to 0: {0}", route));
 
+            int eventId;
+
             // LOCK BEGINS HERE
             lock (Database.Instance)
             {
                 // get event number
                 var sql = SQLQueryBuilder.SaveEvent(ObjectType.Route, EventType.Create);
-                long eventId = Database.Instance.InsertQuery(sql);
+                eventId = Database.Instance.InsertQuery(sql).ToInt();
 
                 // insert the route record
                 sql = SQLQueryBuilder.CreateNewRecord(    TABLE_NAME,
@@ -173,7 +175,7 @@ namespace Server.Data
             route.LastEdited = (DateTime)row[1];
 
             // save all the departure times
-            deliveryTimeDataHelper.Create(route.ID, route.DepartureTimes);
+            deliveryTimeDataHelper.Create(route.ID, eventId, route.DepartureTimes);
                         
             Logger.WriteLine("Created route: " + route);
         }
