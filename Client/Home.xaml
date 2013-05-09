@@ -18,7 +18,7 @@
         </Grid.RowDefinitions>
         <!-- View routes button -->
         <TabControl Grid.Row="1" Height="585" HorizontalAlignment="Left" Margin="12,129,0,0" Name="tabControl1" VerticalAlignment="Top" Width="975" IsHitTestVisible="True" IsEnabled="True" IsTextSearchEnabled="False" FontSize="20" ForceCursor="False" FontWeight="ExtraBold" AllowDrop="False" Grid.RowSpan="2">
-            <TabItem Header="Countries" Name="tabItem1">
+            <TabItem Header="Locations" Name="tabItem1">
                 <Grid Height="500" Width="943">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="165*" />
@@ -28,12 +28,23 @@
                     <Button Content="Add Country" Height="36" HorizontalAlignment="Left" Margin="22,33,0,0" Name="addCountry" VerticalAlignment="Top" Width="125" FontSize="12" FontWeight="Bold" Click="addCountry_Click" />
                     <Button Content="Edit Country" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,91,0,0" Name="editCountry" VerticalAlignment="Top" Width="125" Click="editCountry_Click" />
                     <Button Content="Delete Country" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,149,0,0" Name="deleteCountry" VerticalAlignment="Top" Width="125" Click="deleteCountry_Click" />
-                    <DataGrid AutoGenerateColumns="False" Height="455" HorizontalAlignment="Left" Margin="0,33,0,0" Name="countriesList" VerticalAlignment="Top" Width="713" Grid.Column="2" SelectionChanged="countriesList_SelectionChanged" DataContext="{Binding}" FontSize="12" FontWeight="Normal" ItemsSource="{Binding}">
+                    <DataGrid AutoGenerateColumns="False" Height="187" HorizontalAlignment="Left" Margin="0,33,0,0" Name="countriesList" VerticalAlignment="Top" Width="713" Grid.Column="2" SelectionChanged="countriesList_SelectionChanged" DataContext="{Binding}" FontSize="12" FontWeight="Normal" ItemsSource="{Binding}">
                         <DataGrid.Columns>
                             
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button Content="Reload" Height="23" HorizontalAlignment="Left" Margin="36,422,0,0" Name="reload" VerticalAlignment="Top" Width="75" Click="reload_Click" FontSize="12" />
+                    <Button Content="Add Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,234,0,0" Name="addDistCenterButton" VerticalAlignment="Top" Width="125" />
+                    <Button Content="Edit Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,292,0,0" Name="editDistCenter" VerticalAlignment="Top" Width="125" />
+                    <Button Content="Delete Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,350,0,0" Name="deleteDistCenter" VerticalAlignment="Top" Width="125" />
+                    <DataGrid AutoGenerateColumns="False" DataContext="{Binding}" FontSize="12" FontWeight="Normal" Grid.Column="2" Height="234" HorizontalAlignment="Left" Margin="0,234,0,0" Name="distCenterList" VerticalAlignment="Top" Width="713" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Deliveries" Name="Deliveries">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Button Click="addCountry_Click" Content="Add Delivery" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="33,52,0,0" Name="addDelivery" VerticalAlignment="Top" Width="125" />
+                    <Button Click="editCountry_Click" Content="Edit Delivery" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="33,110,0,0" Name="editDeliver" VerticalAlignment="Top" Width="125" />
+                    <Button Click="deleteCountry_Click" Content="Delete Delivery" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="33,168,0,0" Name="deleteDelivery" VerticalAlignment="Top" Width="125" />
+                    <DataGrid AutoGenerateColumns="False" DataContext="{Binding}" FontSize="12" FontWeight="Normal" Height="455" HorizontalAlignment="Left" ItemsSource="{Binding}" Margin="230,52,0,0" Name="deliveriesList" SelectionChanged="countriesList_SelectionChanged" VerticalAlignment="Top" Width="713" />
                 </Grid>
             </TabItem>
             <TabItem Header="Companies" Name="Companies" FontSize="20" UseLayoutRounding="False">
@@ -44,16 +55,8 @@
                     </Grid.ColumnDefinitions>
                     <Button Content="Add Company" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="34,53.5,0,0" Name="addCompanyButton" VerticalAlignment="Top" Width="125" Grid.ColumnSpan="2" Click="addCompanyButton_Click" />
                     <Button Content="Edit Company" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="34,111.5,0,0" Name="editCompanyButton" VerticalAlignment="Top" Width="125" Grid.ColumnSpan="2" />
-                    <Button Content="Delete Company" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="34,169.5,0,0" Name="deleteCompanyButton" VerticalAlignment="Top" Width="125" Grid.ColumnSpan="2" />
+                    <Button Content="Delete Company" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="34,169.5,0,0" Name="deleteCompanyButton" VerticalAlignment="Top" Width="125" Grid.ColumnSpan="2" Click="deleteCompanyButton_Click" />
                     <DataGrid AutoGenerateColumns="False" DataContext="{Binding}" FontSize="12" FontWeight="Normal" Height="455" HorizontalAlignment="Left" Margin="149.75,53.5,0,0" Name="companiesList" VerticalAlignment="Top" Width="713" Grid.Column="1" />
-                </Grid>
-            </TabItem>
-            <TabItem Header="Distribution Centers" Name="DistributionCenters">
-                <Grid Height="656" Width="976">
-                    <Button Content="Add Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="35,52,0,0" Name="addDistCenterButton" VerticalAlignment="Top" Width="125" />
-                    <Button Content="Edit Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="35,110,0,0" Name="editDistCenter" VerticalAlignment="Top" Width="125" />
-                    <Button Content="Delete Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="35,168,0,0" Name="deleteDistCenter" VerticalAlignment="Top" Width="125" />
-                    <DataGrid AutoGenerateColumns="False" DataContext="{Binding}" FontSize="12" FontWeight="Normal" Height="455" HorizontalAlignment="Left" Margin="226,52,0,0" Name="distCenterList" VerticalAlignment="Top" Width="713" />
                 </Grid>
             </TabItem>
             <TabItem Header="Routes" Name="Routes">
@@ -83,5 +86,6 @@
         </TabControl>
         <Image Grid.Row="1" Height="88" HorizontalAlignment="Left" Margin="12,12,0,0" Name="image1" Stretch="Fill" VerticalAlignment="Top" Width="975" Source="/Client;component/header.png" />
         <Button Content="Request Delivery" FontSize="20" Height="88" HorizontalAlignment="Left" Margin="791,12,0,0" Name="button1" VerticalAlignment="Top" Width="180" Grid.Row="1" Click="button1_Click" />
+        <Button Content="Reload" FontSize="12" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="12,100,0,0" Name="reload" VerticalAlignment="Top" Width="75" />
     </Grid>
 </Page>

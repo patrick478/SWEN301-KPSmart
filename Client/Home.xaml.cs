@@ -79,6 +79,11 @@ namespace Client
             priceList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
             priceList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
 
+            deliveriesList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
+            deliveriesList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
+            deliveriesList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
+            deliveriesList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
+
             //disable edit buttons until something is clicked in the corresponding datagrids
             editCountry.IsEnabled = false;
             editCompanyButton.IsEnabled = false;
@@ -90,6 +95,11 @@ namespace Client
 
 
             ReloadCountries();
+            ReloadCompanies();
+            ReloadDeliveries();
+            ReloadPrices();
+            ReloadRouteNodes();
+            ReloadRoutes();
 
             
 
@@ -108,6 +118,74 @@ namespace Client
                 countriesList.Items.Add(c);
             }
         }
+
+
+        private void ReloadCompanies()
+        {
+
+            companiesList.Items.Clear();
+
+            foreach (var c in _clientState.GetAllCompanies())
+            {
+                countriesList.Items.Add(c);
+            }
+        }
+
+        private void ReloadRouteNodes()
+        {
+
+            routeNodeList.Items.Clear();
+
+            foreach (var c in _clientState.GetAllRouteNodes())
+            {
+                routeNodeList.Items.Add(c);
+            }
+        }
+
+        private void ReloadRoutes()
+        {
+
+            routesList.Items.Clear();
+
+            foreach (var c in _clientState.GetAllRoutes())
+            {
+                routesList.Items.Add(c);
+            }
+        }
+
+        private void ReloadPrices()
+        {
+
+            priceList.Items.Clear();
+
+            foreach (var c in _clientState.GetAllPrices())
+            {
+                priceList.Items.Add(c);
+            }
+        }
+
+        private void ReloadDeliveries()
+        {
+
+            deliveriesList.Items.Clear();
+
+            foreach (var c in _clientState.GetAllDeliveries())
+            {
+                deliveriesList.Items.Add(c);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
         private void addCountry_Click(object sender, RoutedEventArgs e)
         {
@@ -150,16 +228,9 @@ namespace Client
 
             if (dlg.DialogResult != false)
             {
-                var name = dlg.countryName.Text;
-                var code = dlg.countryCode.Text;
-                try
-                {
-                  //  _countryService.Update(((Country) countriesList.SelectedItem).ID, code);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
+
+                //do stuff
+                
             }
             ReloadCountries();
         }
@@ -198,16 +269,23 @@ namespace Client
                 var name = dlg.companyName.Text;
              
 
-                var country = new Company { Name = name};
-
-                companiesList.Items.Add(country);
+                try
+                {
+                    //_clientCon.AddCompany(name);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
 
             }
+            ReloadCompanies();
         }
 
         private void reload_Click(object sender, RoutedEventArgs e)
         {
             ReloadCountries();
+            ReloadCompanies();
         }
 
        
@@ -215,6 +293,19 @@ namespace Client
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new System.Uri("RequestDelivery.xaml", UriKind.RelativeOrAbsolute));
+        }
+
+        private void deleteCompanyButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+               // _clientCon.DeleteCompany(((Company)companiesList.SelectedItem).ID);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            ReloadCompanies();
         }
 
 
