@@ -42,6 +42,8 @@ namespace Client
                     return;
                 case NetCodes.SV_ERROR:
                     return;
+
+                // TODO once implemented, add the business figures stuff
             }
         }
 
@@ -63,6 +65,11 @@ namespace Client
                     state.SaveCompany(new Company() { Name = companyName, ID = id });
                     if (Updated != null)
                         Updated(typeof(Company));
+                    return;
+                case NetCodes.OBJECT_PRICE:
+                    
+                    return;
+                case NetCodes.OBJECT_ROUTE:
                     return;
             }
         }

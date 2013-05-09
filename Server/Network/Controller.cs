@@ -61,14 +61,14 @@ namespace Server.Network
                 case NetCodes.CL_OBJECT_ADD:
                     ObjectAdd(client, tokens);
                     return;
-
                 case NetCodes.CL_OBJECT_EDIT:
                     ObjectEdit(client, tokens);
                     return;
-
                 case NetCodes.CL_OBJECT_DELETE:
                     ObjectDelete(client, tokens);
                     return;
+
+                // TODO once implemented, add the business figures stuff
             }
         }
 
@@ -96,6 +96,18 @@ namespace Server.Network
                     int priceVolume = Convert.ToInt32(tokens[count++]);
                     Price price = priceService.Create(priceOriginId, priceDestinationId, pricePrio, priceWeight, priceVolume);
                     SendObjectAdd(price.ToNetString());
+                    return;
+                case NetCodes.OBJECT_ROUTE:
+                // ... - Origin Location ID (int) - Destination Location ID (int) - Company ID (int) - Transport Type (TRANSPORT_) - *Cost/gram (int) - *Cost/cm3 (int) - *Max Weight (int) - *Max Capacity (int) - TODO Add Times
+                    int routeOriginId = Convert.ToInt32(tokens[count++]);
+                    int routeDestinationId = Convert.ToInt32(tokens[count++]);
+                    int routeCompany = Convert.ToInt32(tokens[count++]);
+                    TransportType routeTransport = TransportTypeExtensions.ParseNetString(tokens[count++]);
+                    int routeWeightCost = Convert.ToInt32(tokens[count++]);
+                    int routeVolumeCost = Convert.ToInt32(tokens[count++]);
+                    int routeWeightMax = Convert.ToInt32(tokens[count++]);
+                    int routeVolumeMax = Convert.ToInt32(tokens[count++]);
+                    
                     return;
             } 
         }
