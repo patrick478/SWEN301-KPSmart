@@ -75,5 +75,18 @@ namespace Common
             }
             return builder.ToString();
         }
+
+        public static string BuildTimesNetString(IList<WeeklyTime> times)
+        {
+            //TODO
+            return "";
+        }
+
+        //TODO - Add a sub-seperator token or just use normal seperator? (seeing as this SHOULD always be the last part of a net message)
+        public static IList<WeeklyTime> ParseTimesNetString()
+        {
+            //TODO
+            return null;
+        }
     }
 }

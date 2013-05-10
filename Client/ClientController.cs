@@ -224,17 +224,36 @@ namespace Client
         #endregion
 
         #region Route
-        // TODO - INCOMPLETE need to add weekly times
-        public void AddRoute(int originId, int destinationId, TransportType type, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration)
+        /// <summary>
+        /// Add a new Route.
+        /// </summary>
+        /// <param name="originId">ID of Origin Location.</param>
+        /// <param name="destinationId">ID of Destination Location.</param>
+        /// <param name="type">Transport type.</param>
+        /// <param name="weightCost">Cost per Gram.</param>
+        /// <param name="volumeCost">Cost per cm^3.</param>
+        /// <param name="weightMax">Maximum weight (g) per trip.</param>
+        /// <param name="volumeMax">Maximum volume (cm^3) per trip.</param>
+        /// <param name="duration">Trip duration.</param>
+        /// <param name="times">Departing times.</param>
+        public void AddRoute(int originId, int destinationId, TransportType type, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration, IList<WeeklyTime> times)
         {
-            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_ROUTE, Convert.ToString(originId), Convert.ToString(destinationId), type.ToNetString(), Convert.ToString(weightCost), Convert.ToString(volumeCost), Convert.ToString(weightMax), Convert.ToString(volumeMax), Convert.ToString(duration), );
+            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_ROUTE, Convert.ToString(originId), Convert.ToString(destinationId), type.ToNetString(), Convert.ToString(weightCost), Convert.ToString(volumeCost), Convert.ToString(weightMax), Convert.ToString(volumeMax), Convert.ToString(duration), NetCodes.BuildTimesNetString(times));
         }
 
-        // TODO - INCOMPLETE need to add weekly times
-        public void EditRoute(int id, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration)
+        /// <summary>
+        /// Edit an existing Route.
+        /// </summary>
+        /// <param name="id">ID of Route to edit.</param>
+        /// <param name="weightCost">Cost per Gram.</param>
+        /// <param name="volumeCost">Cost per cm^3.</param>
+        /// <param name="weightMax">Maximum weight (g) per trip.</param>
+        /// <param name="volumeMax">Maximum volume (cm^3) per trip.</param>
+        /// <param name="duration">Trip duration.</param>
+        /// <param name="times">Departing times.</param>
+        public void EditRoute(int id, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration, IList<WeeklyTime> times)
         {
-            Send(NetCodes.CL_OBJECT_EDIT, Convert.ToString(id), NetCodes.OBJECT_ROUTE, Convert.ToString(weightCost), Convert.ToString(volumeCost), Convert.ToString(weightMax), Convert.ToString(volumeMax), Convert.ToString(duration), );
-            // *Cost/gram (int) - *Cost/cm3 (int) - *Max Weight (int) - *Max Capacity (int) - *Trip Duration (int) - *Trip Times 
+            Send(NetCodes.CL_OBJECT_EDIT, Convert.ToString(id), NetCodes.OBJECT_ROUTE, Convert.ToString(weightCost), Convert.ToString(volumeCost), Convert.ToString(weightMax), Convert.ToString(volumeMax), Convert.ToString(duration), NetCodes.BuildTimesNetString(times));
         }
 
         /// <summary>
@@ -256,7 +275,6 @@ namespace Client
         {
             Network.Instance.WriteLine(NetCodes.BuildNetworkString(first, rest));
         }
-
         #endregion
     }
 }
