@@ -94,7 +94,7 @@ namespace Server.Business
         /// <exception cref="DatabaseException">if it doesn't exist</exception>
         /// <exception cref="InvalidObjectStateException">if the fields are invalid</exception>
         /// <exception cref="ArgumentException">if any of the objects referenced by id do not exist</exception>
-        public Route Update(int routeId, List<WeeklyTime> deliveryTimes, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
+        public Route Update(int routeId, IList<WeeklyTime> deliveryTimes, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
         {
             var route = state.GetRoute(routeId);
             if (route == null)

@@ -131,8 +131,8 @@ namespace Server.Network
                 case NetCodes.OBJECT_PRICE:
                     int priceWeight = Convert.ToInt32(tokens[count++]);
                     int priceVolume = Convert.ToInt32(tokens[count++]);
-                    //Price price = priceService.Update(id, priceWeight, priceVolume);
-                    //SendObjectUpdate(price.ToNetString());
+                    Price price = priceService.Update(id, priceWeight, priceVolume);
+                    SendObjectUpdate(price.ToNetString());
                     return;
                 case NetCodes.OBJECT_ROUTE:
                     int routeWeightCost = Convert.ToInt32(tokens[count++]);
@@ -141,8 +141,8 @@ namespace Server.Network
                     int routeVolumeMax = Convert.ToInt32(tokens[count++]);
                     int routeDuration = Convert.ToInt32(tokens[count++]);
                     IList<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
-                    //Route route = routeService.Update(id, routeTimes, routeDuration, routeWeightMax, routeVolumeMax, routeWeightCost, routeVolumeCost);
-                    //SendObjectUpdate(route.ToNetString());
+                    Route route = routeService.Update(id, routeTimes, routeDuration, routeWeightMax, routeVolumeMax, routeWeightCost, routeVolumeCost);
+                    SendObjectUpdate(route.ToNetString());
                     return;
             }
         }
