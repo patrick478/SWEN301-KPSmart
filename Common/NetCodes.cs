@@ -58,6 +58,7 @@ namespace Common
         /// <summary>Character used to seperate tokens in a network message.</summary>
         public const char SEPARATOR = '|';
         public const char SUBSEPARATOR = '\t';
+        public const char TIMESEPERATOR = ':';
 
         /// <summary>
         /// Creates a string out of all the string parameters, seperated by the seperator character. Ensures at least one string is given.
