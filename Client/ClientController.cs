@@ -13,15 +13,15 @@ namespace Client
     {
         ClientState state;
 
-        #region Receiving
-        public delegate void StateUpdatedDelegate(Type type);
-        public event StateUpdatedDelegate Updated;
-
         public ClientController(ClientState state)
         {
             this.state = state;
             Network.Instance.DataReady += new Network.DataReadyDelegate(OnReceived);
         }
+
+        #region Receiving
+        public delegate void StateUpdatedDelegate(Type type);
+        public event StateUpdatedDelegate Updated;
 
         /// <summary>
         /// Reads a message received from the Server and performs the appropriate actions.
@@ -96,7 +96,26 @@ namespace Client
         }
         #endregion
 
-        #region Sending Triggers (Called by GUI)
+        #region Sending (Triggers Called by GUI)
+
+        #region Delivery
+        public void RequestDelivery(int originId, int destinationId, int weight, int volume)
+        {
+            Send(NetCodes.CL_DELIVERY_REQUEST, Convert.ToString(originId), Convert.ToString(destinationId), Convert.ToString(weight), Convert.ToString(volume));
+        }
+
+        public void ChooseDelivery(PathType type)
+        {
+            Send(NetCodes.CL_DELIVERY_SELECT, type.ToNetString());
+        }
+
+        public void CancelDelivery()
+        {
+            Send(NetCodes.CL_DELIVERY_SELECT, NetCodes.PATH_CANCEL);
+        }
+        #endregion
+
+        #region Country
         public void AddCountry(string code, string name)
         {
             Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_COUNTRY, code, name);
@@ -111,6 +130,56 @@ namespace Client
         {
             Send(NetCodes.CL_OBJECT_DELETE, Convert.ToString(id), NetCodes.OBJECT_COUNTRY);
         }
+        #endregion
+
+        #region Company
+        public void AddCompany(string name)
+        {
+            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_COMPANY, name);
+        }
+
+        public void DeleteCompany(int id)
+        {
+            Send(NetCodes.CL_OBJECT_DELETE, Convert.ToString(id), NetCodes.OBJECT_COMPANY);
+        }
+        #endregion
+
+        #region Price
+        public void AddPrice(int originId, int destinationId, Priority priority, int weightPrice, int volumePrice)
+        {
+            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_PRICE, Convert.ToString(originId), Convert.ToString(destinationId), priority.ToNetString(), Convert.ToString(weightPrice), Convert.ToString(volumePrice));
+        }
+
+        public void EditPrice(int id, int weightPrice, int volumePrice)
+        {
+            Send(NetCodes.CL_OBJECT_EDIT, Convert.ToString(id), NetCodes.OBJECT_PRICE, Convert.ToString(weightPrice), Convert.ToString(volumePrice));
+        }
+
+        public void DeletePrice(int id)
+        {
+            Send(NetCodes.CL_OBJECT_DELETE, Convert.ToString(id), NetCodes.OBJECT_PRICE);
+        }
+        #endregion
+
+        #region Route
+        // TODO - INCOMPLETE need to add weekly times
+        public void AddRoute(int originId, int destinationId, TransportType type, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration)
+        {
+            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_ROUTE, Convert.ToString(originId), Convert.ToString(destinationId), type.ToNetString(), Convert.ToString(weightCost), Convert.ToString(volumeCost), Convert.ToString(weightMax), Convert.ToString(volumeMax), Convert.ToString(duration), );
+        }
+
+        // TODO - INCOMPLETE need to add weekly times
+        public void EditRoute(int id, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration)
+        {
+            Send(NetCodes.CL_OBJECT_EDIT, Convert.ToString(id), NetCodes.OBJECT_ROUTE, Convert.ToString(weightCost), Convert.ToString(volumeCost), Convert.ToString(weightMax), Convert.ToString(volumeMax), Convert.ToString(duration), );
+            // *Cost/gram (int) - *Cost/cm3 (int) - *Max Weight (int) - *Max Capacity (int) - *Trip Duration (int) - *Trip Times 
+        }
+
+        public void DeleteRoute(int id)
+        {
+            Send(NetCodes.CL_OBJECT_DELETE, Convert.ToString(id), NetCodes.OBJECT_ROUTE);
+        }
+        #endregion
 
         /// <summary>
         /// Alias method for sending message to server.

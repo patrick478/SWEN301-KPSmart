@@ -37,6 +37,23 @@ namespace Common
             }
         }
 
+        public static string ToNetString(this PathType type)
+        {
+            switch (type)
+            {
+                case PathType.AirStandard:
+                    return NetCodes.PATH_AIR;
+                case PathType.AirExpress:
+                    return NetCodes.PATH_AIRXPRESS;
+                case PathType.Standard:
+                    return NetCodes.PATH_STANDARD;
+                case PathType.Express:
+                    return NetCodes.PATH_STANDARDXPRESS;
+                default:
+                    throw new ArgumentException("Unsupported enum value");
+            }
+        }
+
         public static PathType ParseNetString(string raw)
         {
             switch (raw)

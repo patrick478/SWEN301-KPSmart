@@ -23,7 +23,7 @@ namespace Common
         // Client to Server - First token of a message sent by a Client, identifies the action the Client wants to take (and the format for the rest of the message).
 
         public const string CL_DELIVERY_REQUEST = "dr";   // Origin Location ID (int) - Destination Location ID (int) - Weight (int) - Volume (int)
-        public const string CL_DELIVERY_SELECT = "ds";    // Priority (PRIORITY_ / CANCEL)
+        public const string CL_DELIVERY_SELECT = "ds";    // Type (PATH_)
 
         public const string CL_OBJECT_ADD = "oa";       // Type (OBJECT_) - See specific object for rest of protocol...
         public const string CL_OBJECT_EDIT = "oe";    // ID (int) - Type (OBJECT_) - See specific object for rest of protocol...
@@ -39,7 +39,7 @@ namespace Common
         // State Updates - Fields marked with astericks are for fields also used in EDITs
         public const string OBJECT_COUNTRY = "l";   // ... - *Location Code (3char string) - Location Name (string)     TODO Later if we get really pro with maps integration: - Longitude - Latititude. Unless we just pass the name along to the api and it finds it itself.
         public const string OBJECT_PRICE = "p";     // ... - Origin Location ID (int) - Destination Location ID (int) - Priority (PRIORITY_) - *Price/gram (int) - *Price/cm3 (int)
-        public const string OBJECT_ROUTE = "r";     // ... - Origin Location ID (int) - Destination Location ID (int) - Company ID (int) - Transport Type (TRANSPORT_) - *Cost/gram (int) - *Cost/cm3 (int) - *Max Weight (int) - *Max Capacity (int) - TODO Add Times
+        public const string OBJECT_ROUTE = "r";     // ... - Origin Location ID (int) - Destination Location ID (int) - Company ID (int) - Transport Type (TRANSPORT_) - *Cost/gram (int) - *Cost/cm3 (int) - *Max Weight (int) - *Max Capacity (int) - *Trip Duration (int) - *Trip Times 
         public const string OBJECT_COMPANY = "c";   // ... - Company Name (string)
 
         public const string PATH_AIR = "a";
