@@ -5,6 +5,7 @@
 // 
 //////////////////////
 using System;
+using System.Collections.Generic;
 
 namespace Common
 {
@@ -168,6 +169,27 @@ namespace Common
                 return 1;
 
             return 0;
+        }
+
+        /// <summary>
+        /// Creates a network string for a list of WeeklyTime objects. Used when communicating departing times of Routes. Convert back into List via ParseTimeNetString method.
+        /// </summary>
+        /// <param name="times"></param>
+        /// <returns></returns>
+        public static string BuildTimesNetString(IList<WeeklyTime> times)
+        {
+            //TODO
+            return "";
+        }
+
+        /// <summary>
+        /// Builds a list of WeeklyTime objects from a network string (that was generated via the BuildTimesNetString method). Used when communicating departing times of Routes.
+        /// </summary>
+        /// <returns>List of WeeklyTime objects.</returns>
+        public static IList<WeeklyTime> ParseTimesNetString(string times)
+        {
+            //TODO
+            return null;
         }
 
     }

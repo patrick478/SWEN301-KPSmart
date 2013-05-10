@@ -31,7 +31,7 @@ namespace Common
 
         // Server to Client - First token of a message sent by the Server, identifies the information the Server is sending (and the format for the rest of the message).
 
-        public const string SV_DELIVERY_PRICES = "dp";    // Standard Price (int) - Air Price (int)
+        public const string SV_DELIVERY_PRICES = "dp";    // PATH_CANCEL or PATH_ 
         public const string SV_ERROR = "er"; // Error Message (string ...)   // CHECK unless we want to have error codes. Or have both; a code followed by a string.
         public const string SV_OBJECT_UPDATE = "ou";    // ID (int) - Type (OBJECT_) - See specific object for rest of protocol...
         public const string SV_OBJECT_DELETE = "od";    // ID (int) - Type (OBJECT_)
@@ -57,6 +57,7 @@ namespace Common
 
         /// <summary>Character used to seperate tokens in a network message.</summary>
         public const char SEPARATOR = '|';
+        public const char SUBSEPARATOR = '\t';
 
         /// <summary>
         /// Creates a string out of all the string parameters, seperated by the seperator character. Ensures at least one string is given.
@@ -76,17 +77,5 @@ namespace Common
             return builder.ToString();
         }
 
-        public static string BuildTimesNetString(IList<WeeklyTime> times)
-        {
-            //TODO
-            return "";
-        }
-
-        //TODO - Add a sub-seperator token or just use normal seperator? (seeing as this SHOULD always be the last part of a net message)
-        public static IList<WeeklyTime> ParseTimesNetString()
-        {
-            //TODO
-            return null;
-        }
     }
 }
