@@ -39,6 +39,39 @@ namespace Server.Data
         }
 
         /// <summary>
+        /// SELECT 'requiredFieldNames' FROM `tableName` WHERE active=1 AND 'fieldName[0]'='fieldValue[0]' AND 'fieldName[1]'='fieldValue[1]' etc...
+        /// </summary>
+        /// <param name="id">the id of the object to be loaded</param>
+        /// <param name="tableName"></param>
+        /// <param name="idColumnName"></param>
+        /// <param name="requiredFieldNames"></param>
+        /// <returns></returns>
+        public static string SelectFieldsWhereFieldsEqual (string tableName, string[] fieldNames, string[] fieldValues, string[] requiredFieldNames)
+        {
+            // format the fields section
+            string fields = "";
+            foreach (string field in requiredFieldNames)
+            {
+                fields += field + ", ";
+            }
+            fields = fields.Trim();
+            fields = fields.Trim(',');
+
+            // format equals section
+            string equalsSection = "";
+            for(int i = 0; i < fieldNames.Length; i++) 
+            {
+                equalsSection += String.Format("AND {0}={1} ", fieldNames[i], fieldValues[i]); 
+            }
+            
+            // build the query
+            var sql = String.Format("SELECT {2} FROM `{0}` WHERE active=1 {1}}", tableName, equalsSection, fields);
+
+            return sql;
+        }
+
+
+        /// <summary>
         /// "SELECT 'requiredFieldNames' FROM `'tableName'` WHERE active=1 AND 'fieldName' LIKE 'fieldValue'"
         /// </summary>
         /// <param name="tableName"></param>

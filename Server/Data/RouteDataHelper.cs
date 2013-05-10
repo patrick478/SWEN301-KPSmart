@@ -82,9 +82,9 @@ namespace Server.Data
             object[] row;
 
             // check it is legal
-//            int routeNodeId = GetId(route);
-//            if (routeNodeId != 0)
-//                throw new DatabaseException(String.Format("That route already exists: {0}", routeNodeId));
+            int routeNodeId = GetId(route);
+            if (routeNodeId != 0)
+                throw new DatabaseException(String.Format("That route already exists: {0}", routeNodeId));
 
             // load ids of fields
             int origin_id = routeNodeDataHelper.GetId(route.Origin);
@@ -180,9 +180,24 @@ namespace Server.Data
             Logger.WriteLine("Created route: " + route);
         }
 
-        public override int GetId(Route country)
+        public override int GetId(Route route)
         {
-            throw new NotImplementedException();
+            long id = 0;
+
+            //LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                // get id of matching record
+                var sql = SQLQueryBuilder.SelectFieldsWhereFieldsEqual(TABLE_NAME, new []{"origin_id", "destination_id", "company_id", "transport_type"}, new[] {route.Origin.ID.ToString(), route.Destination.ID.ToString(), route.Company.ID.ToString(), route.TransportType.ToString()}, new[]{ID_COL_NAME}); 
+                id = Database.Instance.FetchNumberQuery(sql);
+            }
+            //LOCK ENDS HERE
+
+            // set id in route
+            route.ID = (int)id;
+
+            // return result
+            return route.ID;
         }
     }
 }
