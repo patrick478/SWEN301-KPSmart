@@ -62,14 +62,7 @@ namespace Server.Business
                 throw new ArgumentException("Volume cannot be less than or equal to zero", "volumeInCm3");
 
             // do pathfinding and get results
-            var deliveries =
-                pathFinder.findRoutes(new Delivery
-                    {
-                        Origin = origin,
-                        Destination = destination,
-                        WeightInGrams = weightInGrams,
-                        VolumeInCm3 = volumeInCm3
-                    });
+            var deliveries = pathFinder.findRoutes(origin, destination, weightInGrams, volumeInCm3);
 
             // return empty result if none found
             if (deliveries.Count == 0)

@@ -29,7 +29,7 @@ namespace Common
         public DateTime DepartureTime { get; private set; }
 
         // The date of arrival
-        public DateTime ArrivalTime
+        public virtual DateTime ArrivalTime
         {
             get
             {

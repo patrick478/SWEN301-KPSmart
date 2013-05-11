@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using Common;
 using Server.Data;
-using System.Collections.IComparer;
+using System.Collections;
 
 namespace Server.Business
 {
@@ -38,13 +38,13 @@ namespace Server.Business
         }
 
         //indexed by the ordinal of the Common.PathType
-        public Dictionary<PathType, Delivery> findRoutes(RouteNode origin, RouteNode destination, int weight, int volume)
+        public Dictionary<PathType, List<RouteInstance>> findRoutes(RouteNode origin, RouteNode destination, int weight, int volume)
         {
             //get the DateTime to the nearest minute as the requested Date Time
             DateTime requestTime = DateTime.Today;
             requestTime = requestTime.AddHours(DateTime.Now.Hour).AddMinutes(DateTime.Now.Minute);
 
-            var paths = new Dictionary<PathType, Delivery>
+            var paths = new Dictionary<PathType, List<RouteInstance>>
                 {
                     {PathType.Express, findPath(requestTime, origin, destination, weight, volume, time, allRoutes)},
                     {PathType.Standard, findPath(requestTime, origin, destination, weight, volume, cost, allRoutes)},
@@ -55,7 +55,7 @@ namespace Server.Business
             return paths;
         }
 
-        private Delivery findPath(DateTime requestTime, RouteNode origin, RouteNode goal, int weight, int volume, NodeEvaluator evaluator, RouteExcluder excluder)//, Excluder excluder) 
+        private List<RouteInstance> findPath(DateTime requestTime, RouteNode origin, RouteNode goal, int weight, int volume, NodeEvaluator evaluator, RouteExcluder excluder)//, Excluder excluder) 
         {
             Delivery delivery = new Delivery();
             delivery.Origin = origin;
@@ -88,7 +88,7 @@ namespace Server.Business
 
                 //if it's the goal node exit and return path
                 if (curNode.Equals(goal))
-                    return completeDelivery(delivery);
+                    return completeDelivery(curNode);
 
                 //grab a list of all of the routes where the given node is the origin
                 IEnumerable<Route> routes = routeService.GetAll(curNode);
@@ -127,34 +127,35 @@ namespace Server.Business
             }
         }
 
-        private Delivery completeDelivery(Delivery delivery)
+        private List<RouteInstance> completeDelivery(RouteNode goal)
         {
             List<RouteInstance> path = new List<RouteInstance>();
-            RouteNode nextNode = delivery.Destination;
+            RouteNode nextNode = goal;
             RouteInstance nextInstance;
 
-            int totalCost = 0;
-            int totalPrice = 0;
+            //int totalCost = 0;
+            //int totalPrice = 0;
 
             do
             {
                 nextInstance = originPath[nextNode];
                 path.Add(nextInstance);
                 nextNode = nextInstance.Route.Origin;
-
+                /*
                 totalCost += nextInstance.Route.CostPerCm3 * delivery.VolumeInCm3;
                 totalCost += nextInstance.Route.CostPerGram * delivery.WeightInGrams;
 
                 totalPrice += nextInstance.Route.PricePerCm3 * delivery.VolumeInCm3;
                 totalPrice += nextInstance.Route.PricePerGram * delivery.WeightInGrams;
+                */
             }
             while (originPath.ContainsKey(nextNode));
-
+            /*
             delivery.TotalCost = totalCost;
             delivery.TotalPrice = totalPrice;
             delivery.TimeOfDelivery = originPath[delivery.Destination].ArrivalTime;
-
-            return delivery;
+            */
+            return path;
         }
 
         private abstract class NodeEvaluator
