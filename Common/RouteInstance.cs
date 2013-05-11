@@ -27,6 +27,15 @@ namespace Common
     
         // The date of departure
         public DateTime DepartureTime { get; private set; }
+
+        // The date of arrival
+        public DateTime ArrivalTime
+        {
+            get
+            {
+                return DepartureTime.AddMinutes(Route.Duration);
+            }
+        }
     
     }
 }

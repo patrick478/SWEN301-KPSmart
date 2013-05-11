@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Common;
 using Server.Data;
+using System.Collections.IComparer;
 
 namespace Server.Business
 {
@@ -22,6 +23,7 @@ namespace Server.Business
         private RouteExcluder allRoutes;
 
         private Dictionary<RouteNode, RouteInstance> originPath;
+        private Dictionary<RouteNode, double> nodeCost;
         private HashSet<RouteNode> closed;
         private SortedList<RouteNode, double> fringe;
 
@@ -36,152 +38,163 @@ namespace Server.Business
         }
 
         //indexed by the ordinal of the Common.PathType
-        public Dictionary<PathType, IList<RouteInstance>> findRoutes(Delivery delivery)
+        public Dictionary<PathType, Delivery> findRoutes(RouteNode origin, RouteNode destination, int weight, int volume)
         {
+            //get the DateTime to the nearest minute as the requested Date Time
+            DateTime requestTime = DateTime.Today;
+            requestTime = requestTime.AddHours(DateTime.Now.Hour).AddMinutes(DateTime.Now.Minute);
 
-            var paths = new Dictionary<PathType, IList<RouteInstance>>
+            var paths = new Dictionary<PathType, Delivery>
                 {
-                    {PathType.Express, findPath(delivery, time, allRoutes)},
-                    {PathType.Standard, findPath(delivery, cost, allRoutes)},
-                    {PathType.AirExpress, findPath(delivery, time, airOnly)},
-                    {PathType.AirStandard, findPath(delivery, cost, airOnly)}
+                    {PathType.Express, findPath(requestTime, origin, destination, weight, volume, time, allRoutes)},
+                    {PathType.Standard, findPath(requestTime, origin, destination, weight, volume, cost, allRoutes)},
+                    {PathType.AirExpress, findPath(requestTime, origin, destination, weight, volume, time, airOnly)},
+                    {PathType.AirStandard, findPath(requestTime, origin, destination, weight, volume, cost, airOnly)}
                 };
 
             return paths;
         }
 
-        private IList<RouteInstance> findPath(Delivery delivery, NodeEvaluator evaluator, RouteExcluder excluder)//, Excluder excluder) 
+        private Delivery findPath(DateTime requestTime, RouteNode origin, RouteNode goal, int weight, int volume, NodeEvaluator evaluator, RouteExcluder excluder)//, Excluder excluder) 
         {
-            RouteNode origin = delivery.Origin;
-            RouteNode goal = delivery.Destination;
+            Delivery delivery = new Delivery();
+            delivery.Origin = origin;
+            delivery.Destination = goal;
+            delivery.WeightInGrams = weight;
+            delivery.VolumeInCm3 = volume;
+            delivery.TimeOfRequest = requestTime;
 
             originPath = new Dictionary<RouteNode, RouteInstance>();
+            nodeCost = new Dictionary<RouteNode, double>();
             closed = new HashSet<RouteNode>();
             fringe = new SortedList<RouteNode, double>();
 
+            fringe.Add(origin, 0);
+            originPath.Add(origin, new OriginRouteInstance(requestTime));
 
             //if the queue is empty return null (no path)
-            while (fringe.Capacity > 0)
+            while (fringe.Count > 0)
             {
                 //take new node off the top of the stack
+                //this is guaranteed to be the best way to the node
                 RouteNode curNode = fringe.Keys[0];
-                fringe.RemoveAt(0);
+
+                if (closed.Contains(curNode))
+                    continue;
+
+                nodeCost.Add(curNode, fringe.Values[0]);
                 closed.Add(curNode);
+                fringe.RemoveAt(0);
 
-                //if it's the goal node exit and send path
+                //if it's the goal node exit and return path
                 if (curNode.Equals(goal))
-                    return reconstructPath(curNode);
+                    return completeDelivery(delivery);
 
-                //grab a list of the next avaliable nodes
+                //grab a list of all of the routes where the given node is the origin
                 IEnumerable<Route> routes = routeService.GetAll(curNode);
 
-                //take each route/node and evaluate
+                //take each route that hasn't been ommited and evaluate
                 foreach (Route path in excluder.Omit(routes))
                 {
                     RouteInstance nextInstance = evaluator.GetNextInstance(path);
                     RouteNode nextNode = path.Destination;
 
-                    if(closed.Contains(nextNode))
-                        continue;
+                    double totalCost = evaluator.GetValue(nextInstance, delivery);
 
-                    double totalCost = evaluator.GetValue(curNode, nextInstance, curNode);
-
-                    //if node not exists
-                    if (fringe.ContainsKey(nextNode))
-                    {
-                        if (fringe[nextNode] > totalCost) //TODO
-                            continue;
-                    }
-                    //else
-                    else
+                    //if the node is not in the fringe
+                    //or the current value is lower than
+                    //the new cost then set the new parent
+                    if (!fringe.ContainsKey(nextNode) || fringe[nextNode] > totalCost)
                     {
                         originPath.Add(nextNode, nextInstance);
                         fringe.Add(nextNode, totalCost);
-                        //fringe.Sort((System.Collections.IComparer)evaluator);
                     }
                 }
             }
             return null;
         }
 
-        private IList<RouteInstance> reconstructPath(RouteNode goal)
+        private class OriginRouteInstance : RouteInstance
+        {
+            public OriginRouteInstance (DateTime originTime) : base(null, originTime) { }
+
+            public override DateTime ArrivalTime
+            {
+                get
+                {
+                    return DepartureTime;
+                }
+            }
+        }
+
+        private Delivery completeDelivery(Delivery delivery)
         {
             List<RouteInstance> path = new List<RouteInstance>();
-            
-            RouteNode nextNode = goal;
+            RouteNode nextNode = delivery.Destination;
             RouteInstance nextInstance;
+
+            int totalCost = 0;
+            int totalPrice = 0;
 
             do
             {
                 nextInstance = originPath[nextNode];
                 path.Add(nextInstance);
                 nextNode = nextInstance.Route.Origin;
+
+                totalCost += nextInstance.Route.CostPerCm3 * delivery.VolumeInCm3;
+                totalCost += nextInstance.Route.CostPerGram * delivery.WeightInGrams;
+
+                totalPrice += nextInstance.Route.PricePerCm3 * delivery.VolumeInCm3;
+                totalPrice += nextInstance.Route.PricePerGram * delivery.WeightInGrams;
             }
             while (originPath.ContainsKey(nextNode));
-            return path;
+
+            delivery.TotalCost = totalCost;
+            delivery.TotalPrice = totalPrice;
+            delivery.TimeOfDelivery = originPath[delivery.Destination].ArrivalTime;
+
+            return delivery;
         }
 
-        private abstract class NodeEvaluator : System.Collections.IComparer
+        private abstract class NodeEvaluator
         {
-            readonly PathFinder outer;
+            readonly protected PathFinder outer;
 
             public NodeEvaluator(PathFinder outer)
             {
                 this.outer = outer;
             }
-
-            public int Compare(object ob1, object ob2)
+            
+            public abstract double GetValue(RouteInstance route, Delivery delivery);
+            
+            public RouteInstance GetNextInstance(Route routes)
             {
-                int retval = 0;
-
-                if (ob1 is RouteNode && ob2 is RouteNode)
-                {
-                    RouteNode r1 = (RouteNode)ob1;
-                    RouteNode r2 = (RouteNode)ob2;
-                    if (outer.fringe[r1] < outer.fringe[r2]) retval = 1;
-                    if (outer.fringe[r2] < outer.fringe[r1]) retval = -1;
-                }
-                return (retval);
+                return routes.GetNextDeparture(outer.originPath[routes.Origin].ArrivalTime);
             }
-
-            public abstract double GetValue(RouteNode start, RouteInstance route, RouteNode end);
-
-            public abstract RouteInstance GetNextInstance(Route routes);
         }
 
         //compare based on cost (money)
         private class CostEvaluator : NodeEvaluator
         {
-            public CostEvaluator(PathFinder outer) : base(outer)
-            {
-            }
+            public CostEvaluator(PathFinder outer) : base(outer) { }
 
-            public override double GetValue(RouteNode start, RouteInstance route, RouteNode end)
+            public override double GetValue(RouteInstance route, Delivery delivery)
             {
-                throw new System.NotImplementedException();
-            }
-
-            public override RouteInstance GetNextInstance(Route routes)
-            {
-                throw new System.NotImplementedException();
+                double routeCost = route.Route.CostPerCm3 * delivery.VolumeInCm3;
+                routeCost += route.Route.CostPerGram * delivery.WeightInGrams;
+                return routeCost + outer.nodeCost[route.Route.Origin];
             }
         }
 
         //compare based on time
         private class TimeEvaluator : NodeEvaluator
         {
-            public TimeEvaluator(PathFinder outer) : base(outer)
-            {
-            }
+            public TimeEvaluator(PathFinder outer) : base(outer) { }
 
-            public override double GetValue(RouteNode start, RouteInstance route, RouteNode end)
+            public override double GetValue(RouteInstance route, Delivery delivery)
             {
-                throw new System.NotImplementedException();
-            }
-
-            public override RouteInstance GetNextInstance(Route routes)
-            {
-                throw new System.NotImplementedException();
+                return route.ArrivalTime.Ticks;//TODO
             }
         }
 
@@ -201,9 +214,7 @@ namespace Server.Business
         //class to omit all non air routes in a list
         private class AirOnlyExcluder : RouteExcluder
         {
-            public AirOnlyExcluder(PathFinder outer) : base(outer)
-            {
-            }
+            public AirOnlyExcluder(PathFinder outer) : base(outer) { }
 
             public override IEnumerable<Route> Omit(IEnumerable<Route> original)
             {
@@ -221,9 +232,7 @@ namespace Server.Business
         //class to omit no routes
         private class NullExcluder : RouteExcluder
         {
-            public NullExcluder(PathFinder outer) : base(outer) 
-            {
-            }
+            public NullExcluder(PathFinder outer) : base(outer) { }
 
             public override IEnumerable<Route> Omit(IEnumerable<Route> original)
             {

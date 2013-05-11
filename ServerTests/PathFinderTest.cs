@@ -62,6 +62,7 @@ namespace ServerTests
 
 
         private static PathFinder pathFinder;
+        private static List<RouteNode> routeNodes;
 
 
         /// <summary>
@@ -73,24 +74,65 @@ namespace ServerTests
         {
             // initialise state
             CurrentState state = new CurrentState();
-            state.InitialiseRoutes(getRoutes());
+            routeNodes = new List<RouteNode>();
+            routeNodes.Add(new DistributionCentre("Auckland"));
+            routeNodes.Add(new DistributionCentre("Wellington"));
+            routeNodes.Add(new DistributionCentre("Christchurch"));
+            state.InitialiseRoutes(getRoutes(routeNodes));
 
             // initialise routeService
             var routeService = new RouteService(state);
 
             // initialise pathfinder
             pathFinder = new PathFinder(routeService);
+        
+            
         }
 
 
         /// <summary>
-        /// This is where you initialise the routes collection josh.
+        /// This is where the initialisation of the routes collection happens.
         /// </summary>
         /// <returns></returns>
-        private static IDictionary<int, Route> getRoutes()
+        private static IDictionary<int, Route> getRoutes(List<RouteNode> routeNodes)
         {
-            //todo!
-            return null;
+            Company company = new Company() { Name = "NZPost" };
+
+            var routes = new Dictionary<int, Route>();
+
+            Route airChchWell = new Route { Company = company, TransportType = TransportType.Air, Origin = routeNodes[0], Destination = routeNodes[1] };
+            airChchWell.AddDepartureTime(new WeeklyTime(DayOfWeek.Monday, 12, 0));
+            airChchWell.Duration = 60;
+            airChchWell.CostPerCm3 = 0;
+            airChchWell.CostPerGram = 2;
+            airChchWell.ID = 1;
+            routes[1] = airChchWell;
+
+            Route landChchWell = new Route { Company = company, TransportType = TransportType.Land, Origin = routeNodes[0], Destination = routeNodes[1] };
+            landChchWell.AddDepartureTime(new WeeklyTime(DayOfWeek.Tuesday, 12, 0));
+            landChchWell.Duration = 60;
+            landChchWell.CostPerCm3 = 0;
+            landChchWell.CostPerGram = 1;
+            landChchWell.ID = 2;
+            routes[2] = landChchWell;
+
+            Route airWellAuck = new Route { Company = company, TransportType = TransportType.Air, Origin = routeNodes[1], Destination = routeNodes[2] };
+            airWellAuck.AddDepartureTime(new WeeklyTime(DayOfWeek.Thursday, 12, 0));
+            airWellAuck.Duration = 60;
+            airWellAuck.CostPerCm3 = 0;
+            airWellAuck.CostPerGram = 3;
+            airWellAuck.ID = 3;
+            routes[3] = airWellAuck;
+
+            Route landWellAuck = new Route { Company = company, TransportType = TransportType.Land, Origin = routeNodes[1], Destination = routeNodes[2] };
+            landWellAuck.AddDepartureTime(new WeeklyTime(DayOfWeek.Wednesday, 12, 0));
+            landWellAuck.Duration = 60;
+            landWellAuck.CostPerCm3 = 0;
+            landWellAuck.CostPerGram = 4;
+            landWellAuck.ID = 4;
+            routes[3] = landWellAuck;
+
+            return routes;
         }
 
 
@@ -100,12 +142,23 @@ namespace ServerTests
         [TestMethod()]
         public void findRoutesTest()
         {
-            //todo!
+            Dictionary<PathType, Delivery> options = pathFinder.findRoutes(routeNodes[0], routeNodes[2], 1, 1);
 
+            //Expected cost = 5, time = 
+            Assert.AreEqual("expected", options[PathType.AirExpress].TotalCost);
+            Assert.AreEqual("expected", options[PathType.AirExpress]);
 
+            //Expected cost = 5, time = 
+            Assert.AreEqual("expected", options[PathType.AirStandard].TotalCost);
+            Assert.AreEqual("expected", options[PathType.AirStandard]);
 
-            Assert.AreEqual("expected", "actual");
+            //Expected cost = 5, time = 
+            Assert.AreEqual("expected", options[PathType.Express].TotalCost);
+            Assert.AreEqual("expected", options[PathType.Express]);
 
+            //Expected cost = 4, time = 
+            Assert.AreEqual("expected", options[PathType.Standard].TotalCost);
+            Assert.AreEqual("expected", options[PathType.Standard]);
         }
     }
 }
