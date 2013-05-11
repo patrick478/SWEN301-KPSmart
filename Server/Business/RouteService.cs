@@ -82,10 +82,7 @@ namespace Server.Business
         /// <summary>
         /// Updates the route for the given [transportType, company, origin, destination] combination.
         /// </summary>
-        /// <param name="companyId"></param>
-        /// <param name="originID"></param>
-        /// <param name="destinationID"></param>
-        /// <param name="transportType"></param>
+        /// <param name="routeId"></param>
         /// <param name="deliveryTimes"></param>
         /// <param name="scope"></param>
         /// <param name="duration"></param>
@@ -97,24 +94,14 @@ namespace Server.Business
         /// <exception cref="DatabaseException">if it doesn't exist</exception>
         /// <exception cref="InvalidObjectStateException">if the fields are invalid</exception>
         /// <exception cref="ArgumentException">if any of the objects referenced by id do not exist</exception>
-        public Route Update(TransportType transportType, int companyId, int originID, int destinationID, List<WeeklyTime> deliveryTimes, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
+        public Route Update(int routeId, IList<WeeklyTime> deliveryTimes, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
         {
-            // load parameters from id
-            var origin = state.GetRouteNode(originID);
-            if (origin == null)
-                throw new ArgumentException(string.Format("There is no location with id = {0}", originID), "originID");
-
-            var destination = state.GetRouteNode(destinationID);
-            if (destination == null)
-                throw new ArgumentException(string.Format("There is no location with id = {0}", destinationID), "destinationID");
-
-            var company = state.GetCompany(companyId);
-            if (company == null)
-                throw new ArgumentException(string.Format("There is no company with id = {0}", companyId), "companyId");
-
-
+            var route = state.GetRoute(routeId);
+            if (route == null)
+                throw new ArgumentException(string.Format("There is no route with id = {0}", routeId), "routeId");
+            
             // throws an exception if invalid
-            var newRoute = new Route { TransportType = transportType, Company = company, Origin = origin, Destination = destination, DepartureTimes = deliveryTimes, Duration = duration, MaxWeight = maxWeight, MaxVolume = maxVolume, CostPerGram = costPerGram, CostPerCm3 = costPerCm3 };
+            var newRoute = new Route { TransportType = route.TransportType, Company = route.Company, Origin = route.Origin, Destination = route.Destination, DepartureTimes = deliveryTimes, Duration = duration, MaxWeight = maxWeight, MaxVolume = maxVolume, CostPerGram = costPerGram, CostPerCm3 = costPerCm3 };
 
             // throws a database exception if doesn't exist
             dataHelper.Update(newRoute);

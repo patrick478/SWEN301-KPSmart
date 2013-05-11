@@ -50,23 +50,22 @@ namespace Server.Business
         }
 
         /// <summary>
-        /// Updates a new price for the given [origin, destination, priority] combination.
+        /// Updates the given price.
         /// </summary>
-        /// <param name="originID">id of the origin</param>
-        /// <param name="destinationID">id of the destination</param>
-        /// <param name="priority">priority</param>
+        /// <param name="priceId">id of the price to update</param>
         /// <param name="pricePerGram"></param>
         /// <param name="pricePerCm3"></param>
         /// <returns>the created object, with ID field, and LastEdited initialised</returns>
         /// <exception cref="DatabaseException">if it doesn't exist</exception>
         /// <exception cref="InvalidObjectStateException">if the fields are invalid</exception>
-        public Price Update(int originID, int destinationID, Priority priority, int pricePerGram, int pricePerCm3)
+        public Price Update(int priceId, int pricePerGram, int pricePerCm3)
         {
-            var origin = state.GetRouteNode(originID);
-            var destination = state.GetRouteNode(destinationID);
-
+            var price = state.GetPrice(priceId);
+            if (price == null)
+                throw new ArgumentException("No price was found with id: " + priceId, "priceId");
+            
             // throws an exception if invalid
-            var newPrice = new Price { Origin = origin, Destination = destination, Priority = priority, PricePerGram = pricePerGram, PricePerCm3 = pricePerCm3 };
+            var newPrice = new Price { Origin = price.Origin, Destination = price.Destination, Priority = price.Priority, PricePerGram = pricePerGram, PricePerCm3 = pricePerCm3 };
 
             // throws a database exception if exists already
             dataHelper.Update(newPrice);

@@ -5,6 +5,8 @@
 // 
 //////////////////////
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Common
 {
@@ -113,7 +115,7 @@ namespace Common
         /// </summary>
         /// <param name="day"></param>
         /// <returns></returns>
-        private int GetDayOfWeekNumberValue(DayOfWeek day)
+        private static int GetDayOfWeekNumberValue(DayOfWeek day)
         {
             switch (day)
             {
@@ -141,7 +143,7 @@ namespace Common
         /// </summary>
         /// <param name="day"></param>
         /// <returns></returns>
-        private DayOfWeek GetDayOfWeekFromNumberValue(int day)
+        private static DayOfWeek GetDayOfWeekFromNumberValue(int day)
         {
             switch (day)
             {
@@ -168,6 +170,60 @@ namespace Common
                 return 1;
 
             return 0;
+        }
+
+        public string ToNetString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append(GetDayOfWeekNumberValue(DayComponent));
+            builder.Append(NetCodes.TIMESEPERATOR);
+            builder.Append(HourComponent);
+            builder.Append(NetCodes.TIMESEPERATOR);
+            builder.Append(MinuteComponent);
+            return builder.ToString();
+        }
+
+        public static WeeklyTime ParseNetString(string raw)
+        {
+            string[] tokens = raw.Split(NetCodes.TIMESEPERATOR);
+            int i = 0;
+            DayOfWeek day = GetDayOfWeekFromNumberValue(Convert.ToInt32(tokens[i++]));
+            int hour = Convert.ToInt32(tokens[i++]);
+            int minute = Convert.ToInt32(tokens[i++]);
+            return new WeeklyTime(day, hour, minute);
+        }
+
+        /// <summary>
+        /// Creates a network string for a list of WeeklyTime objects. Used when communicating departing times of Routes. Convert back into List via ParseTimeNetString method.
+        /// </summary>
+        /// <param name="times"></param>
+        /// <returns></returns>
+        public static string BuildTimesNetString(IList<WeeklyTime> times)
+        {
+            StringBuilder builder = new StringBuilder();
+            bool first = true;
+            foreach (WeeklyTime t in times)
+            {
+                if (first)
+                    first = false;
+                else
+                    builder.Append(NetCodes.SUBSEPARATOR);
+                builder.Append(t.ToNetString());
+            }
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Builds a list of WeeklyTime objects from a network string (that was generated via the BuildTimesNetString method). Used when communicating departing times of Routes.
+        /// </summary>
+        /// <returns>List of WeeklyTime objects.</returns>
+        public static IList<WeeklyTime> ParseTimesNetString(string times)
+        {
+            string[] tokens = times.Split(NetCodes.SUBSEPARATOR);
+            IList<WeeklyTime> list = new List<WeeklyTime>();
+            for (int i = 0; i < tokens.Length; ++i)
+                list.Add(ParseNetString(tokens[i]));
+            return list;
         }
 
     }

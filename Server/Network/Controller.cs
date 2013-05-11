@@ -81,12 +81,12 @@ namespace Server.Network
                     string countryCode = tokens[count++];
                     string countryName = tokens[count++];
                     Country country = countryService.Create(countryName, countryCode);
-                    SendObjectAdd(country.ToNetString());
+                    SendObjectUpdate(country.ToNetString());
                     return;
                 case NetCodes.OBJECT_COMPANY:
                     string companyName = tokens[count++];
                     Company company = companyService.Create(companyName);
-                    SendObjectAdd(company.ToNetString());
+                    SendObjectUpdate(company.ToNetString());
                     return;
                 case NetCodes.OBJECT_PRICE:
                     int priceOriginId = Convert.ToInt32(tokens[count++]);
@@ -95,10 +95,9 @@ namespace Server.Network
                     int priceWeight = Convert.ToInt32(tokens[count++]);
                     int priceVolume = Convert.ToInt32(tokens[count++]);
                     Price price = priceService.Create(priceOriginId, priceDestinationId, pricePrio, priceWeight, priceVolume);
-                    SendObjectAdd(price.ToNetString());
+                    SendObjectUpdate(price.ToNetString());
                     return;
                 case NetCodes.OBJECT_ROUTE:
-                // ... - Origin Location ID (int) - Destination Location ID (int) - Company ID (int) - Transport Type (TRANSPORT_) - *Cost/gram (int) - *Cost/cm3 (int) - *Max Weight (int) - *Max Capacity (int) - TODO Add Times
                     int routeOriginId = Convert.ToInt32(tokens[count++]);
                     int routeDestinationId = Convert.ToInt32(tokens[count++]);
                     int routeCompany = Convert.ToInt32(tokens[count++]);
@@ -107,7 +106,10 @@ namespace Server.Network
                     int routeVolumeCost = Convert.ToInt32(tokens[count++]);
                     int routeWeightMax = Convert.ToInt32(tokens[count++]);
                     int routeVolumeMax = Convert.ToInt32(tokens[count++]);
-                    
+                    int routeDuration = Convert.ToInt32(tokens[count++]);
+                    IList<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
+                    Route route = routeService.Create(routeTransport, routeCompany, routeOriginId, routeDestinationId, routeTimes, routeDuration, routeWeightMax, routeVolumeMax, routeWeightCost, routeVolumeCost);
+                    SendObjectUpdate(route.ToNetString());
                     return;
             } 
         }
@@ -120,7 +122,8 @@ namespace Server.Network
             {
                 case NetCodes.OBJECT_COUNTRY:
                     string countryCode = tokens[count++];
-                    countryService.Update(id, countryCode);
+                    Country country = countryService.Update(id, countryCode);
+                    SendObjectUpdate(country.ToNetString());
                     return;
                 case NetCodes.OBJECT_COMPANY:
                     // send back error saying you can't edit companies. maybe?
@@ -128,10 +131,18 @@ namespace Server.Network
                 case NetCodes.OBJECT_PRICE:
                     int priceWeight = Convert.ToInt32(tokens[count++]);
                     int priceVolume = Convert.ToInt32(tokens[count++]);
-                    //priceService.Update(
+                    Price price = priceService.Update(id, priceWeight, priceVolume);
+                    SendObjectUpdate(price.ToNetString());
                     return;
                 case NetCodes.OBJECT_ROUTE:
-
+                    int routeWeightCost = Convert.ToInt32(tokens[count++]);
+                    int routeVolumeCost = Convert.ToInt32(tokens[count++]);
+                    int routeWeightMax = Convert.ToInt32(tokens[count++]);
+                    int routeVolumeMax = Convert.ToInt32(tokens[count++]);
+                    int routeDuration = Convert.ToInt32(tokens[count++]);
+                    IList<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
+                    Route route = routeService.Update(id, routeTimes, routeDuration, routeWeightMax, routeVolumeMax, routeWeightCost, routeVolumeCost);
+                    SendObjectUpdate(route.ToNetString());
                     return;
             }
         }
@@ -144,15 +155,19 @@ namespace Server.Network
             {
                 case NetCodes.OBJECT_COUNTRY:
                     countryService.Delete(id);
+                    SendObjectDelete(id, NetCodes.OBJECT_COUNTRY);
                     return;
                 case NetCodes.OBJECT_COMPANY:
                     companyService.Delete(id);
+                    SendObjectDelete(id, NetCodes.OBJECT_COMPANY);
                     return;
                 case NetCodes.OBJECT_PRICE:
                     priceService.Delete(id);
+                    SendObjectDelete(id, NetCodes.OBJECT_PRICE);
                     return;
                 case NetCodes.OBJECT_ROUTE:
                     routeService.Delete(id);
+                    SendObjectDelete(id, NetCodes.OBJECT_ROUTE);
                     return;
             }
         }
@@ -165,8 +180,10 @@ namespace Server.Network
             int weight = Convert.ToInt32(tokens[count++]);
             int volume = Convert.ToInt32(tokens[count++]);
             var options = deliveryService.GetBestRoutes(client.ID, originID, destinationID, weight, volume);
-
-            //client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_PRICES,Convert.ToString(air.TotalPrice),Convert.ToString(standard.TotalPrice)));
+            if (options.Count <= 0)
+                client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_PRICES,NetCodes.PATH_CANCEL));
+            else
+                client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_PRICES,PathTypeExtensions.BuildOptionsNetString(options)));
         }
 
         private void DeliverySelect(Client client, string[] tokens)
@@ -183,42 +200,14 @@ namespace Server.Network
             //TODO Transmit success to client.
         }
 
-        // Just does a full update at the moment, can do delta update later.
-        private void RouteEdit(Client client, string[] tokens)
-        {
-            int count = 1;
-            int routeID = Convert.ToInt32(tokens[count++]);
-            int companyID = Convert.ToInt32(tokens[count++]);
-            TransportType type;
-            if (tokens[count] == NetCodes.TRANSPORT_AIR)
-                type = TransportType.Air;
-            else if (tokens[count] == NetCodes.TRANSPORT_SEA)
-                type = TransportType.Sea;
-            else
-                type = TransportType.Land;   // TODO Just go with the flow and avoid errors by assuming anything else is Land? Or manually check for Land and else is a error?
-            ++count;
-            int originID = Convert.ToInt32(tokens[count++]);
-            int destinationID = Convert.ToInt32(tokens[count++]);
-            int weightCost = Convert.ToInt32(tokens[count++]);
-            int volumeCost = Convert.ToInt32(tokens[count++]);
-
-            //Route r = routeService.GetRoute(routeID);
-        }
-
-        private void PriceEdit(Client client, string[] tokens)
-        {
-            int count = 1;
-        }
-
-        private void CompanyAdd(Client client, string[] tokens)
-        {
-            string name = tokens[1];
-            companyService.Create(name);
-        }
-
-        private void SendObjectAdd(string objectDef)
+        private void SendObjectUpdate(string objectDef)
         {
             Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_UPDATE,objectDef));
+        }
+
+        private void SendObjectDelete(int id, string objectType)
+        {
+            Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_DELETE, Convert.ToString(id), objectType));
         }
     }
 }
