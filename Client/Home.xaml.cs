@@ -96,10 +96,10 @@ namespace Client
 
             ReloadCountries();
             ReloadCompanies();
-            ReloadDeliveries();
-            ReloadPrices();
-            ReloadRouteNodes();
-            ReloadRoutes();
+            //ReloadDeliveries();
+           // ReloadPrices();
+            //ReloadRouteNodes();
+           // ReloadRoutes();
 
             
 
