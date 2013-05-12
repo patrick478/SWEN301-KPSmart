@@ -20,19 +20,31 @@ namespace Client
             this.companies = new Dictionary<int, Company>();
         }
 
-        public override void SaveRouteNode(RouteNode routeNode) { throw new NotSupportedException(); }
+        // State method overrides
 
-        public override void RemoveRouteNode(int id) { throw new NotSupportedException(); }
+        public RouteNode GetRouteNode(int id) { throw new NotSupportedException("Client state does not store RouteNodes."); }
 
-        public override void InitialiseRouteNodes(IDictionary<int, RouteNode> routeNodes) { throw new NotSupportedException(); }
+        public IList<RouteNode> GetAllRouteNodes() { throw new NotSupportedException("Client state does not store RouteNodes."); }
+
+        public Delivery GetDelivery(int id) { throw new NotSupportedException("Client state does not store Deliveries."); }
+
+        public IList<Delivery> GetAllDeliveries() { throw new NotSupportedException("Client state does not store Deliveries."); }
+
+        // Current State method overrides
+
+        public override void SaveRouteNode(RouteNode routeNode) { throw new NotSupportedException("Client state does not store RouteNodes."); }
+
+        public override void RemoveRouteNode(int id) { throw new NotSupportedException("Client state does not store RouteNodes."); }
+
+        public override void InitialiseRouteNodes(IDictionary<int, RouteNode> routeNodes) { throw new NotSupportedException("Client state does not store RouteNodes."); }
 
         public override bool RouteNodesInitialised { get { return false; } }
 
-        public override void SaveDelivery(Delivery delivery) { throw new NotSupportedException(); }
+        public override void SaveDelivery(Delivery delivery) { throw new NotSupportedException("Client state does not store Deliveries."); }
 
-        public override void RemoveDelivery(int id) { throw new NotSupportedException(); }
+        public override void RemoveDelivery(int id) { throw new NotSupportedException("Client state does not store Deliveries."); }
 
-        public override void InitialiseDeliveries(IDictionary<int, Delivery> deliveries) { throw new NotSupportedException(); }
+        public override void InitialiseDeliveries(IDictionary<int, Delivery> deliveries) { throw new NotSupportedException("Client state does not store Deliveries."); }
 
         public override bool DeliveriesInitialised { get { return false; } }
     }
