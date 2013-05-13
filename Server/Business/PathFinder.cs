@@ -104,8 +104,16 @@ namespace Server.Business
                     //if the node is not in the fringe
                     //or the current value is lower than
                     //the new cost then set the new parent
-                    if (!fringe.ContainsKey(nextNode) || fringe[nextNode] > totalCost)
+                    if (!fringe.ContainsKey(nextNode))
                     {
+                        originPath.Add(nextNode, nextInstance);
+                        fringe.Add(nextNode, totalCost);
+                    }
+                    else if (fringe[nextNode] > totalCost)
+                    {
+                        originPath.Remove(nextNode);
+                        fringe.Remove(nextNode);
+
                         originPath.Add(nextNode, nextInstance);
                         fringe.Add(nextNode, totalCost);
                     }
@@ -149,7 +157,7 @@ namespace Server.Business
                 totalPrice += nextInstance.Route.PricePerGram * delivery.WeightInGrams;
                 */
             }
-            while (originPath.ContainsKey(nextNode));
+            while (originPath[nextNode].Route != null);
             /*
             delivery.TotalCost = totalCost;
             delivery.TotalPrice = totalPrice;
