@@ -61,6 +61,13 @@
     <Compile Include="DialogBoxes\AddCompanyDialogBox.xaml.cs">
       <DependentUpon>AddCompanyDialogBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DialogBoxes\AddRouteDialogBox.xaml.cs">
+      <DependentUpon>AddRouteDialogBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialogBoxes\AddPriceDialogBox.xaml.cs">
+      <DependentUpon>AddPriceDialogBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialogBoxes\DayMinuteHourHolder.cs" />
     <Compile Include="DialogBoxes\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
@@ -76,6 +83,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="DialogBoxes\AddCompanyDialogBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DialogBoxes\AddRouteDialogBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DialogBoxes\AddPriceDialogBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -104,7 +119,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Compile Include="ClientController.cs" />
-	<Compile Include="ClientState.cs" />
+    <Compile Include="ClientState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

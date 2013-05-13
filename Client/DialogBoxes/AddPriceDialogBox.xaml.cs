@@ -1,13 +1,13 @@
 ﻿using System.Windows;
 
-namespace Client.Countries
+namespace Client.DialogBoxes
 {
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class AddCountryDialogBox : Window
+    public partial class AddPriceDialogBox : Window
     {
-        public AddCountryDialogBox()
+        public AddPriceDialogBox()
         {
             InitializeComponent();
         }

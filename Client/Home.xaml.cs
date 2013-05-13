@@ -71,26 +71,21 @@ namespace Client
             routesList.Columns.Add(new DataGridTextColumn { Header = "Company", Binding = new Binding("Company") }); 
             routesList.Columns.Add(new DataGridTextColumn { Header = "TransportType", Binding = new Binding("TransportType") });
 
-            routeNodeList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
-            routeNodeList.Columns.Add(new DataGridTextColumn { Header = "Country", Binding = new Binding("Country") });
-
+            
             priceList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
             priceList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
             priceList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
             priceList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
 
-            deliveriesList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
-            deliveriesList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
-            deliveriesList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
-            deliveriesList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
-
+            intlPortList.Columns.Add(new DataGridTextColumn { Header = "Country", Binding = new Binding("Country") });
+            
             //disable edit buttons until something is clicked in the corresponding datagrids
             editCountry.IsEnabled = false;
             editCompanyButton.IsEnabled = false;
             editDistCenter.IsEnabled = false;
             editPrice.IsEnabled = false;
             editRoute.IsEnabled = false;
-            editRouteNode.IsEnabled = false;
+            editIntlPortButton.IsEnabled = false;
 
 
 
@@ -131,16 +126,7 @@ namespace Client
             }
         }
 
-        private void ReloadRouteNodes()
-        {
-
-            routeNodeList.Items.Clear();
-
-            foreach (var c in _clientState.GetAllRouteNodes())
-            {
-                routeNodeList.Items.Add(c);
-            }
-        }
+       
 
         private void ReloadRoutes()
         {
@@ -164,16 +150,7 @@ namespace Client
             }
         }
 
-        private void ReloadDeliveries()
-        {
-
-            deliveriesList.Items.Clear();
-
-            foreach (var c in _clientState.GetAllDeliveries())
-            {
-                deliveriesList.Items.Add(c);
-            }
-        }
+        
 
 
 
@@ -290,7 +267,7 @@ namespace Client
 
        
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void requestDelivery_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new System.Uri("RequestDelivery.xaml", UriKind.RelativeOrAbsolute));
         }
@@ -308,7 +285,77 @@ namespace Client
             ReloadCompanies();
         }
 
+        private void editIntlPortButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void addRoute_Click(object sender, RoutedEventArgs e)
+        {
+        // Instantiate the dialog box
+            var dlg = new AddRouteDialogBox(_clientState);
+
+            // Open the dialog box modally 
+            dlg.ShowDialog();
+            if (dlg.DialogResult != false)
+            {
+                var originID = ((RouteNode)dlg.originComboBox.SelectedValue).ID;
+             
+
+                try
+                {
+                    //_clientCon.AddRoute();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+            
+        }
 
        
+        }
+
+        private void addPrice_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new AddPriceDialogBox();
+
+            // Open the dialog box modally 
+            dlg.ShowDialog();
+            if (dlg.DialogResult != false)
+            {
+                var originID = Convert.ToInt32(dlg.origin.Text);
+                var destId = Convert.ToInt32(dlg.destination.Text);
+                Priority priority = Priority.Standard;
+                if (dlg.priority.SelectedIndex == 0)
+                    priority = Priority.Standard;
+                else if (dlg.priority.SelectedIndex == 1)
+                    priority = Priority.Air;
+                else
+                {
+                    //should never happen
+                    MessageBox.Show("You must select Standard or Air priorty.");
+                }
+                var weightPrice = Convert.ToInt32(dlg.gramPrice.Text);
+                var volumePrice = Convert.ToInt32(dlg.cubicCmPrice.Text);
+
+                try
+                {
+                    _clientCon.AddPrice(originID, destId, priority, weightPrice, volumePrice);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+
+
+        }
+
+        private void addIntlPortButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
