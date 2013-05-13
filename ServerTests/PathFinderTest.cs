@@ -63,6 +63,8 @@ namespace ServerTests
 
         private static PathFinder pathFinder;
         private static List<RouteNode> routeNodes;
+        private static IDictionary<int, Route> routes;
+
 
 
         /// <summary>
@@ -75,9 +77,12 @@ namespace ServerTests
             // initialise state
             CurrentState state = new CurrentState();
             routeNodes = new List<RouteNode>();
-            routeNodes.Add(new DistributionCentre("Auckland"));
-            routeNodes.Add(new DistributionCentre("Wellington"));
             routeNodes.Add(new DistributionCentre("Christchurch"));
+            routeNodes.Add(new DistributionCentre("Wellington"));
+            routeNodes.Add(new DistributionCentre("Auckland"));
+
+            routes = getRoutes(routeNodes);
+
             state.InitialiseRoutes(getRoutes(routeNodes));
 
             // initialise routeService
@@ -142,25 +147,20 @@ namespace ServerTests
         [TestMethod()]
         public void findRoutesTest()
         {
-            /*
-            Dictionary<PathType, Delivery> options = pathFinder.findRoutes(routeNodes[0], routeNodes[2], 1, 1);
+            Dictionary<PathType, List<RouteInstance>> options = pathFinder.findRoutes(routeNodes[0], routeNodes[2], 1, 1);
 
-            //Expected cost = 5, time = 
-            Assert.AreEqual("expected", options[PathType.AirExpress].TotalCost);
-            Assert.AreEqual("expected", options[PathType.AirExpress]);
+            Assert.AreEqual(routes[1], options[PathType.AirExpress][0]);
+            Assert.AreEqual(routes[3], options[PathType.AirExpress][1]);
 
-            //Expected cost = 5, time = 
-            Assert.AreEqual("expected", options[PathType.AirStandard].TotalCost);
-            Assert.AreEqual("expected", options[PathType.AirStandard]);
+            Assert.AreEqual(routes[1], options[PathType.AirStandard][0]);
+            Assert.AreEqual(routes[3], options[PathType.AirStandard][1]);
 
-            //Expected cost = 5, time = 
-            Assert.AreEqual("expected", options[PathType.Express].TotalCost);
-            Assert.AreEqual("expected", options[PathType.Express]);
+            Assert.AreEqual(routes[2], options[PathType.Express][0]);
+            Assert.AreEqual(routes[3], options[PathType.Express][1]);
 
-            //Expected cost = 4, time = 
-            Assert.AreEqual("expected", options[PathType.Standard].TotalCost);
-            Assert.AreEqual("expected", options[PathType.Standard]);
-            */
+            Assert.AreEqual(routes[1], options[PathType.Standard][0]);
+            Assert.AreEqual(routes[4], options[PathType.Standard][1]);
+
         }
     }
 }
