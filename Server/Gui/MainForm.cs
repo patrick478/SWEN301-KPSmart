@@ -66,10 +66,11 @@ namespace Server.Gui
         {
             try
             {
+                
                 CountryDataHelper cdh = new CountryDataHelper();
 
                 // create country if doesn't exist
-                Country country = new Country {ID=1, Name = "Wellington", Code = "WLG"};
+                Country country = new Country { ID = 1, Name = "Wellington", Code = "WLG" };
                 if (!countryService.Exists(country))
                 {
                     country = countryService.Create("Wellington", "WLG");
@@ -90,7 +91,7 @@ namespace Server.Gui
                 }
 
                 // create australia
-                country = new Country {Name = "Australia", Code = "AUS"};
+                country = new Country { Name = "Australia", Code = "AUS" };
                 if (!countryService.Exists(country))
                 {
                     country = countryService.Create(country.Name, country.Code);
@@ -99,72 +100,71 @@ namespace Server.Gui
                 // load all countries
                 var allCountries = countryService.GetAll();
 
-                // delete australia
-                foreach (Country c in allCountries)
-                {
-                    if (c.Name == "Australia")
-                    {
-                        countryService.Delete(c.ID);
-                    }
-                }
-
-
-                // create australia again
-                country = new Country {Name = "Australia", Code = "AUS"};
-                if (!countryService.Exists(country))
-                {
-                    country = countryService.Create(country.Name, country.Code);
-                }
-
 
                 // create christchurch depot
                 RouteNode routeNode = new DistributionCentre("Christchurch");
-                if (!locationService.Exists(routeNode)){
+                if (!locationService.Exists(routeNode))
+                {
                     routeNode = locationService.CreateDistributionCentre("Christchurch");
                 }
 
                 // wellington depot
                 routeNode = new DistributionCentre("Wellington");
-                if (!locationService.Exists(routeNode)){
+                if (!locationService.Exists(routeNode))
+                {
                     routeNode = locationService.CreateDistributionCentre("Wellington");
                 }
 
                 // australia port
                 country = countryService.GetAll().AsQueryable().First(t => t.Name == "Australia");
                 var destination = new InternationalPort(country);
-                if (!locationService.Exists(destination)){
+                if (!locationService.Exists(destination))
+                {
                     destination = locationService.CreateInternationalPort(country.ID);
                 }
 
                 // get a company
-                var company = new Company(){Name = "NZ Post"};
-                if(!companyService.Exists(company)){
+                var company = new Company() { Name = "NZ Post" };
+                if (!companyService.Exists(company))
+                {
                     company = companyService.Create(company.Name);
                 }
 
                 // create a new route
-                Route route = new Route() 
-                    { 
-                        Origin = routeNode, 
-                        Destination = destination, 
-                        Company = company, 
-                        Duration = 300, 
-                        MaxVolume = 5000, 
-                        MaxWeight = 5000, 
-                        CostPerCm3 = 3, 
-                        CostPerGram = 5, 
+                Route route = new Route()
+                    {
+                        Origin = routeNode,
+                        Destination = destination,
+                        Company = company,
+                        Duration = 300,
+                        MaxVolume = 5000,
+                        MaxWeight = 5000,
+                        CostPerCm3 = 3,
+                        CostPerGram = 5,
                         TransportType = TransportType.Air,
-                        DepartureTimes = new List<WeeklyTime>{new WeeklyTime(DayOfWeek.Monday, 5, 30)}
+                        DepartureTimes = new List<WeeklyTime> { new WeeklyTime(DayOfWeek.Monday, 5, 30) }
                     };
-                if (!routeService.Exists(route)) {
-                    route = routeService.Create(route.TransportType, route.Company.ID, route.Origin.ID, route.Destination.ID, route.DepartureTimes, route.Duration, route.MaxWeight, route.MaxVolume, route.CostPerGram, route.CostPerCm3); 
+
+                var routeDataHelper = new RouteDataHelper();
+
+                int id = routeDataHelper.GetId(route);
+                Logger.WriteLine("Route id is: " + id);
+                if (id == 0)
+                {
+                    routeDataHelper.Create(route);
                 }
 
+                route = routeDataHelper.Load(1);
+
+                var routes = routeDataHelper.LoadAll();
+                
             }
-            catch (Exception e)
+            catch (Exception e) 
             {
-                Logger.Write(e.Message);
+                Logger.WriteLine(e.Message);
+                Logger.Write(e.StackTrace);
             }
+
         }
 
 

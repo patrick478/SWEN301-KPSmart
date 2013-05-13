@@ -23,7 +23,10 @@ namespace Server.Business
             if (!state.EventsInitialised())
             {
                 int currentNumberOfEvents = dataHelper.GetNumberOfEvents();
-                state.SetNumberOfEvents(currentNumberOfEvents);
+                if (currentNumberOfEvents != 0)
+                {
+                    state.SetNumberOfEvents(currentNumberOfEvents);
+                }
             }
         }
 

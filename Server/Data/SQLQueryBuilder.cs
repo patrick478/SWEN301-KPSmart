@@ -33,7 +33,7 @@ namespace Server.Data
             fields = fields.Trim(',');
 
             // build the query
-            var sql = String.Format("SELECT {3} FROM `{0}` WHERE active=1 AND {1}={2}", tableName, fieldName, fieldValue, fields);
+            var sql = String.Format("SELECT {3} FROM `{0}` WHERE active=1 AND {1}='{2}'", tableName, fieldName, fieldValue, fields);
 
             return sql;
         }
@@ -61,11 +61,11 @@ namespace Server.Data
             string equalsSection = "";
             for(int i = 0; i < fieldNames.Length; i++) 
             {
-                equalsSection += String.Format("AND {0}={1} ", fieldNames[i], fieldValues[i]); 
+                equalsSection += String.Format("AND {0}='{1}' ", fieldNames[i], fieldValues[i]); 
             }
             
             // build the query
-            var sql = String.Format("SELECT {2} FROM `{0}` WHERE active=1 {1}}", tableName, equalsSection, fields);
+            var sql = String.Format("SELECT {2} FROM `{0}` WHERE active=1 {1}", tableName, equalsSection, fields);
 
             return sql;
         }

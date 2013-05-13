@@ -23,6 +23,9 @@ namespace Server.Data
             lock (Database.Instance) 
             {
                 var sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, "route_id", route_id.ToString(), new[]{"weekly_time"});
+
+                //sql = "SELECT 'weekly_time' FROM `departure_times` WHERE active=1 AND route_id=1";
+
                 var rows = Database.Instance.FetchRows(sql);
 
                 foreach (object[] row in rows) 
