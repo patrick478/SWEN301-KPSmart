@@ -22,13 +22,13 @@ namespace Client
 
         // State method overrides
 
-        public RouteNode GetRouteNode(int id) { throw new NotSupportedException("Client state does not store RouteNodes."); }
+        public override RouteNode GetRouteNode(int id) { throw new NotSupportedException("Client state does not store RouteNodes."); }
 
-        public IList<RouteNode> GetAllRouteNodes() { throw new NotSupportedException("Client state does not store RouteNodes."); }
+        public override IList<RouteNode> GetAllRouteNodes() { throw new NotSupportedException("Client state does not store RouteNodes."); }
 
-        public Delivery GetDelivery(int id) { throw new NotSupportedException("Client state does not store Deliveries."); }
+        public override Delivery GetDelivery(int id) { throw new NotSupportedException("Client state does not store Deliveries."); }
 
-        public IList<Delivery> GetAllDeliveries() { throw new NotSupportedException("Client state does not store Deliveries."); }
+        public override IList<Delivery> GetAllDeliveries() { throw new NotSupportedException("Client state does not store Deliveries."); }
 
         // Current State method overrides
 
