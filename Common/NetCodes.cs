@@ -32,6 +32,7 @@ namespace Common
         // Server to Client - First token of a message sent by the Server, identifies the information the Server is sending (and the format for the rest of the message).
 
         public const string SV_DELIVERY_PRICES = "dp";    // PATH_CANCEL or PATH_ 
+        public const string SV_DELIVERY_CONFIRMED = "dc";    // 
         public const string SV_ERROR = "er"; // Error Message (string ...)   // CHECK unless we want to have error codes. Or have both; a code followed by a string.
         public const string SV_OBJECT_UPDATE = "ou";    // ID (int) - Type (OBJECT_) - See specific object for rest of protocol...
         public const string SV_OBJECT_DELETE = "od";    // ID (int) - Type (OBJECT_)

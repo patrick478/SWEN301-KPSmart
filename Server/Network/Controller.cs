@@ -197,7 +197,7 @@ namespace Server.Network
             }
             PathType type = PathTypeExtensions.ParseNetString(tokens[count]);
             deliveryService.SelectDeliveryOption(client.ID, type);
-            //TODO Transmit success to client.
+            client.SendMessage(NetCodes.SV_DELIVERY_CONFIRMED);
         }
 
         private void SendObjectUpdate(string objectDef)
