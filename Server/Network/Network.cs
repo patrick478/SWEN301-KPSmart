@@ -225,6 +225,7 @@ namespace Server.Network
 
             if (msg.StartsWith("#LOGIN"))
             {
+                Logger.WriteLine("Login attempt.");
                 client.SendMessage("#LOGIN|true|true");
                 //var segments = msg.Split('|');
                 //var username = segments[1];
@@ -240,10 +241,10 @@ namespace Server.Network
 
             MessageHandler.PassMessage(msg, client);
         }
-
+        
         public void SendMessageToAll(string message)
         {
-
+            Logger.WriteLine("Sending message to all: {0}", message);
         }
 
         internal void Send(Client client, byte[] bytes)

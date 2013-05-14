@@ -42,13 +42,13 @@ namespace Client.Countries
 
         void network_DataReady(string msg)
         {
-            MessageBox.Show("Message from server: " + msg);
+//            MessageBox.Show("Message from server: " + msg);
         }
 
         void network_OnConnect()
         {
-            MessageBox.Show("Connected! Sending message..");
-            Network.Instance.WriteLine("Hello from client!");       
+            //MessageBox.Show("Connected! Sending message..");
+            //Network.Instance.WriteLine("Hello from client!");       
         }
     }
 }
