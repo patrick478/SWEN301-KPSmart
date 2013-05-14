@@ -22,6 +22,8 @@ namespace Client
         #region Receiving
         public delegate void StateUpdatedDelegate(Type type);
         public event StateUpdatedDelegate Updated;
+        public delegate void DeliveryOptionsDelegate(IDictionary<PathType, int> prices);
+        public event DeliveryOptionsDelegate OptionsReceived;
 
         /// <summary>
         /// Reads a message received from the Server and performs the appropriate actions.
@@ -40,7 +42,11 @@ namespace Client
                 case NetCodes.SV_OBJECT_DELETE:
                     ObjectDelete(tokens);
                     return;
+                case NetCodes.SV_DELIVERY_PRICES:
+                    DeliveryOptions(tokens);
+                    return;
                 case NetCodes.SV_ERROR:
+                    //TODO
                     return;
 
                 // TODO once implemented, add the business figures stuff
@@ -101,6 +107,22 @@ namespace Client
                     state.RemoveCompany(id);
                     return;
             }
+        }
+
+        private void DeliveryOptions(string[] tokens)
+        {
+            int count = 1;
+            if (OptionsReceived != null)
+            {
+                if (tokens[count] == NetCodes.PATH_CANCEL)
+                    OptionsReceived(null);
+                else
+                {
+                    IDictionary<PathType, int> options = PathTypeExtensions.ParseOptionsNetString(tokens[count]);
+                    OptionsReceived(options);
+                }
+            }
+
         }
         #endregion
 

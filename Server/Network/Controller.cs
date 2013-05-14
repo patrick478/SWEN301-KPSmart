@@ -179,7 +179,7 @@ namespace Server.Network
             int destinationID = Convert.ToInt32(tokens[count++]);
             int weight = Convert.ToInt32(tokens[count++]);
             int volume = Convert.ToInt32(tokens[count++]);
-            var options = deliveryService.GetBestRoutes(client.ID, originID, destinationID, weight, volume);
+            IDictionary<PathType,Delivery> options = deliveryService.GetBestRoutes(client.ID, originID, destinationID, weight, volume);
             if (options.Count <= 0)
                 client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_PRICES,NetCodes.PATH_CANCEL));
             else
