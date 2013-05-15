@@ -12,6 +12,11 @@ namespace Client
     /// </summary>
     public class ClientState: CurrentState
     {
+        /// <summary>
+        /// Server timestamp on the latest state update received.
+        /// </summary>
+        private DateTime lastUpdate;
+
         public ClientState()
         {
             this.countries = new Dictionary<int, Country>();
@@ -20,6 +25,7 @@ namespace Client
             this.companies = new Dictionary<int, Company>();
         }
 
+        #region Functionality Removal Overrides
         // State method overrides
 
         public override RouteNode GetRouteNode(int id) { throw new NotSupportedException("Client state does not store RouteNodes."); }
@@ -47,5 +53,6 @@ namespace Client
         public override void InitialiseDeliveries(IDictionary<int, Delivery> deliveries) { throw new NotSupportedException("Client state does not store Deliveries."); }
 
         public override bool DeliveriesInitialised { get { return false; } }
+        #endregion
     }
 }

@@ -202,12 +202,12 @@ namespace Server.Network
 
         private void SendObjectUpdate(string objectDef)
         {
-            Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_UPDATE,objectDef));
+            Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_UPDATE, DateTime.UtcNow.ToString(), objectDef));
         }
 
         private void SendObjectDelete(int id, string objectType)
         {
-            Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_DELETE, Convert.ToString(id), objectType));
+            Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_DELETE, DateTime.UtcNow.ToString(), Convert.ToString(id), objectType));
         }
     }
 }
