@@ -15,8 +15,6 @@ namespace ServerTests
     [TestClass()]
     public class PathFinderTest
     {
-
-
         private TestContext testContextInstance;
 
         /// <summary>
@@ -110,31 +108,31 @@ namespace ServerTests
             airChchWell.Duration = 60;
             airChchWell.CostPerCm3 = 0;
             airChchWell.CostPerGram = 2;
-            airChchWell.ID = 1;
-            routes[1] = airChchWell;
+            airChchWell.ID = 0;
+            routes[0] = airChchWell;
 
             Route landChchWell = new Route { Company = company, TransportType = TransportType.Land, Origin = routeNodes[0], Destination = routeNodes[1] };
             landChchWell.AddDepartureTime(new WeeklyTime(DayOfWeek.Tuesday, 12, 0));
             landChchWell.Duration = 60;
             landChchWell.CostPerCm3 = 0;
             landChchWell.CostPerGram = 1;
-            landChchWell.ID = 2;
-            routes[2] = landChchWell;
+            landChchWell.ID = 1;
+            routes[1] = landChchWell;
 
             Route airWellAuck = new Route { Company = company, TransportType = TransportType.Air, Origin = routeNodes[1], Destination = routeNodes[2] };
             airWellAuck.AddDepartureTime(new WeeklyTime(DayOfWeek.Thursday, 12, 0));
             airWellAuck.Duration = 60;
             airWellAuck.CostPerCm3 = 0;
             airWellAuck.CostPerGram = 3;
-            airWellAuck.ID = 3;
-            routes[3] = airWellAuck;
+            airWellAuck.ID = 2;
+            routes[2] = airWellAuck;
 
             Route landWellAuck = new Route { Company = company, TransportType = TransportType.Land, Origin = routeNodes[1], Destination = routeNodes[2] };
             landWellAuck.AddDepartureTime(new WeeklyTime(DayOfWeek.Wednesday, 12, 0));
             landWellAuck.Duration = 60;
             landWellAuck.CostPerCm3 = 0;
             landWellAuck.CostPerGram = 4;
-            landWellAuck.ID = 4;
+            landWellAuck.ID = 3;
             routes[3] = landWellAuck;
 
             return routes;
@@ -149,17 +147,17 @@ namespace ServerTests
         {
             Dictionary<PathType, List<RouteInstance>> options = pathFinder.findRoutes(routeNodes[0], routeNodes[2], 1, 1);
 
-            Assert.AreEqual(routes[1], options[PathType.AirExpress][0]);
-            Assert.AreEqual(routes[3], options[PathType.AirExpress][1]);
+            Assert.AreEqual(routes[0].ID, options[PathType.AirExpress][0].Route.ID);
+            Assert.AreEqual(routes[2].ID, options[PathType.AirExpress][1].Route.ID);
 
-            Assert.AreEqual(routes[1], options[PathType.AirStandard][0]);
-            Assert.AreEqual(routes[3], options[PathType.AirStandard][1]);
+            Assert.AreEqual(routes[0].ID, options[PathType.AirStandard][0].Route.ID);
+            Assert.AreEqual(routes[2].ID, options[PathType.AirStandard][1].Route.ID);
 
-            Assert.AreEqual(routes[2], options[PathType.Express][0]);
-            Assert.AreEqual(routes[3], options[PathType.Express][1]);
+            Assert.AreEqual(routes[0].ID, options[PathType.Express][0].Route.ID);
+            Assert.AreEqual(routes[3].ID, options[PathType.Express][1].Route.ID);
 
-            Assert.AreEqual(routes[1], options[PathType.Standard][0]);
-            Assert.AreEqual(routes[4], options[PathType.Standard][1]);
+            Assert.AreEqual(routes[1].ID, options[PathType.Standard][0].Route.ID);
+            Assert.AreEqual(routes[2].ID, options[PathType.Standard][1].Route.ID);
 
         }
     }

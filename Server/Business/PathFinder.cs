@@ -150,19 +150,20 @@ namespace Server.Business
                 path.Add(nextInstance);
                 nextNode = nextInstance.Route.Origin;
                 /*
-                totalCost += nextInstance.Route.CostPerCm3 * delivery.VolumeInCm3;
-                totalCost += nextInstance.Route.CostPerGram * delivery.WeightInGrams;
+                    totalCost += nextInstance.Route.CostPerCm3 * delivery.VolumeInCm3;
+                    totalCost += nextInstance.Route.CostPerGram * delivery.WeightInGrams;
 
-                totalPrice += nextInstance.Route.PricePerCm3 * delivery.VolumeInCm3;
-                totalPrice += nextInstance.Route.PricePerGram * delivery.WeightInGrams;
+                    totalPrice += nextInstance.Route.PricePerCm3 * delivery.VolumeInCm3;
+                    totalPrice += nextInstance.Route.PricePerGram * delivery.WeightInGrams;
                 */
             }
             while (originPath[nextNode].Route != null);
             /*
-            delivery.TotalCost = totalCost;
-            delivery.TotalPrice = totalPrice;
-            delivery.TimeOfDelivery = originPath[delivery.Destination].ArrivalTime;
+                delivery.TotalCost = totalCost;
+                delivery.TotalPrice = totalPrice;
+                delivery.TimeOfDelivery = originPath[delivery.Destination].ArrivalTime;
             */
+            path.Reverse(0, path.Count);
             return path;
         }
 
@@ -192,7 +193,8 @@ namespace Server.Business
             {
                 double routeCost = route.Route.CostPerCm3 * delivery.VolumeInCm3;
                 routeCost += route.Route.CostPerGram * delivery.WeightInGrams;
-                return routeCost + outer.nodeCost[route.Route.Origin];
+                routeCost += outer.nodeCost[route.Route.Origin];
+                return routeCost + (1.0 - (1.0 / route.ArrivalTime.Ticks));
             }
         }
 
@@ -203,7 +205,10 @@ namespace Server.Business
 
             public override double GetValue(RouteInstance route, Delivery delivery)
             {
-                return route.ArrivalTime.Ticks;//TODO
+                double routeCost = route.Route.CostPerCm3 * delivery.VolumeInCm3;
+                routeCost += route.Route.CostPerGram * delivery.WeightInGrams;
+                routeCost += outer.nodeCost[route.Route.Origin];
+                return route.ArrivalTime.Ticks + (1.0 - (1.0 / routeCost));//TODO
             }
         }
 
