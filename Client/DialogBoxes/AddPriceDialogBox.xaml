@@ -1,0 +1,28 @@
+﻿<Window x:Class="Client.DialogBoxes.AddPriceDialogBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Add Price" Height="262" Width="367"
+        MinHeight="10"
+        MinWidth="300"
+        ResizeMode="CanResizeWithGrip"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" 
+        FocusManager.FocusedElement="{Binding ElementName=companyName}">
+    <Grid>
+        <Label Content="Origin ID:" Height="28" HorizontalAlignment="Left" Margin="41,19,0,0" Name="label1" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="156,19,0,0" Name="origin" VerticalAlignment="Top" Width="120" />
+        <Button Content="Enter" Height="23" HorizontalAlignment="Left" Margin="167,180,0,0" Name="okButton" VerticalAlignment="Top" Width="75" IsDefault="True" Click="okButton_Click" />
+        <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,180,12,0" Name="button1" VerticalAlignment="Top" Width="75" IsCancel="True" />
+        <Label Content="Destination ID:" Height="28" HorizontalAlignment="Left" Margin="41,52,0,0" Name="label2" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="156,54,0,0" Name="destination" VerticalAlignment="Top" Width="120" />
+        <Label Content="Price per gram:" Height="28" HorizontalAlignment="Left" Margin="41,115,0,0" Name="label3" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="156,117,0,0" Name="gramPrice" VerticalAlignment="Top" Width="120" />
+        <Label Content="Price per cubic cm:" Height="28" HorizontalAlignment="Left" Margin="41,149,0,0" Name="label4" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="156,151,0,0" Name="cubicCmPrice" VerticalAlignment="Top" Width="120" />
+        <Label Content="Priority:" Height="28" HorizontalAlignment="Left" Margin="41,83,0,0" Name="label5" VerticalAlignment="Top" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="156,88,0,0" Name="priority" VerticalAlignment="Top" Width="120">
+            <ComboBoxItem Content="Standard" IsSelected="True" />
+            <ComboBoxItem Content="Air" />
+        </ComboBox>
+    </Grid>
+</Window>

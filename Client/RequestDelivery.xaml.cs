@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Common;
+using Server.Business;
 
 namespace Client
 {
@@ -20,10 +22,23 @@ namespace Client
     /// </summary>
     public partial class RequestDelivery : Page
     {
+        // initialise routeService
+            
+            // initialise pathfinder
+        private readonly PathFinder _pathFinder;
+        private readonly ClientState _clientState;
+        private DeliveryService _pathfindService;
+
         public RequestDelivery()
         {
-            InitializeComponent();
             
+            InitializeComponent();
+            var state = new CurrentState();
+            var routeService = new RouteService(state);
+            _pathFinder = new PathFinder(routeService);
+            _clientState = new ClientState();
+            _pathfindService = new DeliveryService(state, _pathFinder);
+
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -31,7 +46,7 @@ namespace Client
 
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void backToHomeButton_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new System.Uri("Home.xaml", UriKind.RelativeOrAbsolute));
         }
@@ -50,23 +65,47 @@ namespace Client
             volume.Visibility = Visibility.Hidden;
 
             submitButton.Visibility = Visibility.Hidden;
+
+            try
+            {
+                int originNode = Convert.ToInt32(origin.Text);
+                int destNode = Convert.ToInt32(destination.Text);
+               
+
+
+
+                var results = _pathfindService.GetBestRoutes(0,originNode, destNode, Convert.ToInt32(weight),
+                                                                                           Convert.ToInt32(volume));
+
+                
+                var standardDelivery = results[PathType.Standard];
+                var expressDelivery = results[PathType.Express];
+                var airStandardDelivery  = results[PathType.AirStandard];
+                var airExpressDelivery = results[PathType.AirExpress];
+
+                var standardPrice = 0;
+                var standardExpressPrice = 0;
+                var airPrice = 0;
+                var airExpressPrice = 0;
+
+
+                
+
+                air.Visibility = Visibility.Visible;
+                airExpress.Visibility = Visibility.Visible;
+                standard.Visibility = Visibility.Visible;
+                standardExpress.Visibility = Visibility.Visible;
+
+                air.Content = "Air: " + airPrice;
+                airExpress.Content = "Air Express: " + airExpressPrice;
+                standard.Content = "Standard: " + standardPrice;
+                standardExpress.Content = "Standard Express: " + standardExpressPrice;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
             
-
-            //placeholder prices until Josh pushes code
-            var standaredCheapPrice = 100;
-            var standaredFastPrice = 150;
-            var airFastPrice = 75;
-            var airCheapPrice = 50;
-
-            airCheap.Visibility = Visibility.Visible;
-            airFast.Visibility = Visibility.Visible;
-            standardCheap.Visibility = Visibility.Visible;
-            standardFast.Visibility = Visibility.Visible;
-
-            airCheap.Content = "Air cheap: " + airCheapPrice;
-            airFast.Content = "Air cheap: " + airFastPrice;
-            standardCheap.Content = "Air cheap: " + standaredCheapPrice;
-            standardFast.Content = "Air cheap: " + standaredFastPrice;
         }
 
         void t_Elapsed(object sender, ElapsedEventArgs e)

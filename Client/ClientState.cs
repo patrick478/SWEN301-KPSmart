@@ -12,6 +12,11 @@ namespace Client
     /// </summary>
     public class ClientState: CurrentState
     {
+        /// <summary>
+        /// Server timestamp on the latest state update received.
+        /// </summary>
+        private DateTime lastUpdate;
+
         public ClientState()
         {
             this.countries = new Dictionary<int, Country>();
@@ -20,15 +25,16 @@ namespace Client
             this.companies = new Dictionary<int, Company>();
         }
 
+        #region Functionality Removal Overrides
         // State method overrides
 
-        public RouteNode GetRouteNode(int id) { throw new NotSupportedException("Client state does not store RouteNodes."); }
+        public override RouteNode GetRouteNode(int id) { throw new NotSupportedException("Client state does not store RouteNodes."); }
 
-        public IList<RouteNode> GetAllRouteNodes() { throw new NotSupportedException("Client state does not store RouteNodes."); }
+        public override IList<RouteNode> GetAllRouteNodes() { throw new NotSupportedException("Client state does not store RouteNodes."); }
 
-        public Delivery GetDelivery(int id) { throw new NotSupportedException("Client state does not store Deliveries."); }
+        public override Delivery GetDelivery(int id) { throw new NotSupportedException("Client state does not store Deliveries."); }
 
-        public IList<Delivery> GetAllDeliveries() { throw new NotSupportedException("Client state does not store Deliveries."); }
+        public override IList<Delivery> GetAllDeliveries() { throw new NotSupportedException("Client state does not store Deliveries."); }
 
         // Current State method overrides
 
@@ -47,5 +53,6 @@ namespace Client
         public override void InitialiseDeliveries(IDictionary<int, Delivery> deliveries) { throw new NotSupportedException("Client state does not store Deliveries."); }
 
         public override bool DeliveriesInitialised { get { return false; } }
+        #endregion
     }
 }

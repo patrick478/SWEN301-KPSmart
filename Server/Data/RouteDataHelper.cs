@@ -22,7 +22,7 @@ namespace Server.Data
     {
 
         private PriceDataHelper priceDataHelper;
-        private DepartureTimeDataHelper deliveryTimeDataHelper;
+        private DepartureTimeDataHelper departureTimeDataHelper;
         private RouteNodeDataHelper routeNodeDataHelper;
         private CompanyDataHelper companyDataHelper;
 
@@ -32,19 +32,172 @@ namespace Server.Data
             ID_COL_NAME = "route_id";
 
             priceDataHelper = new PriceDataHelper();
-            deliveryTimeDataHelper = new DepartureTimeDataHelper();
+            departureTimeDataHelper = new DepartureTimeDataHelper();
             routeNodeDataHelper = new RouteNodeDataHelper();
             companyDataHelper = new CompanyDataHelper();
         }
 
         public override Route Load(int id)
         {
-            throw new NotImplementedException();
+            string sql;
+            object[] row;
+
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, id.ToString(), new string[] { "origin_id", 
+                                                                                                                            "destination_id",
+                                                                                                                            "company_id",
+                                                                                                                            "transport_type",
+                                                                                                                            "duration",
+                                                                                                                            "max_weight",
+                                                                                                                            "max_volume",
+                                                                                                                            "cost_per_cm3",
+                                                                                                                            "cost_per_gram",
+                                                                                                                            "created" });
+                row = Database.Instance.FetchRow(sql);
+            }
+            // LOCK ENDS HERE
+
+            if (row.Length == 0)
+            {
+                return null;
+            }
+
+            // get field values
+            int originId = row[0].ToInt();
+            int destinationId = row[1].ToInt();
+            int companyId = row[2].ToInt();
+            string transType = row[3] as string;
+            int duration = row[4].ToInt();
+            int maxWeight = row[5].ToInt();
+            int maxVolume = row[6].ToInt();
+            int costPerCm3 = row[7].ToInt();
+            int costPerGram = row[8].ToInt();
+            DateTime created = (DateTime)row[9];
+
+
+            // load origin
+            var origin = routeNodeDataHelper.Load(originId);
+
+            // load destination
+            var destination = routeNodeDataHelper.Load(destinationId);
+
+            // load company
+            var company = companyDataHelper.Load(companyId);
+
+            // load transportType
+            var transportType = transType.ParseTransportTypeFromString();
+
+            // load departure times
+            var departureTimes = departureTimeDataHelper.Load(id);
+
+
+            var route = new Route { 
+                                    Origin = origin, 
+                                    Destination = destination, 
+                                    Company = company, 
+                                    TransportType = transportType, 
+                                    Duration = duration, 
+                                    MaxWeight = maxWeight, 
+                                    MaxVolume = maxVolume, 
+                                    CostPerCm3 = costPerCm3, 
+                                    CostPerGram = costPerGram, 
+                                    DepartureTimes = departureTimes,
+                                    ID = id,
+                                    LastEdited = created
+                                 };
+
+            Logger.WriteLine("Loaded route: " + route );
+
+            return route;
         }
 
         public override IDictionary<int, Route> LoadAll()
         {
-            throw new NotImplementedException();
+            string sql;
+            object[][] rows;
+
+            // BEGIN LOCK HERE
+            lock (Database.Instance)
+            {
+
+                sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[] { 
+                                                                              "origin_id", 
+                                                                              "destination_id",
+                                                                              "company_id",
+                                                                              "transport_type",
+                                                                              "duration",
+                                                                              "max_weight",
+                                                                              "max_volume",
+                                                                              "cost_per_cm3",
+                                                                              "cost_per_gram",
+                                                                              "created",
+                                                                              "route_id"});
+                rows = Database.Instance.FetchRows(sql);
+            }
+            // END LOCK HERE
+            Logger.WriteLine("Loaded {0} routes:", rows.Length);
+
+            var results = new Dictionary<int, Route>();
+            foreach (object[] row in rows)
+            {
+                // get field values
+                int originId = row[0].ToInt();
+                int destinationId = row[1].ToInt();
+                int companyId = row[2].ToInt();
+                string transType = row[3] as string;
+                int duration = row[4].ToInt();
+                int maxWeight = row[5].ToInt();
+                int maxVolume = row[6].ToInt();
+                int costPerCm3 = row[7].ToInt();
+                int costPerGram = row[8].ToInt();
+                DateTime created = (DateTime)row[9];
+                int id = row[10].ToInt();
+
+
+                // load origin
+                var origin = routeNodeDataHelper.Load(originId);
+
+                // load destination
+                var destination = routeNodeDataHelper.Load(destinationId);
+
+                // load company
+                var company = companyDataHelper.Load(companyId);
+
+                // load transportType
+                var transportType = transType.ParseTransportTypeFromString();
+
+                // load departure times
+                var departureTimes = departureTimeDataHelper.Load(id);
+
+                var route = new Route
+                {
+                    Origin = origin,
+                    Destination = destination,
+                    Company = company,
+                    TransportType = transportType,
+                    Duration = duration,
+                    MaxWeight = maxWeight,
+                    MaxVolume = maxVolume,
+                    CostPerCm3 = costPerCm3,
+                    CostPerGram = costPerGram,
+                    DepartureTimes = departureTimes,
+                    ID = id,
+                    LastEdited = created
+                };
+
+                Logger.WriteLine(route.ToString());
+
+                // add route to results
+                results.Add((int)id, route);
+            }
+
+            return results;
+
+
+
+
         }
 
         public override IDictionary<int, Route> LoadAll(DateTime snapshotTime)
@@ -82,9 +235,9 @@ namespace Server.Data
             object[] row;
 
             // check it is legal
-//            int routeNodeId = GetId(route);
-//            if (routeNodeId != 0)
-//                throw new DatabaseException(String.Format("That route already exists: {0}", routeNodeId));
+            int routeNodeId = GetId(route);
+            if (routeNodeId != 0)
+                throw new DatabaseException(String.Format("That route already exists: {0}", routeNodeId));
 
             // load ids of fields
             int origin_id = routeNodeDataHelper.GetId(route.Origin);
@@ -175,14 +328,35 @@ namespace Server.Data
             route.LastEdited = (DateTime)row[1];
 
             // save all the departure times
-            deliveryTimeDataHelper.Create(route.ID, eventId, route.DepartureTimes);
+            departureTimeDataHelper.Create(route.ID, eventId, route.DepartureTimes);
                         
             Logger.WriteLine("Created route: " + route);
         }
 
-        public override int GetId(Route country)
+        public override int GetId(Route route)
         {
-            throw new NotImplementedException();
+            long id = 0;
+
+            // load ids of origin, destination, and company in case they aren't initialised.
+            var originId = routeNodeDataHelper.GetId(route.Origin).ToString();
+            var destinationId = routeNodeDataHelper.GetId(route.Destination).ToString();
+            var companyId = companyDataHelper.GetId(route.Company).ToString();
+
+
+            //LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                // get id of matching record
+                var sql = SQLQueryBuilder.SelectFieldsWhereFieldsEqual(TABLE_NAME, new []{"origin_id", "destination_id", "company_id", "transport_type"}, new[] {originId, destinationId, companyId, route.TransportType.ToString()}, new[]{ID_COL_NAME}); 
+                id = Database.Instance.FetchNumberQuery(sql);
+            }
+            //LOCK ENDS HERE
+
+            // set id in route
+            route.ID = id.ToInt();
+
+            // return result
+            return route.ID;
         }
     }
 }

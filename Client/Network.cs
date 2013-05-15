@@ -74,6 +74,8 @@ namespace Client
         private AsyncCallback onSentCallback;
         private AsyncCallback onRecieveCallback;
 
+        private bool connecting = false;
+
         private byte[] buffer;
 
         public Network()
@@ -115,7 +117,23 @@ namespace Client
                 return;
             }
 
-            clientSocket.BeginReceive(buffer, 0, 1024, SocketFlags.None, onRecieveCallback, null);
+            try
+            {
+                clientSocket.BeginReceive(buffer, 0, 1024, SocketFlags.None, onRecieveCallback, null);
+            }
+            catch (SocketException se)
+            {
+                if (se.ErrorCode == 10054)
+                {
+                    this.Connected = false;
+                    ErrorOccured = true;
+                    Error = NetworkError.ConnectionError;
+                    ErrorMessage = se.Message;
+
+                    if (NetworkErrorOccured != null)
+                        NetworkErrorOccured();
+                }
+            }
 
 
             if (OnConnectComplete != null)
@@ -183,6 +201,7 @@ namespace Client
             if (message.StartsWith("#LOGIN"))
             {
                 var success = (message.Split('|')[1] == "true" ? true : false);
+                MessageBox.Show("Login success: " + success);
                 if (success)
                 {
                     var isAdmin = (message.Split('|')[2] == "true" ? true : false);
@@ -196,10 +215,16 @@ namespace Client
             }
             else if (DataReady != null)
                 DataReady(message);
+
+            this.connecting = false;
         }
 
         public void BeginConnect(string address, int port)
         {
+            if (connecting)
+                return;
+
+            this.connecting = true;
             clientSocket.BeginConnect(address, port, onConnectCompleteCallback, null);
         }
 
@@ -211,10 +236,24 @@ namespace Client
 
         public void WriteLine(string line)
         {
-            if (!Usable)
+            if (Usable || line.StartsWith("#LOGIN"))
             {
                 byte[] data = Encoding.ASCII.GetBytes(line);
-                clientSocket.BeginSend(data, 0, data.Length, SocketFlags.None, onSentCallback, null);
+
+                try
+                {
+                    clientSocket.BeginSend(data, 0, data.Length, SocketFlags.None, onSentCallback, null);
+                }
+                catch (SocketException se)
+                {
+                    if (se.ErrorCode == 10054)
+                    {
+                        ErrorOccured = true;
+                        Error = NetworkError.Disconnect;
+                        ErrorMessage = se.Message;
+                        return;
+                    }
+                }
             }
         }
     }

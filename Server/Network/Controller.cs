@@ -179,7 +179,7 @@ namespace Server.Network
             int destinationID = Convert.ToInt32(tokens[count++]);
             int weight = Convert.ToInt32(tokens[count++]);
             int volume = Convert.ToInt32(tokens[count++]);
-            var options = deliveryService.GetBestRoutes(client.ID, originID, destinationID, weight, volume);
+            IDictionary<PathType,Delivery> options = deliveryService.GetBestRoutes(client.ID, originID, destinationID, weight, volume);
             if (options.Count <= 0)
                 client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_PRICES,NetCodes.PATH_CANCEL));
             else
@@ -197,17 +197,17 @@ namespace Server.Network
             }
             PathType type = PathTypeExtensions.ParseNetString(tokens[count]);
             deliveryService.SelectDeliveryOption(client.ID, type);
-            //TODO Transmit success to client.
+            client.SendMessage(NetCodes.SV_DELIVERY_CONFIRMED);
         }
 
         private void SendObjectUpdate(string objectDef)
         {
-            Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_UPDATE,objectDef));
+            Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_UPDATE, DateTime.UtcNow.ToString(), objectDef));
         }
 
         private void SendObjectDelete(int id, string objectType)
         {
-            Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_DELETE, Convert.ToString(id), objectType));
+            Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_DELETE, DateTime.UtcNow.ToString(), Convert.ToString(id), objectType));
         }
     }
 }

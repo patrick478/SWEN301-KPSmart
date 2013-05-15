@@ -97,7 +97,6 @@ namespace Common
             return builder.ToString();
         }
 
-        //TODO - Add a sub-seperator token or just use normal seperator? (seeing as this SHOULD always be the last part of a net message)
         /// <summary>
         /// Builds a dictonary mapping PathTypes to prices (integers) from a network string (that was generated via the BuildOptionsNetString method). Used when receiving Delivery Options from the server.
         /// </summary>

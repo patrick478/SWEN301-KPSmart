@@ -23,6 +23,12 @@ namespace Client
         public delegate void StateUpdatedDelegate(Type type);
         public event StateUpdatedDelegate Updated;
 
+        public delegate void DeliveryOptionsDelegate(IDictionary<PathType, int> prices);
+        public event DeliveryOptionsDelegate OptionsReceived;
+
+        public delegate void DeliveryConfirmedDelegate();
+        public event DeliveryConfirmedDelegate DeliveryOK;
+
         /// <summary>
         /// Reads a message received from the Server and performs the appropriate actions.
         /// </summary>
@@ -40,7 +46,14 @@ namespace Client
                 case NetCodes.SV_OBJECT_DELETE:
                     ObjectDelete(tokens);
                     return;
+                case NetCodes.SV_DELIVERY_PRICES:
+                    DeliveryOptions(tokens);
+                    return;
+                case NetCodes.SV_DELIVERY_CONFIRMED:
+                    DeliveryConfirmed(tokens);
+                    return;
                 case NetCodes.SV_ERROR:
+                    //TODO
                     return;
 
                 // TODO once implemented, add the business figures stuff
@@ -71,9 +84,25 @@ namespace Client
                         Updated(typeof(Company));
                     return;
                 case NetCodes.OBJECT_PRICE:
-                    
+                    int priceOriginId = Convert.ToInt32(tokens[count++]);
+                    int priceDestinationId = Convert.ToInt32(tokens[count++]);
+                    Priority pricePrio = PriorityExtensions.ParseNetString(tokens[count++]);
+                    int priceWeight = Convert.ToInt32(tokens[count++]);
+                    int priceVolume = Convert.ToInt32(tokens[count++]);
+                    //state.SavePrice(new Price() { Origin = state.GetCountry(priceOriginId), Destination = state.GetCountry(priceDestinationId), Priority = pricePrio, PricePerGram = priceWeight, PricePerCm3 = priceVolume });
                     return;
                 case NetCodes.OBJECT_ROUTE:
+                    int routeOriginId = Convert.ToInt32(tokens[count++]);
+                    int routeDestinationId = Convert.ToInt32(tokens[count++]);
+                    int routeCompany = Convert.ToInt32(tokens[count++]);
+                    TransportType routeType = TransportTypeExtensions.ParseNetString(tokens[count++]);
+                    int routeWeightCost = Convert.ToInt32(tokens[count++]);
+                    int routeVolumeCost = Convert.ToInt32(tokens[count++]);
+                    int routeWeightMax = Convert.ToInt32(tokens[count++]);
+                    int routeVolumeMax = Convert.ToInt32(tokens[count++]);
+                    int routeDuration = Convert.ToInt32(tokens[count++]);
+                    IList<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
+                    //state.SaveRoute(new Route() { Origin = state.GetCountry(routeOriginId), Destination = state.GetCountry(routeDestinationId), Company = state.GetCompany(routeCompany), TransportType = routeType, CostPerGram = routeWeightCost, CostPerCm3 = routeVolumeCost, MaxWeight = routeWeightMax, MaxVolume = routeVolumeMax, Duration = routeDuration, DepartureTimes = routeTimes});
                     return;
             }
         }
@@ -90,17 +119,47 @@ namespace Client
             {
                 case NetCodes.OBJECT_COUNTRY:
                     state.RemoveCountry(id);
+                    if (Updated != null)
+                        Updated(typeof(Country));
                     return;
                 case NetCodes.OBJECT_PRICE:
                     state.RemovePrice(id);
+                    if (Updated != null)
+                        Updated(typeof(Price));
                     return;
                 case NetCodes.OBJECT_ROUTE:
                     state.RemoveRoute(id);
+                    if (Updated != null)
+                        Updated(typeof(Route));
                     return;
                 case NetCodes.OBJECT_COMPANY:
                     state.RemoveCompany(id);
+                    if (Updated != null)
+                        Updated(typeof(Company));
                     return;
             }
+        }
+
+        private void DeliveryOptions(string[] tokens)
+        {
+            int count = 1;
+            if (OptionsReceived != null)
+            {
+                if (tokens[count] == NetCodes.PATH_CANCEL)
+                    OptionsReceived(null);
+                else
+                {
+                    IDictionary<PathType, int> options = PathTypeExtensions.ParseOptionsNetString(tokens[count]);
+                    OptionsReceived(options);
+                }
+            }
+
+        }
+
+        private void DeliveryConfirmed(string[] tokens)
+        {
+            if (DeliveryOK != null)
+                DeliveryOK();
         }
         #endregion
 

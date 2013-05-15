@@ -48,8 +48,7 @@ namespace Server.Data
             }
 
             string name = row[0] as string;
-            string code = row[1] as string;
-            DateTime created = (DateTime)row[2];
+            DateTime created = (DateTime)row[1];
 
             var company = new Company { Name = name, ID = id, LastEdited = created };
             Logger.WriteLine("Loaded company: " + company);

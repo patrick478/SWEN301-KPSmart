@@ -50,5 +50,21 @@ namespace Common
                     throw new ArgumentException("Unsupported network token");
             }
         }
+
+        public static TransportType ParseTransportTypeFromString (this string raw) 
+        {
+            switch (raw) 
+            { 
+                case "Air":
+                    return TransportType.Air;
+                case "Land":
+                    return TransportType.Land;
+                case "Sea":
+                    return TransportType.Sea;
+                default:
+                    throw new ArgumentException("Unsupported string value");
+            } 
+       
+        }
     }
 }

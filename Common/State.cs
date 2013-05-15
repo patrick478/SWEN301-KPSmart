@@ -53,12 +53,12 @@ namespace Common
 
 
         #region route nodes
-        public RouteNode GetRouteNode(int id)
+        public virtual RouteNode GetRouteNode(int id)
         {
             return routeNodes.ContainsKey(id) ? routeNodes[id] : null;
         }
 
-        public IList<RouteNode> GetAllRouteNodes()
+        public virtual IList<RouteNode> GetAllRouteNodes()
         {
             return new List<RouteNode>(routeNodes.Values);
         }
@@ -91,12 +91,12 @@ namespace Common
 
 
         #region deliveries
-        public Delivery GetDelivery(int id)
+        public virtual Delivery GetDelivery(int id)
         {
             return deliveries.ContainsKey(id) ? deliveries[id] : null;
         }
 
-        public IList<Delivery> GetAllDeliveries()
+        public virtual IList<Delivery> GetAllDeliveries()
         {
             return new List<Delivery>(deliveries.Values);
         }
