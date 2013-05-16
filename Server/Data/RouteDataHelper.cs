@@ -206,7 +206,35 @@ namespace Server.Data
 
         public override void Delete(int id)
         {
-            throw new NotImplementedException();
+            if (Load(id) == null)
+                throw new DatabaseException(String.Format("There is no active record with id='{0}'", id));
+
+            long eventId = 0;
+
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                // get event number
+                var sql = SQLQueryBuilder.SaveEvent(ObjectType.Route, EventType.Delete);
+                eventId = Database.Instance.InsertQuery(sql);
+
+                // set all entries to inactive
+                sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, id);
+                Database.Instance.InsertQuery(sql);
+
+                // insert new 'deleted' row
+                sql = SQLQueryBuilder.InsertFields(TABLE_NAME,
+                                                   new string[] { EVENT_ID, ID_COL_NAME, "active", "origin_id", "destination_id", "company_id", "transport_type", "duration", "max_weight", "max_volume", "cost_per_cm3", "cost_per_gram" },
+                                                   new string[] { eventId.ToString(), id.ToString(), "-1", "0", "0", "0", "", "0", "0", "0", "0", "0" });
+                Database.Instance.InsertQuery(sql);
+            }
+            // LOCK ENDS HERE
+
+
+            departureTimeDataHelper.Delete(id, eventId.ToInt());
+
+
+            Logger.WriteLine("Deleted route: " + id);
         }
 
         public override void Delete(Route obj)

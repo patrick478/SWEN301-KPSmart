@@ -25,7 +25,7 @@ namespace Common
 
         public override string ToString ()
         {
-            return string.Format("InternationalPort[ID={0}, LastEdited={1}, Country={2}]", ID, LastEdited, Country);
+            return string.Format("InternationalPort[ID={0}, Country={2}, LastEdited={1}]", ID, LastEdited, Country.ToShortString());
         }
 
         public override string ToShortString ()

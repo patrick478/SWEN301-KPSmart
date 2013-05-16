@@ -52,7 +52,7 @@ namespace Common
 
         public override string ToString ()
         {
-            return string.Format("DistributionCentre[ID={0}, LastEdited={1}, Name={2}]", ID, LastEdited, Name);
+            return string.Format("DistributionCentre[ID={0}, Name={2}, LastEdited={1}]", ID, LastEdited, Name);
         }
 
         public override string  ToShortString()

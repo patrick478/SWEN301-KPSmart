@@ -13,7 +13,7 @@ namespace Common
     /// <summary>
     /// This class represents a weekly time.  It has a day of the week component, an hour componenet, and a minute component.
     /// </summary>
-    public class WeeklyTime : IComparable<WeeklyTime>, IEquatable<WeeklyTime>
+    public class WeeklyTime : DataObject, IComparable<WeeklyTime>, IEquatable<WeeklyTime>
     {
 
         public static int MINUTES_IN_A_WEEK = 10080;

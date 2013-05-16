@@ -160,7 +160,10 @@ namespace Server.Gui
                 route.DepartureTimes.Add(new WeeklyTime(DayOfWeek.Wednesday, 14, 35));
 
                 // update
-                routeDataHelper.Update(route);
+                //routeDataHelper.Update(route);
+
+                // delete
+                routeDataHelper.Delete(route.ID);
 
                 var routes = routeDataHelper.LoadAll();
                 

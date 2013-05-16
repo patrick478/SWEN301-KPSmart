@@ -22,13 +22,14 @@ namespace Server.Data
             var list = new List<WeeklyTime>();
             lock (Database.Instance) 
             {
-                var sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, "route_id", route_id.ToString(), new[]{"weekly_time"});
+                var sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, "route_id", route_id.ToString(), new[]{ID_COL_NAME, "weekly_time"});
                 var rows = Database.Instance.FetchRows(sql);
 
                 foreach (object[] row in rows) 
                 {
-                    long ticks = (long)row[0];
-                    list.Add(new WeeklyTime(ticks));
+                    int id = row[0].ToInt();
+                    long ticks = (long)row[1];
+                    list.Add(new WeeklyTime(ticks) { ID = id});
                 }
             }
 
@@ -171,6 +172,39 @@ namespace Server.Data
 
             // return
             return id;
+        }
+
+        public void Delete (int route_id, int eventId)
+        {
+            // check values
+            if (route_id == 0)
+                throw new ArgumentException("Route_id cannot be zero", "route_id");
+
+            if (eventId == 0)
+                throw new ArgumentException("Event_id cannot be zero", "event_id");
+
+            var deliveryTimes = Load(route_id);
+
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                foreach (WeeklyTime time in deliveryTimes)
+                {
+                    // set all entries to inactive
+                    var sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2} AND {3}={4}", TABLE_NAME, "route_id", route_id, ID_COL_NAME, time.ID);
+                    Database.Instance.InsertQuery(sql);
+
+                    // insert new 'deleted' row
+                    sql = SQLQueryBuilder.InsertFields(TABLE_NAME,
+                                                       new string[] { EVENT_ID, ID_COL_NAME, "active", "route_id", "weekly_time" },
+                                                       new string[] { eventId.ToString(), time.ID.ToString(), "-1", route_id.ToString(), "0"});
+                    Database.Instance.InsertQuery(sql);
+                }
+            }
+            // LOCK ENDS HERE
+
+            Logger.WriteLine("Deleted delivery times: " + deliveryTimes.Count);
+
         }
     }
 }
