@@ -166,6 +166,19 @@ namespace Server.Gui
                 routeDataHelper.Delete(route.ID);
 
                 var routes = routeDataHelper.LoadAll();
+
+                var delivery = new Delivery { Origin = routeNode, Destination = destination, Priority = Priority.Air, WeightInGrams = 200, VolumeInCm3 = 2000, TotalPrice = 2500, TotalCost = 1000, TimeOfRequest = DateTime.UtcNow, TimeOfDelivery = DateTime.UtcNow.AddHours(5.5) };
+
+                var deliveryDataHelper = new DeliveryDataHelper();
+
+                deliveryDataHelper.Create(delivery);
+
+                deliveryDataHelper.Load(1);
+
+                deliveryDataHelper.LoadAll();
+
+                int delId = deliveryDataHelper.GetId(delivery);
+                Logger.WriteLine("id: " + delId);
                 
             }
             catch (Exception e) 

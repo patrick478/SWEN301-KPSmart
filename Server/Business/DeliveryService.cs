@@ -135,10 +135,6 @@ namespace Server.Business
                 totalPrice += price.PricePerCm3 * volumeInCm3;
                 totalPrice += price.PricePerGram * weightInGrams;
 
-                // check scope
-                if (scope != Scope.International && route.Scope == Scope.International)
-                    scope = Scope.International;
-
                 previousDestination = route.Destination;
             }
 
@@ -162,7 +158,6 @@ namespace Server.Business
                     TimeOfRequest = timeOfRequest, 
                     TimeOfDelivery = timeOfDelivery, 
                     Priority = priority, 
-                    Scope = scope
                 };
 
             return newDelivery;

@@ -26,7 +26,16 @@ namespace Common
         public Priority Priority { get; set; }
 
         // Domestic or International
-        public Scope Scope { get; set; }
+        public Scope Scope 
+        {
+            get
+            {
+                if (Origin.GetType() == typeof(InternationalPort) || Destination.GetType() == typeof(InternationalPort))
+                    return Scope.International;
+                else
+                    return Scope.Domestic;
+            }
+        }
 
         // the routes included in the delivery
         public IList<RouteInstance> Routes { get; set; }
