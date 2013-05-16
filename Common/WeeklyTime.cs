@@ -191,16 +191,16 @@ namespace Common
         {
             StringBuilder builder = new StringBuilder();
             builder.Append(GetDayOfWeekNumberValue(DayComponent));
-            builder.Append(NetCodes.TIMESEPERATOR);
+            builder.Append(NetCodes.SEPERATOR_TIME);
             builder.Append(HourComponent);
-            builder.Append(NetCodes.TIMESEPERATOR);
+            builder.Append(NetCodes.SEPERATOR_TIME);
             builder.Append(MinuteComponent);
             return builder.ToString();
         }
 
         public static WeeklyTime ParseNetString(string raw)
         {
-            string[] tokens = raw.Split(NetCodes.TIMESEPERATOR);
+            string[] tokens = raw.Split(NetCodes.SEPERATOR_TIME);
             int i = 0;
             DayOfWeek day = GetDayOfWeekFromNumberValue(Convert.ToInt32(tokens[i++]));
             int hour = Convert.ToInt32(tokens[i++]);
@@ -222,7 +222,7 @@ namespace Common
                 if (first)
                     first = false;
                 else
-                    builder.Append(NetCodes.SUBSEPARATOR);
+                    builder.Append(NetCodes.SEPARATOR_ELEMENT);
                 builder.Append(t.ToNetString());
             }
             return builder.ToString();
@@ -234,7 +234,7 @@ namespace Common
         /// <returns>List of WeeklyTime objects.</returns>
         public static List<WeeklyTime> ParseTimesNetString(string times)
         {
-            string[] tokens = times.Split(NetCodes.SUBSEPARATOR);
+            string[] tokens = times.Split(NetCodes.SEPARATOR_ELEMENT);
             List<WeeklyTime> list = new List<WeeklyTime>();
             for (int i = 0; i < tokens.Length; ++i)
                 list.Add(ParseNetString(tokens[i]));

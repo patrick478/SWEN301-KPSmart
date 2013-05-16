@@ -89,9 +89,9 @@ namespace Common
                 if (first)
                     first = false;
                 else
-                    builder.Append(NetCodes.SUBSEPARATOR);
+                    builder.Append(NetCodes.SEPARATOR_ELEMENT);
                 builder.Append(entry.Key.ToNetString());
-                builder.Append(NetCodes.SUBSEPARATOR);
+                builder.Append(NetCodes.SEPARATOR_ELEMENT);
                 builder.Append(entry.Value.TotalPrice);
             }
             return builder.ToString();
@@ -103,7 +103,7 @@ namespace Common
         /// <returns>Dictonary mapping PathType to price (integer)</returns>
         public static IDictionary<PathType, int> ParseOptionsNetString(string options)
         {
-            string[] tokens = options.Split(NetCodes.SUBSEPARATOR);
+            string[] tokens = options.Split(NetCodes.SEPARATOR_ELEMENT);
             IDictionary<PathType, int> prices = new Dictionary<PathType,int>();
             for (int i = 0; i < tokens.Length; )
             {
