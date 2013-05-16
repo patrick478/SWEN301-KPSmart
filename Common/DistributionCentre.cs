@@ -55,5 +55,11 @@ namespace Common
             return string.Format("DistributionCentre[ID={0}, LastEdited={1}, Name={2}]", ID, LastEdited, Name);
         }
 
+        public override string  ToShortString()
+        {
+            return Name;
+        }
+
+
     }
 }

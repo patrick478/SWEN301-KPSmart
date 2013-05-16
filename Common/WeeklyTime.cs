@@ -13,7 +13,7 @@ namespace Common
     /// <summary>
     /// This class represents a weekly time.  It has a day of the week component, an hour componenet, and a minute component.
     /// </summary>
-    public class WeeklyTime : IComparable<WeeklyTime>
+    public class WeeklyTime : IComparable<WeeklyTime>, IEquatable<WeeklyTime>
     {
 
         public static int MINUTES_IN_A_WEEK = 10080;
@@ -55,7 +55,17 @@ namespace Common
         /// Constructor to make a WeeklyTime from a DateTime.  It extracts out the DayOfWeek, Hour, and Minute component.
         /// </summary>
         /// <param name="datetime"></param>
-        public WeeklyTime(DateTime datetime): this(datetime.DayOfWeek, datetime.Hour, datetime.Minute) {
+        public WeeklyTime(DateTime datetime): this(datetime.DayOfWeek, datetime.Hour, datetime.Minute) 
+        {
+        }
+
+        /// <summary>
+        /// Constructor to make a WeeklyTime from a representation of a DateTime.  The ticks of the dateTime are equal to the ticks of the weeklyTime.
+        /// </summary>
+        /// <param name="dateTimeRepresentation"></param>
+        public WeeklyTime (string dateTimeRepresentation) 
+        { 
+            
         }
 
         /// <summary>
@@ -158,7 +168,6 @@ namespace Common
             }
         }
 
-
         public int CompareTo(WeeklyTime other)
         {
 
@@ -171,6 +180,12 @@ namespace Common
 
             return 0;
         }
+
+        public override string ToString ()
+        {
+            return String.Format("{0} {1}:{2}", DayComponent.ToString(), HourComponent, MinuteComponent);
+        }
+
 
         public string ToNetString()
         {
@@ -217,14 +232,37 @@ namespace Common
         /// Builds a list of WeeklyTime objects from a network string (that was generated via the BuildTimesNetString method). Used when communicating departing times of Routes.
         /// </summary>
         /// <returns>List of WeeklyTime objects.</returns>
-        public static IList<WeeklyTime> ParseTimesNetString(string times)
+        public static List<WeeklyTime> ParseTimesNetString(string times)
         {
             string[] tokens = times.Split(NetCodes.SUBSEPARATOR);
-            IList<WeeklyTime> list = new List<WeeklyTime>();
+            List<WeeklyTime> list = new List<WeeklyTime>();
             for (int i = 0; i < tokens.Length; ++i)
                 list.Add(ParseNetString(tokens[i]));
             return list;
         }
 
+
+
+
+
+        public class Comparer : IEqualityComparer<WeeklyTime> 
+        {
+            public bool Equals (WeeklyTime x, WeeklyTime y)
+            {
+                return x.Value == y.Value;
+            }
+
+            public int GetHashCode (WeeklyTime obj)
+            {
+                return obj.Value.GetHashCode();
+            }
+        }
+
+
+
+        public bool Equals (WeeklyTime other)
+        {
+            return this.Value.Equals(other.Value);
+        }
     }
 }

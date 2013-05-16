@@ -107,7 +107,7 @@ namespace Server.Network
                     int routeWeightMax = Convert.ToInt32(tokens[count++]);
                     int routeVolumeMax = Convert.ToInt32(tokens[count++]);
                     int routeDuration = Convert.ToInt32(tokens[count++]);
-                    IList<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
+                    List<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
                     Route route = routeService.Create(routeTransport, routeCompany, routeOriginId, routeDestinationId, routeTimes, routeDuration, routeWeightMax, routeVolumeMax, routeWeightCost, routeVolumeCost);
                     SendObjectUpdate(route.ToNetString());
                     return;
@@ -140,7 +140,7 @@ namespace Server.Network
                     int routeWeightMax = Convert.ToInt32(tokens[count++]);
                     int routeVolumeMax = Convert.ToInt32(tokens[count++]);
                     int routeDuration = Convert.ToInt32(tokens[count++]);
-                    IList<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
+                    List<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
                     Route route = routeService.Update(id, routeTimes, routeDuration, routeWeightMax, routeVolumeMax, routeWeightCost, routeVolumeCost);
                     SendObjectUpdate(route.ToNetString());
                     return;

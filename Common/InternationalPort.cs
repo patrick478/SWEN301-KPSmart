@@ -28,5 +28,10 @@ namespace Common
             return string.Format("InternationalPort[ID={0}, LastEdited={1}, Country={2}]", ID, LastEdited, Country);
         }
 
+        public override string ToShortString ()
+        {
+            return Country.Name;
+        }
+
     }
 }

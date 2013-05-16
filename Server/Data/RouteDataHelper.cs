@@ -9,6 +9,9 @@ using System;
 using System.Collections.Generic;
 using Common;
 using Server.Gui;
+using System.Data.SQLite;
+using System.Linq;
+using Server.Business;
 
 namespace Server.Data
 {
@@ -194,10 +197,6 @@ namespace Server.Data
             }
 
             return results;
-
-
-
-
         }
 
         public override IDictionary<int, Route> LoadAll(DateTime snapshotTime)
@@ -215,19 +214,174 @@ namespace Server.Data
             throw new NotImplementedException();
         }
 
-        public override void Update(Route obj)
+        public override void Update(Route route)
         {
-            throw new NotImplementedException();
-        }
+            // check it has an id
+            if (route.ID == 0)
+                throw new DatabaseException("Cannot update a route with no ID.");
 
-        public void AddDeliveryTime(Route route, WeeklyTime deliveryTime)
-        {
-            throw new NotImplementedException();
-        }
+            // check the key fields aren't changing
+            var existingRoute = Load(route.ID);
+            if (!route.Origin.Equals(existingRoute.Origin))
+                throw new DatabaseException("Cannot modify the key field 'Origin' of the route.");
+            if (!route.Destination.Equals(existingRoute.Destination))
+                throw new DatabaseException("Cannot modify the key field 'Destination' of the route.");
+            if (!route.Company.Equals(existingRoute.Company))
+                throw new DatabaseException("Cannot modify the key field 'Company' of the route.");
+            if (route.TransportType != existingRoute.TransportType)
+                throw new DatabaseException("Cannot modify the key field 'TransportType' of the route.");
 
-        public void DeleteDeliveryTime(Route route, WeeklyTime deliveryTime)
-        {
-            throw new NotImplementedException();
+            // check that some field is changing
+            var durationSame = route.Duration == existingRoute.Duration;
+            var maxWeightSame = route.MaxWeight == existingRoute.MaxWeight;
+            var maxVolumeSame = route.MaxVolume == existingRoute.MaxVolume;
+            var costPerGramSame = route.CostPerGram == existingRoute.CostPerGram;
+            var costPerCm3Same = route.CostPerCm3 == existingRoute.CostPerCm3;
+            route.DepartureTimes.Sort();
+            existingRoute.DepartureTimes.Sort();
+            var departureTimesSame = route.DepartureTimes.AsQueryable().SequenceEqual<WeeklyTime>(existingRoute.DepartureTimes);
+            if (durationSame && maxWeightSame && maxVolumeSame && costPerCm3Same && costPerGramSame && departureTimesSame)
+                throw new NoChangeException();
+
+            // load ids of fields
+            int origin_id = routeNodeDataHelper.GetId(route.Origin);
+            int destination_id = routeNodeDataHelper.GetId(route.Destination);
+            int company_id = companyDataHelper.GetId(route.Company);
+            string transport_type = route.TransportType == null ? "" : Enum.GetName(typeof(TransportType), route.TransportType);
+
+            // check all the fields
+            if (origin_id == 0)
+                throw new DatabaseException(String.Format("Origin could not be found: {0}", route.Origin));
+
+            if (destination_id == 0)
+                throw new DatabaseException(String.Format("Destination could not be found: {0}", route.Destination));
+
+            if (origin_id == destination_id)
+                throw new DatabaseException("Origin and destination cannot be the same");
+
+            if (company_id == 0)
+                throw new DatabaseException(String.Format("Company could not be found: {0}", route.Company));
+
+            if (transport_type == String.Empty)
+                throw new DatabaseException(String.Format("Route must have a transport type: {0}", route));
+
+            if (route.Duration == 0)
+                throw new DatabaseException(String.Format("Route duration cannot be 0: {0}", route));
+
+            if (route.DepartureTimes.Count == 0)
+                throw new DatabaseException(String.Format("Route must have at least one departureTime: {0}", route));
+
+            if (route.MaxWeight <= 0)
+                throw new DatabaseException(String.Format("Route maxWeight cannot be less than or equal to 0: {0}", route));
+
+            if (route.MaxVolume <= 0)
+                throw new DatabaseException(String.Format("Route maxVolume cannot be less than or equal to 0: {0}", route));
+
+            if (route.CostPerGram <= 0)
+                throw new DatabaseException(String.Format("Route costPerGram cannot be less than or equal to 0: {0}", route));
+
+            if (route.CostPerCm3 <= 0)
+                throw new DatabaseException(String.Format("Route costPerCm3 cannot be less than or equal to 0: {0}", route));
+
+            string sql;
+            object[] row;
+            long eventId = 0;
+
+            //LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+
+                // check that a route with same key fields doesn't already exist.
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldsEqual(TABLE_NAME, new []{"origin_id", "destination_id", "company_id", "transport_type"}, new string []{route.Origin.ID.ToString(), route.Destination.ID.ToString(), route.Company.ID.ToString(), route.TransportType.ToString()}, new []{"route_id"});
+                row = Database.Instance.FetchRow(sql);
+
+                if (row.Length == 0)
+                    throw new DatabaseException("No route with that [origin, destination, company, transportType] combination already exists: " + row[0].ToInt());
+
+                // create a transaction
+                SQLiteTransaction transaction = Database.Instance.BeginTransaction();
+                try
+                {
+
+                    // get event number
+                    sql = SQLQueryBuilder.SaveEvent(ObjectType.Route, EventType.Update);
+                    eventId = Database.Instance.InsertQuery(sql, transaction);
+
+                    // deactivate all previous records
+                    sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME,
+                                        route.ID);
+                    Database.Instance.InsertQuery(sql, transaction);
+
+
+                    // insert the route record
+                    sql = SQLQueryBuilder.InsertFields(TABLE_NAME,
+                                                              new string[] 
+                                                              { 
+                                                                  EVENT_ID, 
+                                                                  "route_id",
+                                                                  "active",
+                                                                  "origin_id", 
+                                                                  "destination_id", 
+                                                                  "company_id", 
+                                                                  "transport_type", 
+                                                                  "duration", 
+                                                                  "max_weight", 
+                                                                  "max_volume", 
+                                                                  "cost_per_gram",
+                                                                  "cost_per_cm3"                                                            
+                                                              },
+                                                              new string[] 
+                                                              { 
+                                                                  eventId.ToString(), 
+                                                                  route.ID.ToString(),
+                                                                  "1",
+                                                                  origin_id.ToString(), 
+                                                                  destination_id.ToString(),
+                                                                  company_id.ToString(),
+                                                                  transport_type,
+                                                                  route.Duration.ToString(),
+                                                                  route.MaxWeight.ToString(),
+                                                                  route.MaxVolume.ToString(),
+                                                                  route.CostPerGram.ToString(),
+                                                                  route.CostPerCm3.ToString()
+                                                              });
+                    long inserted_id = Database.Instance.InsertQuery(sql);
+
+                    // commit transaction
+                    transaction.Commit();
+
+
+                    // get id and LastEdited
+                    var fields = new string[] { "created" };
+                    sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, "id", inserted_id.ToString(), fields);
+                    row = Database.Instance.FetchRow(sql);
+
+
+                }
+                catch (SQLiteException de)
+                {
+                    Console.WriteLine("Got here");
+                    transaction.Rollback();
+                    Console.WriteLine("Rollback complete");
+                    transaction.Dispose();
+                    throw de;
+                }
+                catch (Exception e)
+                {
+                    Logger.WriteLine("Exception occured during Country.Update() - rolling back:");
+                    Logger.WriteLine(e.Message);
+                }
+
+            }
+            // LOCK ENDS HERE
+
+            // update delivery times
+            departureTimeDataHelper.Update(route.ID, eventId.ToInt(), route.DepartureTimes);
+
+            // update last edited
+            route.LastEdited = (DateTime)row[0];
+            Logger.WriteLine("Updated route: " + route);
+
         }
 
         public override void Create(Route route)
@@ -260,6 +414,9 @@ namespace Server.Data
 
             if (transport_type == String.Empty)
                 throw new DatabaseException(String.Format("Route must have a transport type: {0}", route));
+
+            if (route.DepartureTimes.Count == 0)
+                throw new DatabaseException(String.Format("Route must have at least one departureTime: {0}", route));
 
             if (route.Duration == 0)
                 throw new DatabaseException(String.Format("Route duration cannot be 0: {0}", route));
@@ -330,7 +487,7 @@ namespace Server.Data
             // save all the departure times
             departureTimeDataHelper.Create(route.ID, eventId, route.DepartureTimes);
                         
-            Logger.WriteLine("Created route: " + route);
+            Logger.WriteLine("Updated route: " + route);
         }
 
         public override int GetId(Route route)

@@ -35,7 +35,7 @@ namespace Common
 
         // all the departure times this route offers
         private List<WeeklyTime> departureTimes;
-        public IList<WeeklyTime> DepartureTimes
+        public List<WeeklyTime> DepartureTimes
         {
             get { return departureTimes; }
             set { this.departureTimes = new List<WeeklyTime>(value); }
@@ -170,7 +170,14 @@ namespace Common
 
         public override string ToString ()
         {
-            return String.Format("Route[ID={0}, Origin={1}, Destination={2}, Company={3}, TransportType={4}, Duration={5}, MaxWeight={6}, MaxVolume={7}, CostPerCm3={8}, CostPerGram={9}, LastEdited={10}]", ID, Origin, Destination, Company.Name, TransportType, Duration, MaxWeight, MaxVolume, CostPerCm3, CostPerGram, LastEdited);
+            var weeklyTimes = "";
+
+            foreach (WeeklyTime t in departureTimes) 
+            {
+                weeklyTimes += t.ToString() + ", ";
+            }
+            
+            return String.Format("Route[ID={0}, Origin={1}, Destination={2}, Company={3}, TransportType={4}, Duration={5}, MaxWeight={6}, MaxVolume={7}, CostPerCm3={8}, CostPerGram={9}, DepartureTimes={10}, LastEdited={11}]", ID, Origin.ToShortString(), Destination.ToShortString(), Company.Name, TransportType, Duration, MaxWeight, MaxVolume, CostPerCm3, CostPerGram, weeklyTimes, LastEdited);
         }
 
     }

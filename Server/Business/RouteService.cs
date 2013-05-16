@@ -50,7 +50,7 @@ namespace Server.Business
         /// <exception cref="DatabaseException">if it already exists</exception>
         /// <exception cref="InvalidObjectStateException">if the fields are invalid</exception>
         /// <exception cref="ArgumentException">if any of the objects referenced by id do not exist</exception>
-        public Route Create(TransportType transportType, int companyId, int originID, int destinationID, IList<WeeklyTime> deliveryTimes, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
+        public Route Create(TransportType transportType, int companyId, int originID, int destinationID, List<WeeklyTime> deliveryTimes, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
         {
             // load parameters from id
             var origin = state.GetRouteNode(originID);
@@ -94,7 +94,7 @@ namespace Server.Business
         /// <exception cref="DatabaseException">if it doesn't exist</exception>
         /// <exception cref="InvalidObjectStateException">if the fields are invalid</exception>
         /// <exception cref="ArgumentException">if any of the objects referenced by id do not exist</exception>
-        public Route Update(int routeId, IList<WeeklyTime> deliveryTimes, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
+        public Route Update(int routeId, List<WeeklyTime> deliveryTimes, int duration, int maxWeight, int maxVolume, int costPerGram, int costPerCm3)
         {
             var route = state.GetRoute(routeId);
             if (route == null)
@@ -111,64 +111,6 @@ namespace Server.Business
             state.IncrementNumberOfEvents();
 
             return newRoute;
-        }
-
-        /// <summary>
-        /// Adds the given delivery time to the route, and returns the new route.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="deliveryTime"></param>
-        /// <returns></returns>
-        /// <exception cref="DatabaseException">if the delivery time already exists in the route</exception>
-        /// <exception cref="ArgumentException">if delivery time is null, or if the route doesn't exist</exception>
-        public Route AddDeliveryTime(int id, WeeklyTime deliveryTime)
-        {
-            if (deliveryTime == null)
-            {
-                throw new ArgumentException("deliveryTime cannot be null");
-            }
-
-            var route = state.GetRoute(id);
-            if(route==null)
-                throw new ArgumentException("There is no route with id = " + id);
-
-            // throws database exception if already exists
-            ((RouteDataHelper)dataHelper).AddDeliveryTime(route, deliveryTime);
-
-            // update state
-            state.SaveRoute(route);
-            state.IncrementNumberOfEvents();
-
-            return route;
-        }
-
-        /// <summary>
-        /// Deletes the given delivery time from the route, and returns the updated route.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="deliveryTime"></param>
-        /// <returns></returns>
-        /// <exception cref="DatabaseException">if the delivery time already exists in the route</exception>
-        /// <exception cref="ArgumentException">if delivery time is null, or if the route doesn't exist</exception>
-        public Route DeleteDeliveryTime(int id, WeeklyTime deliveryTime)
-        {
-            if (deliveryTime == null)
-            {
-                throw new ArgumentException("deliveryTime cannot be null");
-            }
-
-            var route = state.GetRoute(id);
-            if (route == null)
-                throw new ArgumentException("There is no route with id = " + id);
-
-            // throws database exception if delivery time doesn't exist
-            ((RouteDataHelper)dataHelper).DeleteDeliveryTime(route, deliveryTime);
-
-            // update state
-            state.SaveRoute(route);
-            state.IncrementNumberOfEvents();
-
-            return route;
         }
 
 

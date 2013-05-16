@@ -20,5 +20,10 @@ namespace Common
         {
             return ID.ToString();
         }
+
+        public virtual string ToShortString () 
+        {
+            return ID.ToString();
+        }
     }
 }

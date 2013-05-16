@@ -68,7 +68,7 @@ namespace Server.Gui
             {
                 
                 CountryDataHelper cdh = new CountryDataHelper();
-
+                
                 // create country if doesn't exist
                 Country country = new Country { ID = 1, Name = "Wellington", Code = "WLG" };
                 if (!countryService.Exists(country))
@@ -107,7 +107,7 @@ namespace Server.Gui
                 {
                     routeNode = locationService.CreateDistributionCentre("Christchurch");
                 }
-
+                
                 // wellington depot
                 routeNode = new DistributionCentre("Wellington");
                 if (!locationService.Exists(routeNode))
@@ -153,8 +153,14 @@ namespace Server.Gui
                 {
                     routeDataHelper.Create(route);
                 }
+                
+                //route = routeDataHelper.Load(1);
 
-                route = routeDataHelper.Load(1);
+                // edit departure times
+                route.DepartureTimes.Add(new WeeklyTime(DayOfWeek.Wednesday, 14, 35));
+
+                // update
+                routeDataHelper.Update(route);
 
                 var routes = routeDataHelper.LoadAll();
                 

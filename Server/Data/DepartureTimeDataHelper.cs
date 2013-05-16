@@ -13,7 +13,7 @@ namespace Server.Data
         protected string TABLE_NAME = "departure_times";
         protected string ID_COL_NAME = "departure_time_id";
 
-        public IList<WeeklyTime> Load (int route_id)
+        public List<WeeklyTime> Load (int route_id)
         {
             // check values
             if (route_id == 0)
@@ -23,9 +23,6 @@ namespace Server.Data
             lock (Database.Instance) 
             {
                 var sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, "route_id", route_id.ToString(), new[]{"weekly_time"});
-
-                //sql = "SELECT 'weekly_time' FROM `departure_times` WHERE active=1 AND route_id=1";
-
                 var rows = Database.Instance.FetchRows(sql);
 
                 foreach (object[] row in rows) 
@@ -64,15 +61,15 @@ namespace Server.Data
 
 
             var currentList = Load(route_id);
-            var difference = currentList.Except(departureTimes);
+            var difference = departureTimes.Except(currentList, new WeeklyTime.Comparer()).ToList<WeeklyTime>();
 
             if (difference.Count() == 0)
                 return; // you are allowed to call update even if it doesn't make a difference.
 
 
             // get times to add and remove
-            var toDelete = difference.Intersect(currentList);
-            var toAdd = difference.Intersect(departureTimes);
+            var toDelete = difference.Intersect(currentList, new WeeklyTime.Comparer()).ToList<WeeklyTime>();
+            var toAdd = difference.Intersect(departureTimes, new WeeklyTime.Comparer()).ToList<WeeklyTime>();
 
 
             lock (Database.Instance) 
