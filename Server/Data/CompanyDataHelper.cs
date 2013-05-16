@@ -21,8 +21,13 @@ namespace Server.Data
     /// </summary>
     public class CompanyDataHelper : DataHelper<Company>
     {
-        private const string TABLE_NAME = "companies";
-        private const string ID_COL_NAME = "company_id";
+
+
+        public CompanyDataHelper () 
+        { 
+            TABLE_NAME = "companies";
+            ID_COL_NAME = "company_id";
+        }
 
         /// <summary>
         /// Loads the company of the given id.  If no company exists, returns null.
@@ -35,7 +40,7 @@ namespace Server.Data
             object[] row;
 
             // LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, id.ToString(), new string[] { "name", "created" });
                 row = Database.Instance.FetchRow(sql);
@@ -66,7 +71,7 @@ namespace Server.Data
             object[][] rows;
 
             // BEGIN LOCK HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
 
                 sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[] { ID_COL_NAME, "name", "created" });
@@ -122,44 +127,48 @@ namespace Server.Data
             string sql;
             object[] row;
 
-            // create a transaction
-            SQLiteTransaction transaction = Database.Instance.BeginTransaction();
-            try
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
             {
+                // create a transaction
+                SQLiteTransaction transaction = Database.Instance.BeginTransaction();
+                try
+                {
+                    // get event number
+                    sql = SQLQueryBuilder.SaveEvent(ObjectType.Company, EventType.Update);
+                    long eventId = Database.Instance.InsertQuery(sql, transaction);
 
-                // get event number
-                sql = SQLQueryBuilder.SaveEvent(ObjectType.Company, EventType.Update);
-                long eventId = Database.Instance.InsertQuery(sql, transaction);
+                    // deactivate all previous records
+                    sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME,
+                                        company.ID);
+                    Database.Instance.InsertQuery(sql, transaction);
 
-                // deactivate all previous records
-                sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME,
-                                    company.ID);
-                Database.Instance.InsertQuery(sql, transaction);
+                    // insert new record
+                    var fieldNames = new string[] { EVENT_ID, ID_COL_NAME, "active", "name", "code" };
+                    var values = new string[] { eventId.ToString(), company.ID.ToString(), "1", company.Name };
+                    sql = SQLQueryBuilder.InsertFields(TABLE_NAME, fieldNames, values);
+                    Database.Instance.InsertQuery(sql, transaction);
 
-                // insert new record
-                var fieldNames = new string[] { EVENT_ID, ID_COL_NAME, "active", "name", "code" };
-                var values = new string[] { eventId.ToString(), company.ID.ToString(), "1", company.Name };
-                sql = SQLQueryBuilder.InsertFields(TABLE_NAME, fieldNames, values);
-                Database.Instance.InsertQuery(sql, transaction);
+                    //Database.Instance.InsertQuery("invalid sql", transaction);
 
-                //Database.Instance.InsertQuery("invalid sql", transaction);
-
-                // commit transaction
-                transaction.Commit();
+                    // commit transaction
+                    transaction.Commit();
+                }
+                catch (SQLiteException de)
+                {
+                    Console.WriteLine("Got here");
+                    transaction.Rollback();
+                    Console.WriteLine("Rollback complete");
+                    transaction.Dispose();
+                    throw de;
+                }
+                catch (Exception e)
+                {
+                    Logger.WriteLine("Exception occured during company.Update() - rolling back:");
+                    Logger.WriteLine(e.Message);
+                }
             }
-            catch (SQLiteException de)
-            {
-                Console.WriteLine("Got here");
-                transaction.Rollback();
-                Console.WriteLine("Rollback complete");
-                transaction.Dispose();
-                throw de;
-            }
-            catch (Exception e)
-            {
-                Logger.WriteLine("Exception occured during company.Update() - rolling back:");
-                Logger.WriteLine(e.Message);
-            }
+            // LOCK ENDS HERE
 
             // get lastEdited 
             sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, company.ID.ToString(),
@@ -178,7 +187,6 @@ namespace Server.Data
         public override void Create(Company company)
         {
             object[] row;
-            int ID;
 
             // check it is legal
             int companyID = GetId(company);
@@ -188,7 +196,7 @@ namespace Server.Data
 
 
             // LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 // get event number
                 var sql = SQLQueryBuilder.SaveEvent(ObjectType.Company, EventType.Create);
@@ -205,13 +213,11 @@ namespace Server.Data
                 var fields = new string[] { ID_COL_NAME, "created" };
                 sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, "id", inserted_id.ToString(), fields);
                 row = Database.Instance.FetchRow(sql);
-                long id = (long)row[0];
-                ID = (int)id;
             }
             // LOCK ENDS HERE
 
             // set id and lastedited
-            company.ID = (int)ID;
+            company.ID = row[0].ToInt();
             company.LastEdited = (DateTime)row[1];
 
             Logger.WriteLine("Created company: " + company);
@@ -231,7 +237,7 @@ namespace Server.Data
             long id = 0;
 
             //LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 // get id of matching record
                 var sql = SQLQueryBuilder.SelectFieldsWhereFieldLike(TABLE_NAME, "name", company.Name,
@@ -260,7 +266,7 @@ namespace Server.Data
                 throw new DatabaseException(String.Format("There is no active record with company_id='{0}'", id));
 
             // LOCK BEGINS HERE
-            //lock (Database.Instance)
+            lock (Database.Instance)
             {
                 // get event number
                 var sql = SQLQueryBuilder.SaveEvent(ObjectType.Company, EventType.Delete);
@@ -294,7 +300,6 @@ namespace Server.Data
                 if (id == 0)
                     throw new DatabaseException("There is no active record matching that company to delete: " + obj);
 
-                Delete(id);
             }
 
             Delete(obj.ID);
