@@ -155,19 +155,19 @@ namespace Server.Network
             {
                 case NetCodes.OBJECT_COUNTRY:
                     countryService.Delete(id);
-                    SendObjectDelete(id, NetCodes.OBJECT_COUNTRY);
+                    SendObjectDelete(NetCodes.OBJECT_COUNTRY, id);
                     return;
                 case NetCodes.OBJECT_COMPANY:
                     companyService.Delete(id);
-                    SendObjectDelete(id, NetCodes.OBJECT_COMPANY);
+                    SendObjectDelete(NetCodes.OBJECT_COMPANY, id);
                     return;
                 case NetCodes.OBJECT_PRICE:
                     priceService.Delete(id);
-                    SendObjectDelete(id, NetCodes.OBJECT_PRICE);
+                    SendObjectDelete(NetCodes.OBJECT_PRICE, id);
                     return;
                 case NetCodes.OBJECT_ROUTE:
                     routeService.Delete(id);
-                    SendObjectDelete(id, NetCodes.OBJECT_ROUTE);
+                    SendObjectDelete(NetCodes.OBJECT_ROUTE, id);
                     return;
             }
         }
@@ -205,9 +205,9 @@ namespace Server.Network
             Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_UPDATE, DateTime.UtcNow.ToString(), objectDef));
         }
 
-        private void SendObjectDelete(int id, string objectType)
+        private void SendObjectDelete(string objectType, int id)
         {
-            Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_DELETE, DateTime.UtcNow.ToString(), Convert.ToString(id), objectType));
+            Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_DELETE, DateTime.UtcNow.ToString(), objectType, Convert.ToString(id)));
         }
     }
 }

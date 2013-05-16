@@ -29,6 +29,8 @@ namespace Common
         public const string CL_OBJECT_EDIT = "oe";    // ID (int) - Type (OBJECT_) - See specific object for rest of protocol...
         public const string CL_OBJECT_DELETE = "od";    // ID (int) - Type (OBJECT_)
 
+        public const string CL_SYNC_STATE = "ss";   // Timestamp (DateTime)
+
         // Server to Client - First token of a message sent by the Server, identifies the information the Server is sending (and the format for the rest of the message).
 
         public const string SV_DELIVERY_PRICES = "dp";    // PATH_CANCEL or PATH_ 
@@ -57,9 +59,21 @@ namespace Common
         public const string TRANSPORT_SEA = "s";
 
         /// <summary>Character used to seperate tokens in a network message.</summary>
-        public const char SEPARATOR = '|';
+        public const char SEPARATOR = '^';
+        public const char SEPARATOR_FIELD = '|';
         public const char SEPARATOR_ELEMENT = '\t';
         public const char SEPERATOR_TIME = ':';
+
+
+        public static string BuildNetworkString(string first, params string[] rest)
+        {
+            return BuildSeperatedString(SEPARATOR, first, rest);
+        }
+
+        public static string BuildObjectNetString(string first, params string[] rest)
+        {
+            return BuildSeperatedString(SEPARATOR_FIELD, first, rest);
+        }
 
         /// <summary>
         /// Creates a string out of all the string parameters, seperated by the seperator character. Ensures at least one string is given.
@@ -67,13 +81,13 @@ namespace Common
         /// <param name="first">First string</param>
         /// <param name="rest">Remaining strings</param>
         /// <returns></returns>
-        public static string BuildNetworkString(string first, params string[] rest)
+        private static string BuildSeperatedString(char seperator, string first, params string[] rest)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append(first);
             for (int i = 0; i < rest.Length; ++i)
             {
-                builder.Append(NetCodes.SEPARATOR);
+                builder.Append(seperator);
                 builder.Append(rest[i]);
             }
             return builder.ToString();

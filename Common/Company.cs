@@ -5,6 +5,8 @@
 // 
 //////////////////////
 
+using System;
+
 namespace Common
 {
     /// <summary>
@@ -50,7 +52,17 @@ namespace Common
 
         public override string ToNetString()
         {
-            return NetCodes.BuildNetworkString(base.ToNetString(), NetCodes.OBJECT_COMPANY, Name);
+            return NetCodes.BuildObjectNetString(base.ToNetString(), Name);
         }
+
+        public static Company ParseNetString(string objectDef)
+        {
+            string[] tokens = objectDef.Split(NetCodes.SEPARATOR_FIELD);
+            int count = 0;
+            int id = Convert.ToInt32(tokens[count++]);
+            string name = tokens[count++];
+            return new Company() { Name = name, ID = id };
+        }
+        
     }
 }

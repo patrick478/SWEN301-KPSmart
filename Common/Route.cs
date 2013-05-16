@@ -163,11 +163,6 @@ namespace Common
             }
         }
 
-        public override string ToNetString()
-        {
-            return NetCodes.BuildNetworkString(base.ToNetString(), NetCodes.OBJECT_ROUTE, Convert.ToString(Origin.ID), Convert.ToString(Destination.ID), TransportType.ToNetString(), Convert.ToString(PricePerGram), Convert.ToString(PricePerCm3), Convert.ToString(MaxWeight), Convert.ToString(MaxVolume), Convert.ToString(Duration), WeeklyTime.BuildTimesNetString(DepartureTimes));
-        }
-
         public override string ToString ()
         {
             var weeklyTimes = "";
@@ -178,6 +173,29 @@ namespace Common
             }
             
             return String.Format("Route[ID={0}, Origin={1}, Destination={2}, Company={3}, TransportType={4}, Duration={5}, MaxWeight={6}, MaxVolume={7}, CostPerCm3={8}, CostPerGram={9}, DepartureTimes={10}, LastEdited={11}]", ID, Origin.ToShortString(), Destination.ToShortString(), Company.Name, TransportType, Duration, MaxWeight, MaxVolume, CostPerCm3, CostPerGram, weeklyTimes, LastEdited);
+        }
+
+        public override string ToNetString()
+        {
+            return NetCodes.BuildObjectNetString(base.ToNetString(), Convert.ToString(Origin.ID), Convert.ToString(Destination.ID), TransportType.ToNetString(), Convert.ToString(PricePerGram), Convert.ToString(PricePerCm3), Convert.ToString(MaxWeight), Convert.ToString(MaxVolume), Convert.ToString(Duration), WeeklyTime.BuildTimesNetString(DepartureTimes));
+        }
+
+        public static Route ParseNetString(string objectDef, State state)
+        {
+            string[] tokens = objectDef.Split(NetCodes.SEPARATOR_FIELD);
+            int count = 0;
+            int id = Convert.ToInt32(tokens[count++]);
+            int originId = Convert.ToInt32(tokens[count++]);
+            int destinationId = Convert.ToInt32(tokens[count++]);
+            int companyId = Convert.ToInt32(tokens[count++]);
+            TransportType type = TransportTypeExtensions.ParseNetString(tokens[count++]);
+            int weightCost = Convert.ToInt32(tokens[count++]);
+            int volumeCost = Convert.ToInt32(tokens[count++]);
+            int weightMax = Convert.ToInt32(tokens[count++]);
+            int volumeMax = Convert.ToInt32(tokens[count++]);
+            int duration = Convert.ToInt32(tokens[count++]);
+            List<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
+            return new Route() { Origin = state.GetRouteNode(originId), Destination = state.GetRouteNode(destinationId), Company = state.GetCompany(companyId), TransportType = type, CostPerGram = weightCost, CostPerCm3 = volumeCost, MaxWeight = weightMax, MaxVolume = volumeMax, Duration = duration, DepartureTimes = routeTimes };
         }
 
     }
