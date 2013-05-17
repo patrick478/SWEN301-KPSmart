@@ -68,6 +68,9 @@ namespace Server.Network
                     ObjectDelete(client, tokens);
                     return;
 
+                case NetCodes.CL_SYNC_STATE:
+                    SyncState(client, tokens);
+
                 // TODO once implemented, add the business figures stuff
             }
         }
@@ -198,6 +201,16 @@ namespace Server.Network
             PathType type = PathTypeExtensions.ParseNetString(tokens[count]);
             deliveryService.SelectDeliveryOption(client.ID, type);
             client.SendMessage(NetCodes.SV_DELIVERY_CONFIRMED);
+        }
+
+        private void SyncState(Client client, string[] tokens)
+        {
+            DateTime clientTime = DateTime.Parse(tokens[1]);
+            //TODO
+            foreach (Company c in companyService.GetAll())
+            {
+                //client.SendMessage
+            }
         }
 
         private void SendObjectUpdate(string objectDef)
