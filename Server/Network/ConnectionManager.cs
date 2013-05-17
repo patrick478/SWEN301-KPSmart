@@ -41,6 +41,17 @@ namespace Server.Network
             throw new Exception("Client does not exist in ConnectionManager");
         }
 
+        public static List<Client> GetAll()
+        {
+            List<Client> clients = new List<Client>();
+            foreach (KeyValuePair<int, Client> kvp in connections)
+            {
+                clients.Add(kvp.Value);
+            }
+
+            return clients;
+        }
+
         /// <summary>
         /// Creates a new Client and returns the newly allocated ID number.
         /// This doesn't return the Client for synchronisation reasons.

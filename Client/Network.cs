@@ -201,7 +201,6 @@ namespace Client
             if (message.StartsWith("#LOGIN"))
             {
                 var success = (message.Split('|')[1] == "true" ? true : false);
-                MessageBox.Show("Login success: " + success);
                 if (success)
                 {
                     var isAdmin = (message.Split('|')[2] == "true" ? true : false);
