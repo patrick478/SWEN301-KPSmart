@@ -36,8 +36,8 @@ namespace Common
         public const string SV_DELIVERY_PRICES = "dp";    // PATH_CANCEL or PATH_ 
         public const string SV_DELIVERY_CONFIRMED = "dc";    // 
         public const string SV_ERROR = "er"; // Error Message (string ...)   // CHECK unless we want to have error codes. Or have both; a code followed by a string.
-        public const string SV_OBJECT_UPDATE = "ou";    // DateTime String - ID (int) - Type (OBJECT_) - See specific object for rest of protocol...
-        public const string SV_OBJECT_DELETE = "od";    // DateTime String - ID (int) - Type (OBJECT_)
+        public const string SV_OBJECT_UPDATE = "ou";    // DateTime String - Type (OBJECT_) - ID (int) - See specific object for rest of protocol...
+        public const string SV_OBJECT_DELETE = "od";    // DateTime String - Type (OBJECT_) - ID (int)
 
         // State Updates - Fields marked with astericks are for fields also used in EDITs
         public const string OBJECT_COUNTRY = "l";   // ... - *Location Code (3char string) - Location Name (string)     TODO Later if we get really pro with maps integration: - Longitude - Latititude. Unless we just pass the name along to the api and it finds it itself.
@@ -47,8 +47,8 @@ namespace Common
 
         public const string PATH_AIR = "a";
         public const string PATH_STANDARD = "s";
-        public const string PATH_AIRXPRESS = "A";
-        public const string PATH_STANDARDXPRESS = "S";
+        public const string PATH_AIRXPRESS = "ax";
+        public const string PATH_STANDARDXPRESS = "sx";
         public const string PATH_CANCEL = "c";
 
         public const string PRIORITY_AIR = "a";
