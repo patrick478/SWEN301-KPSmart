@@ -177,8 +177,13 @@ namespace Server.Gui
 
                 deliveryDataHelper.LoadAll();
 
-                int delId = deliveryDataHelper.GetId(delivery);
-                Logger.WriteLine("id: " + delId);
+                var price = new Price { Origin = routeNode, Destination = destination, Priority = Priority.Air, PricePerCm3 = 3, PricePerGram = 5 };
+                var priceDataHelper = new PriceDataHelper();
+                //priceDataHelper.Create(price);
+
+                price.PricePerGram = 10;
+                price.ID = 1;
+                //priceDataHelper.Update(price);
                 
             }
             catch (Exception e) 

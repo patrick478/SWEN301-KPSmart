@@ -213,7 +213,7 @@ namespace Common
         /// </summary>
         /// <param name="times"></param>
         /// <returns></returns>
-        public static string BuildTimesNetString(IList<WeeklyTime> times)
+        public static string BuildTimesNetString(List<WeeklyTime> times)
         {
             StringBuilder builder = new StringBuilder();
             bool first = true;

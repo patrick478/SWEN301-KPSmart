@@ -244,7 +244,10 @@ namespace Server.Network
         
         public void SendMessageToAll(string message)
         {
-            Logger.WriteLine("Sending message to all: {0}", message);
+            foreach (Client c in ConnectionManager.GetAll())
+            {
+                c.SendMessage(message);
+            }
         }
 
         internal void Send(Client client, byte[] bytes)

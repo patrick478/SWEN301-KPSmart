@@ -71,13 +71,18 @@ namespace Common
 
        public override string ToNetString()
        {
-           return NetCodes.BuildNetworkString(base.ToNetString(), NetCodes.OBJECT_COUNTRY, Code, Name);
+           return NetCodes.BuildObjectNetString(base.ToNetString(), Code, Name);
+       }
+
+       public static Country ParseNetString(string objectDef)
+       {
+           string[] tokens = objectDef.Split(NetCodes.SEPARATOR_FIELD);
+           int count = 0;
+           int id = Convert.ToInt32(tokens[count++]);
+           string code = tokens[count++];
+           string name = tokens[count++];
+           return new Country() { Name = name, Code = code, ID = id };
        }
     }
-
-
-
-
-
 
 }

@@ -66,45 +66,32 @@ namespace Client
         /// <param name="tokens">Network Message.</param>
         private void ObjectUpdate(string[] tokens)
         {
+            
             int count = 1;
-            int id = Convert.ToInt32(tokens[count++]);
+            DateTime timestamp = DateTime.Parse(tokens[count++]);
+            Type updatedType = null;
             switch (tokens[count++])
             {
                 case NetCodes.OBJECT_COUNTRY:
-                    string countryCode = tokens[count++];
-                    string countryName = tokens[count++];
-                    state.SaveCountry(new Country() { Name = countryName, Code = countryCode, ID = id });
-                    if (Updated != null)
-                        Updated(typeof(Country));
-                    return;
+                    state.SaveCountry(Country.ParseNetString(tokens[count]));
+                    updatedType = typeof(Country);
+                    break;
                 case NetCodes.OBJECT_COMPANY:
-                    string companyName = tokens[count++];
-                    state.SaveCompany(new Company() { Name = companyName, ID = id });
-                    if (Updated != null)
-                        Updated(typeof(Company));
-                    return;
+                    state.SaveCompany(Company.ParseNetString(tokens[count]));
+                    updatedType = typeof(Company);
+                    break;
                 case NetCodes.OBJECT_PRICE:
-                    int priceOriginId = Convert.ToInt32(tokens[count++]);
-                    int priceDestinationId = Convert.ToInt32(tokens[count++]);
-                    Priority pricePrio = PriorityExtensions.ParseNetString(tokens[count++]);
-                    int priceWeight = Convert.ToInt32(tokens[count++]);
-                    int priceVolume = Convert.ToInt32(tokens[count++]);
-                    //state.SavePrice(new Price() { Origin = state.GetCountry(priceOriginId), Destination = state.GetCountry(priceDestinationId), Priority = pricePrio, PricePerGram = priceWeight, PricePerCm3 = priceVolume });
-                    return;
+                    state.SavePrice(Price.ParseNetString(tokens[count], state));
+                     updatedType = typeof(Price);
+                    break;
                 case NetCodes.OBJECT_ROUTE:
-                    int routeOriginId = Convert.ToInt32(tokens[count++]);
-                    int routeDestinationId = Convert.ToInt32(tokens[count++]);
-                    int routeCompany = Convert.ToInt32(tokens[count++]);
-                    TransportType routeType = TransportTypeExtensions.ParseNetString(tokens[count++]);
-                    int routeWeightCost = Convert.ToInt32(tokens[count++]);
-                    int routeVolumeCost = Convert.ToInt32(tokens[count++]);
-                    int routeWeightMax = Convert.ToInt32(tokens[count++]);
-                    int routeVolumeMax = Convert.ToInt32(tokens[count++]);
-                    int routeDuration = Convert.ToInt32(tokens[count++]);
-                    IList<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
-                    //state.SaveRoute(new Route() { Origin = state.GetCountry(routeOriginId), Destination = state.GetCountry(routeDestinationId), Company = state.GetCompany(routeCompany), TransportType = routeType, CostPerGram = routeWeightCost, CostPerCm3 = routeVolumeCost, MaxWeight = routeWeightMax, MaxVolume = routeVolumeMax, Duration = routeDuration, DepartureTimes = routeTimes});
-                    return;
+                    state.SaveRoute(Route.ParseNetString(tokens[count], state));
+                    updatedType = typeof(Route);
+                    break;
             }
+            if (Updated != null)
+                Updated(updatedType);
+            state.UpdateTime(timestamp);
         }
 
         /// <summary>
@@ -114,30 +101,31 @@ namespace Client
         private void ObjectDelete(string[] tokens)
         {
             int count = 1;
-            int id = Convert.ToInt32(tokens[count++]);
+            DateTime timestamp = DateTime.Parse(tokens[count++]);
+            Type updatedType = null;
+            int id = Convert.ToInt32(tokens[count+1]);  // Note the different order here.
             switch (tokens[count])
             {
                 case NetCodes.OBJECT_COUNTRY:
                     state.RemoveCountry(id);
-                    if (Updated != null)
-                        Updated(typeof(Country));
-                    return;
+                    updatedType = typeof(Country);
+                    break;
                 case NetCodes.OBJECT_PRICE:
                     state.RemovePrice(id);
-                    if (Updated != null)
-                        Updated(typeof(Price));
-                    return;
+                    updatedType = typeof(Price);
+                    break;
                 case NetCodes.OBJECT_ROUTE:
                     state.RemoveRoute(id);
-                    if (Updated != null)
-                        Updated(typeof(Route));
-                    return;
+                    updatedType = typeof(Route);
+                    break;
                 case NetCodes.OBJECT_COMPANY:
                     state.RemoveCompany(id);
-                    if (Updated != null)
-                        Updated(typeof(Company));
-                    return;
+                    updatedType = typeof(Company);
+                    break;
             }
+            if (Updated != null)
+                Updated(updatedType);
+            state.UpdateTime(timestamp);
         }
 
         private void DeliveryOptions(string[] tokens)
@@ -295,7 +283,7 @@ namespace Client
         /// <param name="volumeMax">Maximum volume (cm^3) per trip.</param>
         /// <param name="duration">Trip duration.</param>
         /// <param name="times">Departing times.</param>
-        public void AddRoute(int originId, int destinationId, TransportType type, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration, IList<WeeklyTime> times)
+        public void AddRoute(int originId, int destinationId, TransportType type, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration, List<WeeklyTime> times)
         {
             Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_ROUTE, Convert.ToString(originId), Convert.ToString(destinationId), type.ToNetString(), Convert.ToString(weightCost), Convert.ToString(volumeCost), Convert.ToString(weightMax), Convert.ToString(volumeMax), Convert.ToString(duration), WeeklyTime.BuildTimesNetString(times));
         }
@@ -310,7 +298,7 @@ namespace Client
         /// <param name="volumeMax">Maximum volume (cm^3) per trip.</param>
         /// <param name="duration">Trip duration.</param>
         /// <param name="times">Departing times.</param>
-        public void EditRoute(int id, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration, IList<WeeklyTime> times)
+        public void EditRoute(int id, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration, List<WeeklyTime> times)
         {
             Send(NetCodes.CL_OBJECT_EDIT, Convert.ToString(id), NetCodes.OBJECT_ROUTE, Convert.ToString(weightCost), Convert.ToString(volumeCost), Convert.ToString(weightMax), Convert.ToString(volumeMax), Convert.ToString(duration), WeeklyTime.BuildTimesNetString(times));
         }

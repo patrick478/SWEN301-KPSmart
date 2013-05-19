@@ -29,13 +29,15 @@ namespace Common
         public const string CL_OBJECT_EDIT = "oe";    // ID (int) - Type (OBJECT_) - See specific object for rest of protocol...
         public const string CL_OBJECT_DELETE = "od";    // ID (int) - Type (OBJECT_)
 
+        public const string CL_SYNC_STATE = "ss";   // Timestamp (DateTime)
+
         // Server to Client - First token of a message sent by the Server, identifies the information the Server is sending (and the format for the rest of the message).
 
         public const string SV_DELIVERY_PRICES = "dp";    // PATH_CANCEL or PATH_ 
         public const string SV_DELIVERY_CONFIRMED = "dc";    // 
         public const string SV_ERROR = "er"; // Error Message (string ...)   // CHECK unless we want to have error codes. Or have both; a code followed by a string.
-        public const string SV_OBJECT_UPDATE = "ou";    // DateTime String - ID (int) - Type (OBJECT_) - See specific object for rest of protocol...
-        public const string SV_OBJECT_DELETE = "od";    // DateTime String - ID (int) - Type (OBJECT_)
+        public const string SV_OBJECT_UPDATE = "ou";    // DateTime String - Type (OBJECT_) - ID (int) - See specific object for rest of protocol...
+        public const string SV_OBJECT_DELETE = "od";    // DateTime String - Type (OBJECT_) - ID (int)
 
         // State Updates - Fields marked with astericks are for fields also used in EDITs
         public const string OBJECT_COUNTRY = "l";   // ... - *Location Code (3char string) - Location Name (string)     TODO Later if we get really pro with maps integration: - Longitude - Latititude. Unless we just pass the name along to the api and it finds it itself.
@@ -45,8 +47,8 @@ namespace Common
 
         public const string PATH_AIR = "a";
         public const string PATH_STANDARD = "s";
-        public const string PATH_AIRXPRESS = "A";
-        public const string PATH_STANDARDXPRESS = "S";
+        public const string PATH_AIRXPRESS = "ax";
+        public const string PATH_STANDARDXPRESS = "sx";
         public const string PATH_CANCEL = "c";
 
         public const string PRIORITY_AIR = "a";
@@ -57,9 +59,21 @@ namespace Common
         public const string TRANSPORT_SEA = "s";
 
         /// <summary>Character used to seperate tokens in a network message.</summary>
-        public const char SEPARATOR = '|';
+        public const char SEPARATOR = '^';
+        public const char SEPARATOR_FIELD = '|';
         public const char SEPARATOR_ELEMENT = '\t';
         public const char SEPERATOR_TIME = ':';
+
+
+        public static string BuildNetworkString(string first, params string[] rest)
+        {
+            return BuildSeperatedString(SEPARATOR, first, rest);
+        }
+
+        public static string BuildObjectNetString(string first, params string[] rest)
+        {
+            return BuildSeperatedString(SEPARATOR_FIELD, first, rest);
+        }
 
         /// <summary>
         /// Creates a string out of all the string parameters, seperated by the seperator character. Ensures at least one string is given.
@@ -67,13 +81,13 @@ namespace Common
         /// <param name="first">First string</param>
         /// <param name="rest">Remaining strings</param>
         /// <returns></returns>
-        public static string BuildNetworkString(string first, params string[] rest)
+        private static string BuildSeperatedString(char seperator, string first, params string[] rest)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append(first);
             for (int i = 0; i < rest.Length; ++i)
             {
-                builder.Append(NetCodes.SEPARATOR);
+                builder.Append(seperator);
                 builder.Append(rest[i]);
             }
             return builder.ToString();
