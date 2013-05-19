@@ -70,6 +70,7 @@ namespace Server.Network
 
                 case NetCodes.CL_SYNC_STATE:
                     SyncState(client, tokens);
+                    return;
 
                 // TODO once implemented, add the business figures stuff
             }
