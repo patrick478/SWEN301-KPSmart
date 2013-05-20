@@ -97,7 +97,7 @@ namespace Client
             editCountry.IsEnabled = false;
 
 
-            editCompanyButton.IsEnabled = false;
+            //editCompanyButton.IsEnabled = false;
 
             editDistCenter.IsEnabled = false;
             editPrice.IsEnabled = false;
@@ -435,4 +435,4 @@ namespace Client
         }
 
     }
-}
+

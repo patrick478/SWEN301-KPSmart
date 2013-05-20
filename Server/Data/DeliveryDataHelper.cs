@@ -10,6 +10,7 @@ namespace Server.Data
     public class DeliveryDataHelper: DataHelper<Delivery>
     {
         private RouteNodeDataHelper routeNodeDataHelper;
+        private DeliveryRouteInstanceDataHelper deliveryRouteInstanceDataHelper;
         
         
         public DeliveryDataHelper () 
@@ -66,6 +67,9 @@ namespace Server.Data
             // load destination
             var destination = routeNodeDataHelper.Load(destinationId);
 
+            // load routeInstances
+            var routeInstances = deliveryRouteInstanceDataHelper.Load(id);
+
             var delivery = new Delivery
             {
                 Origin = origin,
@@ -78,7 +82,8 @@ namespace Server.Data
                 TimeOfRequest = timeOfRequest,
                 TimeOfDelivery = timeOfDelivery,
                 ID = id,
-                LastEdited = created
+                LastEdited = created,
+                Routes = routeInstances
             };
 
             Logger.WriteLine("Loaded delivery: " + delivery);
@@ -137,6 +142,8 @@ namespace Server.Data
                 // load destination
                 var destination = routeNodeDataHelper.Load(destinationId);
 
+                var routeInstances = deliveryRouteInstanceDataHelper.Load(id);
+
                 var delivery = new Delivery
                 {
                     Origin = origin,
@@ -149,7 +156,8 @@ namespace Server.Data
                     TimeOfRequest = timeOfRequest,
                     TimeOfDelivery = timeOfDelivery,
                     ID = id,
-                    LastEdited = created
+                    LastEdited = created,
+                    Routes = routeInstances
                 };
 
                 deliveries[id] = delivery;
@@ -233,6 +241,9 @@ namespace Server.Data
 
             if (delivery.TimeOfDelivery.Ticks == 0)
                 throw new DatabaseException(String.Format("TimeOfDelivery cannot be null: {0}", delivery));
+
+            if (delivery.Routes == null || delivery.Routes.Count == 0)
+                throw new DatabaseException("There needs to be at least one route instance in the delivery: " + delivery);
             
             int eventId;
 
@@ -280,6 +291,9 @@ namespace Server.Data
                 row = Database.Instance.FetchRow(sql);
             }
             // LOCK ENDS HERE
+
+            // save route instances
+            deliveryRouteInstanceDataHelper.Create(delivery.ID, eventId, delivery.Routes);
 
             // set id and lastedited
             delivery.ID = row[0].ToInt();

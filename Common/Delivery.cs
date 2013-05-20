@@ -84,7 +84,7 @@ namespace Common
         }
 
         // the routes included in the delivery. Note, only to be used by Josh's pathfinding.
-        public IList<RouteInstance> Routes { get; set; }
+        public List<RouteInstance> Routes { get; set; }
 
 
 

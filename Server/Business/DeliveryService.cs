@@ -92,7 +92,7 @@ namespace Server.Business
             return deliveryOptions.GetOptions();
         }
 
-        private Delivery GetDeliveryFromRouteInstances(IList<RouteInstance> path, int weightInGrams, int volumeInCm3, DateTime timeOfRequest, PathType pathType)
+        private Delivery GetDeliveryFromRouteInstances(List<RouteInstance> path, int weightInGrams, int volumeInCm3, DateTime timeOfRequest, PathType pathType)
         {      
             // check arguments
             if (path.Count == 0)

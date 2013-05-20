@@ -73,6 +73,7 @@
     <Compile Include="Data\ObjectType.cs" />
     <Compile Include="Data\PriceDataHelper.cs" />
     <Compile Include="Data\RouteDataHelper.cs" />
+    <Compile Include="Data\DeliveryRouteInstanceDataHelper.cs" />
     <Compile Include="Data\RouteNodeDataHelper.cs" />
     <Compile Include="Data\SQLQueryBuilder.cs" />
     <Compile Include="Network\Client.cs" />
