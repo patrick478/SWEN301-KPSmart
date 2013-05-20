@@ -20,7 +20,9 @@ namespace Client
     {
         private readonly ClientState _clientState;
         private readonly ClientController _clientCon;
+
         private readonly CurrentState _currentState;
+
 
         public void clientController_Updated(string type)
         {
@@ -55,7 +57,10 @@ namespace Client
             _clientCon = new ClientController(_clientState);
 
             // initialise all the services (they set up the state themselves)
+
             _currentState = new CurrentState();
+
+
 
 
 
@@ -90,6 +95,10 @@ namespace Client
             
             //disable edit buttons until something is clicked in the corresponding datagrids
             editCountry.IsEnabled = false;
+
+
+            editCompanyButton.IsEnabled = false;
+
             editDistCenter.IsEnabled = false;
             editPrice.IsEnabled = false;
             editRoute.IsEnabled = false;
@@ -366,6 +375,7 @@ namespace Client
 
         private void addIntlPortButton_Click(object sender, RoutedEventArgs e)
         {
+
             
         }
 
@@ -419,6 +429,9 @@ namespace Client
         private void button2_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new System.Uri("ViewStats.xaml", UriKind.RelativeOrAbsolute));
+        }
+
+
         }
 
     }

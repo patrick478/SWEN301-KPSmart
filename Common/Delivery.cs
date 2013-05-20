@@ -19,11 +19,57 @@ namespace Common
     public class Delivery: DataObject
     {
 
-        public RouteNode Origin { get; set; }
-        public RouteNode Destination { get; set; }
+        private RouteNode origin;
+        public RouteNode Origin
+        {
+            get { return origin; }
+            set
+            {
+                // validation
+                if (value == null)
+                    throw new InvalidObjectStateException("Origin", "Origin cannot be set to null.");
+
+                if (value.Equals(Destination))
+                    throw new InvalidObjectStateException("Origin", "Origin cannot be the same as the Destination.");
+
+                this.origin = value;
+            }
+        }
+
+        private RouteNode destination;
+        public RouteNode Destination
+        {
+            get { return destination; }
+            set
+            {
+                // validation
+                if (value == null)
+                    throw new InvalidObjectStateException("Destination", "Destination cannot be set to null.");
+
+                if (value.Equals(Origin))
+                    throw new InvalidObjectStateException("Destination", "Destination cannot be the same as the Origin.");
+
+                this.origin = value;
+            }
+        }
+
+
+
 
         // Standard or Air
-        public Priority Priority { get; set; }
+        private Priority priority;
+        public Priority Priority
+        {
+            get { return priority; }
+            set
+            {
+                // validation
+                if (value == null)
+                    throw new InvalidObjectStateException("Priority", "Priority cannot be set to null.");
+
+                this.priority = value;
+            }
+        } 
 
         // Domestic or International
         public Scope Scope 
@@ -37,24 +83,105 @@ namespace Common
             }
         }
 
-        // the routes included in the delivery
+        // the routes included in the delivery. Note, only to be used by Josh's pathfinding.
         public IList<RouteInstance> Routes { get; set; }
 
-        public int WeightInGrams { get; set; }
 
-        public int VolumeInCm3 { get; set; }
+
+
+        private int weightInGrams;
+        public int WeightInGrams
+        {
+            get { return weightInGrams; }
+            set
+            {
+                // validation
+                if (value <= 0)
+                    throw new InvalidObjectStateException("WeightInGrams", "WeightInGrams cannot be less than or equal to 0.");
+
+                this.weightInGrams = value;
+            }
+        }
+
+        private int volumeInCm3;
+        public int VolumeInCm3
+        {
+            get { return volumeInCm3; }
+            set
+            {
+                // validation
+                if (value <= 0)
+                    throw new InvalidObjectStateException("VolumeInCm3", "VolumeInCm3 cannot be less than or equal to 0.");
+
+                this.volumeInCm3 = value;
+            }
+        }
 
         // total price charged to the customer
-        public int TotalPrice { get; set; }
+        private int totalPrice;
+        public int TotalPrice
+        {
+            get { return totalPrice; }
+            set
+            {
+                // validation
+                if (value <= 0)
+                    throw new InvalidObjectStateException("TotalPrice", "TotalPrice cannot be less than or equal to 0.");
+
+                this.totalPrice = value;
+            }
+        }
 
         // total cost paid to the delivery companies
-        public int TotalCost { get; set; }
+        private int totalCost;
+        public int TotalCost
+        {
+            get { return totalCost; }
+            set
+            {
+                // validation
+                if (value <= 0)
+                    throw new InvalidObjectStateException("TotalCost", "TotalCost cannot be less than or equal to 0.");
+
+                this.totalCost = value;
+            }
+        }
 
         // the time the delivery was requested
-        public DateTime TimeOfRequest { get; set; }
+        private DateTime timeOfRequest;
+        public DateTime TimeOfRequest
+        {
+            get { return timeOfRequest; }
+            set
+            {
+                // validation
+                if (value == null)
+                    throw new InvalidObjectStateException("TimeOfRequest", "TimeOfRequest cannot be set to null.");
+
+                if (TimeOfDelivery.Ticks != 0 && value >= TimeOfDelivery)
+                    throw new InvalidObjectStateException("TimeOfRequest", "TimeOfRequest cannot be equal or after the TimeOfDelivery");
+
+                this.timeOfRequest = value;
+            }
+        }
 
         // the time the delivery arrived at its destination
-        public DateTime TimeOfDelivery { get; set; }
+        private DateTime timeOfDelivery;
+        public DateTime TimeOfDelivery
+        {
+            get { return timeOfDelivery; }
+            set
+            {
+                // validation
+                if (value == null)
+                    throw new InvalidObjectStateException("TimeOfDelivery", "TimeOfDelivery cannot be set to null.");
+
+                if (TimeOfRequest.Ticks != 0 && value <= TimeOfRequest )
+                    throw new InvalidObjectStateException("TimeOfDelivery", "TimeOfDelivery cannot be the same as or before the TimeOfRequest.");
+
+                this.timeOfDelivery = value;
+            }
+        }
 
         // Eg. 'Domestic Air', 'International Standard'
         public string CustomerFriendlyPriority

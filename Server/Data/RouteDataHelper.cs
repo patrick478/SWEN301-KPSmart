@@ -237,9 +237,17 @@ namespace Server.Data
             Logger.WriteLine("Deleted route: " + id);
         }
 
-        public override void Delete(Route obj)
+        public override void Delete(Route route)
         {
-            throw new NotImplementedException();
+            if (route.ID == 0)
+            {
+                int id = GetId(route);
+
+                if (id == 0)
+                    throw new DatabaseException("There is no active record matching that route to delete: " + route);
+            }
+
+            Delete(route.ID);
         }
 
         public override void Update(Route route)

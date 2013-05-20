@@ -23,12 +23,117 @@ namespace Server.Data
 
         public override Price Load(int id)
         {
-            throw new NotImplementedException();
+            string sql;
+            object[] row;
+
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, id.ToString(), new string[] { "origin_id", 
+                                                                                                                            "destination_id",
+                                                                                                                            "priority",
+                                                                                                                            "price_per_cm3",
+                                                                                                                            "price_per_gram",
+                                                                                                                            "created" });
+                row = Database.Instance.FetchRow(sql);
+            }
+            // LOCK ENDS HERE
+
+            if (row.Length == 0)
+            {
+                return null;
+            }
+
+            // get field values
+            int originId = row[0].ToInt();
+            int destinationId = row[1].ToInt();
+            Priority priority = row[2].ToString().Equals(Priority.Air.ToString()) ? Priority.Air : Priority.Standard;
+            int pricePerCm3 = row[3].ToInt();
+            int pricePerGram = row[4].ToInt();
+            DateTime created = (DateTime)row[5];
+
+            // load origin
+            var origin = routeNodeDataHelper.Load(originId);
+
+            // load destination
+            var destination = routeNodeDataHelper.Load(destinationId);
+
+            var price = new Price
+            {
+                Origin = origin,
+                Destination = destination,
+                Priority = priority,
+                PricePerCm3 = pricePerCm3,
+                PricePerGram = pricePerGram,
+                ID = id,
+                LastEdited = created
+            };
+
+            Logger.WriteLine("Loaded price: " + price);
+
+            return price;
         }
 
         public override IDictionary<int, Price> LoadAll()
         {
-            throw new NotImplementedException();
+            string sql;
+            object[][] rows;
+            IDictionary<int, Price> prices = new Dictionary<int, Price>();
+
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[] { "origin_id", 
+                                                                                                                            "destination_id",
+                                                                                                                            "priority",
+                                                                                                                            "price_per_cm3",
+                                                                                                                            "price_per_gram",
+                                                                                                                            "created",
+                                                                                                                            "price_id"});
+                rows = Database.Instance.FetchRows(sql);
+            }
+            // LOCK ENDS HERE
+
+            if (rows.Length == 0)
+            {
+                return null;
+            }
+
+            Logger.WriteLine("Loaded prices: " + rows.Length);
+
+            foreach (object[] row in rows)
+            {
+                // get field values
+                int originId = row[0].ToInt();
+                int destinationId = row[1].ToInt();
+                Priority priority = row[2].ToString().Equals(Priority.Air.ToString()) ? Priority.Air : Priority.Standard;
+                int pricePerCm3 = row[3].ToInt();
+                int pricePerGram = row[4].ToInt();
+                DateTime created = (DateTime)row[5];
+
+                // load origin
+                var origin = routeNodeDataHelper.Load(originId);
+
+                // load destination
+                var destination = routeNodeDataHelper.Load(destinationId);
+
+                var price = new Price
+                {
+                    Origin = origin,
+                    Destination = destination,
+                    Priority = priority,
+                    PricePerCm3 = pricePerCm3,
+                    PricePerGram = pricePerGram,
+                    ID = row[6].ToInt(),
+                    LastEdited = created
+                };
+
+                Logger.WriteLine(price.ToString());
+
+                prices[price.ID] = price;
+            }
+
+            return prices;
         }
 
         public override IDictionary<int, Price> LoadAll(DateTime snapshotTime)
@@ -38,12 +143,45 @@ namespace Server.Data
 
         public override void Delete(int id)
         {
-            throw new NotImplementedException();
+            if (Load(id) == null)
+                throw new DatabaseException(String.Format("There is no active record with id='{0}'", id));
+
+            long eventId = 0;
+
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                // get event number
+                var sql = SQLQueryBuilder.SaveEvent(ObjectType.Price, EventType.Delete);
+                eventId = Database.Instance.InsertQuery(sql);
+
+                // set all entries to inactive
+                sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME, id);
+                Database.Instance.InsertQuery(sql);
+
+                // insert new 'deleted' row
+                sql = SQLQueryBuilder.InsertFields(TABLE_NAME,
+                                                   new string[] { EVENT_ID, ID_COL_NAME, "active", "origin_id", "destination_id", "priority", "price_per_cm3", "price_per_gram" },
+                                                   new string[] { eventId.ToString(), id.ToString(), "-1", "0", "0", "", "0", "0"});
+                Database.Instance.InsertQuery(sql);
+            }
+            // LOCK ENDS HERE
+
+
+            Logger.WriteLine("Deleted price: " + id);
         }
 
-        public override void Delete(Price obj)
+        public override void Delete(Price price)
         {
-            throw new NotImplementedException();
+            if (price.ID == 0)
+            {
+                int id = GetId(price);
+
+                if (id == 0)
+                    throw new DatabaseException("There is no active record matching that price to delete: " + price);
+            }
+
+            Delete(price.ID);
         }
 
         public override void Update(Price price)
@@ -98,7 +236,7 @@ namespace Server.Data
             lock (Database.Instance)
             {
 
-                // check that a price with same key fields doesn't already exist.
+                // check that a price with same key fields already exists.
                 sql = SQLQueryBuilder.SelectFieldsWhereFieldsEqual(TABLE_NAME, new[] { "origin_id", "destination_id", "priority"}, new string[] { price.Origin.ID.ToString(), price.Destination.ID.ToString(), price.Priority.ToString() }, new[] { "price_id" });
                 row = Database.Instance.FetchRow(sql);
 
@@ -125,7 +263,7 @@ namespace Server.Data
                                                               new string[] 
                                                               { 
                                                                   EVENT_ID, 
-                                                                  "route_id",
+                                                                  "price_id",
                                                                   "active",
                                                                   "origin_id", 
                                                                   "destination_id", 
