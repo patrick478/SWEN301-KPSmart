@@ -5,6 +5,7 @@
 // 
 //////////////////////
 
+using System;
 namespace Common
 {
     /// <summary>
@@ -25,9 +26,18 @@ namespace Common
         }
 
         // The name of the distribution centre.
+        private string name;
         public string Name
         {
-            get; private set;
+            get { return name; }
+            set
+            {
+                // validation
+                if (value == null || value == String.Empty)
+                    throw new InvalidObjectStateException("Name", "Cannot give the DistributionCentre an empty or null name");
+
+                name = value;
+            }
         }
 
 

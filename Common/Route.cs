@@ -24,11 +24,70 @@ namespace Common
 
         // fields that determine uniqueness of the Route
         //----------------------------------------------
-        public Company Company { get; set; }
-        public TransportType TransportType { get; set; }
-        public RouteNode Origin { get; set; }
-        public RouteNode Destination { get; set; }
 
+        private Company company;
+        public Company Company
+        {
+            get { return company; }
+            set
+            {
+                // validation
+                if (value == null)
+                    throw new InvalidObjectStateException("Company", "Company cannot be set to null.");
+
+                this.company = value;
+            }
+        }
+
+        private TransportType transportType;
+        public TransportType TransportType
+        {
+            get { return transportType; }
+            set
+            {
+                // validation
+                if (value == null)
+                    throw new InvalidObjectStateException("TransportType", "TransportType cannot be set to null.");
+
+                this.transportType = value;
+            }
+        }
+
+
+        private RouteNode origin;
+        public RouteNode Origin
+        {
+            get { return origin; }
+            set
+            {
+                // validation
+                if (value == null)
+                    throw new InvalidObjectStateException("Origin", "Origin cannot be set to null.");
+
+                if (value.Equals(Destination))
+                    throw new InvalidObjectStateException("Origin", "Origin cannot be the same as the Destination.");
+
+                this.origin = value;
+            }
+        }
+
+        private RouteNode destination;
+        public RouteNode Destination
+        {
+
+            get { return destination; }
+            set
+            {
+                // validation
+                if (value == null)
+                    throw new InvalidObjectStateException("Destination", "Destination cannot be set to null.");
+
+                if (value.Equals(Origin))
+                    throw new InvalidObjectStateException("Destination", "Destination cannot be the same as the Origin.");
+
+                this.origin = value;
+            }
+        }
 
         // other fields
         //-------------
@@ -53,42 +112,129 @@ namespace Common
             }
         }
 
-        //in minutes  
-        public int Duration { get; set; }
+        //in minutes 
+        private int duration;
+        public int Duration
+        {
+            get { return duration; }
+            set
+            {
+                // validation
+                if (value <= 0)
+                    throw new InvalidObjectStateException("Duration", "Duration cannot be less than or equal to 0.");
+
+                this.duration = value;
+            }
+        }
 
         // in grams
-        public int MaxWeight { get; set; }
+        private int maxWeight;
+        public int MaxWeight
+        {
+            get { return maxWeight; }
+            set
+            {
+                // validation
+                if (value <= 0)
+                    throw new InvalidObjectStateException("MaxWeight", "MaxWeight cannot be less than or equal to 0.");
+
+                this.maxWeight = value;
+            }
+        }
 
         // In cubic cm
-        public int MaxVolume { get; set; }
+        private int maxVolume;
+        public int MaxVolume
+        {
+            get { return maxVolume; }
+            set
+            {
+                // validation
+                if (value <= 0)
+                    throw new InvalidObjectStateException("MaxVolume", "MaxVolume cannot be less than or equal to 0.");
 
-        // (should this be a double?)  Maybe make a class "MoneyValue"?
+                this.maxVolume = value;
+            }
+        }
+
+
+        // in cents 
+        private int costPerGram;
+        public int CostPerGram
+        {
+            get { return costPerGram; }
+            set
+            {
+                // validation
+                if (value <= 0)
+                    throw new InvalidObjectStateException("CostPerGram", "CostPerGram cannot be less than or equal to 0.");
+
+                this.costPerGram = value;
+            }
+        }
+
         // in cents  
-        public int CostPerGram { get; set; }
+        private int costPerCm3;
+        public int CostPerCm3
+        {
+            get { return costPerCm3; }
+            set
+            {
+                // validation
+                if (value <= 0)
+                    throw new InvalidObjectStateException("CostPerCm3", "CostPerCm3 cannot be less than or equal to 0.");
 
-        // in cents  
-        public int CostPerCm3 { get; set; }
+                this.costPerCm3 = value;
+            }
+        }
 
-        // in cents - this isn't a property belonging to the Route itself.
-        public int PricePerGram { get; set; }
+        // in cents - this isn't a property of Route, just for reference
+        private int pricePerGram;
+        public int PricePerGram
+        {
+            get { return pricePerGram; }
+            set
+            {
+                // validation
+                if (value <= 0)
+                    throw new InvalidObjectStateException("PricePerGram", "PricePerGram cannot be less than or equal to 0.");
 
-        // in cents - this isn't a property belonging to the Route itself.
-        public int PricePerCm3 {get; set; }
+                this.pricePerGram = value;
+            }
+        }
+
+        // in cents - this isn't a property of Route, just for reference
+        private int pricePerCm3;
+        public int PricePerCm3
+        {
+
+            get { return pricePerCm3; }
+            set
+            {
+                // validation
+                if (value <= 0)
+                    throw new InvalidObjectStateException("PricePerCm3", "PricePerCm3 cannot be less than or equal to 0.");
+
+                this.pricePerCm3 = value;
+            }
+        }
         
         public void AddDepartureTime(WeeklyTime weeklyTime)
         {
+            // validation
+            if (this.departureTimes.Contains(weeklyTime))
+                throw new IllegalActionException("That time is already part of the route.");
+
             this.departureTimes.Add(weeklyTime);
             this.departureTimes.Sort();
         }
 
         /// <summary>
-        /// TODO: not sure if this will work - need to make WeeklyTime comparible so if it has the same value, it is equal?  
-        /// Not sure if Remove listens to this, or looks at specific instances?
+        /// Removes the given weeklyTime if it is contained.
         /// </summary>
         /// <param name="weeklyTime"></param>
         public void RemoveDepartureTime(WeeklyTime weeklyTime)
-        {
-            
+        {      
             this.departureTimes.Remove(weeklyTime);
         }
 

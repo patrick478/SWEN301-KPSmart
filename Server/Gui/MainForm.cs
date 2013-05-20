@@ -75,9 +75,6 @@ namespace Server.Gui
                     country = countryService.Create("Wellington", "WLG");
                 }
 
-                Logger.WriteLine("# from LoadAll(Timestamp=now) is: {0}", cdh.LoadAll(((DateTime)(DateTime.Now - new TimeSpan(2013, 4, 25)))).Count);
-
-                // perform updates
                 country = countryService.Update(country.ID, "WLN");
                 country = countryService.Update(country.ID, "BEN");
 
@@ -185,7 +182,13 @@ namespace Server.Gui
                 price.PricePerGram = 10;
                 price.ID = 1;
                 //priceDataHelper.Update(price);
-                
+                //priceDataHelper.Load(1);
+
+                var prices = priceDataHelper.LoadAll();
+
+                //priceDataHelper.Delete(1);
+
+                prices = priceDataHelper.LoadAll();            
             }
             catch (Exception e) 
             {

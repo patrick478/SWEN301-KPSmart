@@ -14,8 +14,19 @@ namespace Common
     /// </summary>
     public class Company: DataObject
     {
+        private string name;
+        public string Name
+        {
+            get { return name; } 
+            set 
+            {
+                // validation
+                if (value == null || value == String.Empty)
+                    throw new InvalidObjectStateException("Name", "Cannot give the Company an empty or null name");
 
-        public string Name { get; set; }
+                name = value; 
+            } 
+        }
 
         public override string ToString ()
         {
