@@ -25,9 +25,14 @@ namespace Client
             this.companies = new Dictionary<int, Company>();
         }
 
-        public void UpdateTime(DateTime newTime)
+        public void SetUpdateTime(DateTime newTime)
         {
             lastUpdate = newTime;
+        }
+
+        public DateTime GetUpdateTime()
+        {
+            return lastUpdate;
         }
 
         #region Functionality Removal Overrides

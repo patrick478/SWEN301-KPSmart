@@ -39,20 +39,21 @@ namespace Server.Gui
             // 
             // logBox
             // 
-            this.logBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.logBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.logBox.Location = new System.Drawing.Point(6, 6);
             this.logBox.Multiline = true;
             this.logBox.Name = "logBox";
+            this.logBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.logBox.Size = new System.Drawing.Size(960, 521);
             this.logBox.TabIndex = 0;
             // 
             // tabControl
             // 
-            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.tabPage1);
             this.tabControl.Location = new System.Drawing.Point(2, 1);
             this.tabControl.Name = "tabControl";

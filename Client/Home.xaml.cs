@@ -18,12 +18,17 @@ namespace Client
     {
         private readonly ClientState _clientState;
         private readonly ClientController _clientCon;
-        public void clientController_Updated(Type type)
+        public void clientController_Updated(string type)
         {
-            if(type == typeof(Country)){
+            switch (type)
+            {
+                case NetCodes.OBJECT_COUNTRY:
                     ReloadCountries();
+                    return;
+                case NetCodes.OBJECT_COMPANY:
+                    ReloadCompanies();
+                    return;
             }
-
         }
 
 
@@ -248,7 +253,7 @@ namespace Client
 
                 try
                 {
-                    //_clientCon.AddCompany(name);
+                    _clientCon.AddCompany(name);
                 }
                 catch (Exception ex)
                 {

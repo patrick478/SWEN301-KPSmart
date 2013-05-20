@@ -27,6 +27,10 @@ namespace Server.Network
         // Locking object for the singleton. Thread safety!
         private static object syncRoot = new Object();
 
+        public delegate void MessageReceivedDelegate(Client client, string msg);
+        public event MessageReceivedDelegate MessageReceived;
+
+
         // Empty constructor is empty for a reason. All 'settings' for this, should be loaded using the config
         private Network() { }
 
@@ -239,11 +243,13 @@ namespace Server.Network
                 //    client.SendMessage("#LOGIN|true|true");
             }
 
-            MessageHandler.PassMessage(msg, client);
+            if (MessageReceived != null)
+                MessageReceived(client, msg);
         }
         
         public void SendMessageToAll(string message)
         {
+            Logger.WriteLine("Sending '"+message+"' to all clients.");
             foreach (Client c in ConnectionManager.GetAll())
             {
                 c.SendMessage(message);

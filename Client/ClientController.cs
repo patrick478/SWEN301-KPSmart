@@ -17,10 +17,11 @@ namespace Client
         {
             this.state = state;
             Network.Instance.DataReady += new Network.DataReadyDelegate(OnReceived);
+            Network.Instance.OnConnectComplete += new Network.OnConnectDelegate(OnConnected);
         }
 
         #region Receiving
-        public delegate void StateUpdatedDelegate(Type type);
+        public delegate void StateUpdatedDelegate(string type);
         public event StateUpdatedDelegate Updated;
 
         public delegate void DeliveryOptionsDelegate(IDictionary<PathType, int> prices);
@@ -60,6 +61,11 @@ namespace Client
             }
         }
 
+        private void OnConnected()
+        {
+            Send(NetCodes.CL_SYNC_STATE, state.GetUpdateTime().ToString());
+        }
+
         /// <summary>
         /// Updates the Client's state with an Add/Edit of a DataObject.
         /// </summary>
@@ -69,29 +75,29 @@ namespace Client
             
             int count = 1;
             DateTime timestamp = DateTime.Parse(tokens[count++]);
-            Type updatedType = null;
-            switch (tokens[count++])
+            string updatedType = null;
+            switch (tokens[count])
             {
                 case NetCodes.OBJECT_COUNTRY:
-                    state.SaveCountry(Country.ParseNetString(tokens[count]));
-                    updatedType = typeof(Country);
+                    state.SaveCountry(Country.ParseNetString(tokens[++count]));
+                    updatedType = NetCodes.OBJECT_COUNTRY;
                     break;
                 case NetCodes.OBJECT_COMPANY:
-                    state.SaveCompany(Company.ParseNetString(tokens[count]));
-                    updatedType = typeof(Company);
+                    state.SaveCompany(Company.ParseNetString(tokens[++count]));
+                    updatedType = NetCodes.OBJECT_COMPANY;
                     break;
                 case NetCodes.OBJECT_PRICE:
-                    state.SavePrice(Price.ParseNetString(tokens[count], state));
-                     updatedType = typeof(Price);
+                    state.SavePrice(Price.ParseNetString(tokens[++count], state));
+                     updatedType = NetCodes.OBJECT_PRICE;
                     break;
                 case NetCodes.OBJECT_ROUTE:
-                    state.SaveRoute(Route.ParseNetString(tokens[count], state));
-                    updatedType = typeof(Route);
+                    state.SaveRoute(Route.ParseNetString(tokens[++count], state));
+                    updatedType = NetCodes.OBJECT_ROUTE;
                     break;
             }
             if (Updated != null)
                 Updated(updatedType);
-            state.UpdateTime(timestamp);
+            state.SetUpdateTime(timestamp);
         }
 
         /// <summary>
@@ -102,30 +108,30 @@ namespace Client
         {
             int count = 1;
             DateTime timestamp = DateTime.Parse(tokens[count++]);
-            Type updatedType = null;
+            string updatedType = null;
             int id = Convert.ToInt32(tokens[count+1]);  // Note the different order here.
             switch (tokens[count])
             {
                 case NetCodes.OBJECT_COUNTRY:
                     state.RemoveCountry(id);
-                    updatedType = typeof(Country);
+                    updatedType = NetCodes.OBJECT_COUNTRY;
                     break;
                 case NetCodes.OBJECT_PRICE:
                     state.RemovePrice(id);
-                    updatedType = typeof(Price);
+                    updatedType = NetCodes.OBJECT_PRICE;
                     break;
                 case NetCodes.OBJECT_ROUTE:
                     state.RemoveRoute(id);
-                    updatedType = typeof(Route);
+                    updatedType = NetCodes.OBJECT_ROUTE;
                     break;
                 case NetCodes.OBJECT_COMPANY:
                     state.RemoveCompany(id);
-                    updatedType = typeof(Company);
+                    updatedType = NetCodes.OBJECT_COMPANY;
                     break;
             }
             if (Updated != null)
                 Updated(updatedType);
-            state.UpdateTime(timestamp);
+            state.SetUpdateTime(timestamp);
         }
 
         private void DeliveryOptions(string[] tokens)

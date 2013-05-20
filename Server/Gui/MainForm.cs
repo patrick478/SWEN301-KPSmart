@@ -46,15 +46,14 @@ namespace Server.Gui
             locationService = new LocationService(currentState);
             eventService = new EventService(currentState);
 
-            // create controller
-            var controller = new Controller(countryService, companyService, deliveryService, priceService, routeService,
-                                            locationService);
-
             // initialise network
             Network.Network network = Network.Network.Instance;
             network.Start();
             network.Open();
-            // todo - pass controller to network
+
+            // create controller
+            var controller = new Controller(countryService, companyService, deliveryService, priceService, routeService,
+                                            locationService);
 
             BenDBTests(countryService, routeService);
         }

@@ -12,6 +12,7 @@
 using System;
 using System.Net.Sockets;
 using System.Text;
+using Server.Gui;
 
 namespace Server.Network
 {
@@ -50,6 +51,7 @@ namespace Server.Network
 
         public void SendMessage(string p)
         {
+            Logger.WriteLine("Sending '"+p+"' to client "+ID+".");
             byte[] bytes = Encoding.ASCII.GetBytes(p);
             Network.Instance.Send(this, bytes);
         }
