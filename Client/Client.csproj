@@ -55,6 +55,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="RequestDelivery.xaml.cs">
+      <DependentUpon>RequestDelivery.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DialogBoxes\AddCountryDialogBox.xaml.cs">
       <DependentUpon>AddCountryDialogBox.xaml</DependentUpon>
     </Compile>
@@ -75,9 +78,13 @@
       <DependentUpon>Home.xaml</DependentUpon>
     </Compile>
     <Compile Include="Network.cs" />
-    <Compile Include="RequestDelivery.xaml.cs">
-      <DependentUpon>RequestDelivery.xaml</DependentUpon>
+    <Compile Include="ViewStats.xaml.cs">
+      <DependentUpon>ViewStats.xaml</DependentUpon>
     </Compile>
+    <Page Include="RequestDelivery.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DialogBoxes\AddCountryDialogBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -114,7 +121,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="RequestDelivery.xaml">
+    <Page Include="ViewStats.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

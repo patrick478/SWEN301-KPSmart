@@ -42,5 +42,10 @@ namespace Client.DialogBoxes
                 MessageBox.Show("You have entered invalid data. " + ex.Message);
             }
         }
+
+        private void remove_Click(object sender, RoutedEventArgs e)
+        {
+            timesGrid.Items.Remove(timesGrid.SelectedItem);
+        }
     }
 }

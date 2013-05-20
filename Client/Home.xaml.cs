@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -18,6 +20,8 @@ namespace Client
     {
         private readonly ClientState _clientState;
         private readonly ClientController _clientCon;
+        private readonly CurrentState _currentState;
+
         public void clientController_Updated(string type)
         {
             switch (type)
@@ -51,7 +55,7 @@ namespace Client
             _clientCon = new ClientController(_clientState);
 
             // initialise all the services (they set up the state themselves)
-
+            _currentState = new CurrentState();
 
 
 
@@ -86,7 +90,6 @@ namespace Client
             
             //disable edit buttons until something is clicked in the corresponding datagrids
             editCountry.IsEnabled = false;
-            editCompanyButton.IsEnabled = false;
             editDistCenter.IsEnabled = false;
             editPrice.IsEnabled = false;
             editRoute.IsEnabled = false;
@@ -261,7 +264,6 @@ namespace Client
                 }
 
             }
-            ReloadCompanies();
         }
 
         private void reload_Click(object sender, RoutedEventArgs e)
@@ -302,6 +304,10 @@ namespace Client
 
             // Open the dialog box modally 
             dlg.ShowDialog();
+
+            dlg.originComboBox.ItemsSource = _currentState.GetAllRouteNodes();
+            dlg.destComboBox.ItemsSource = _currentState.GetAllRouteNodes();
+
             if (dlg.DialogResult != false)
             {
                 var originID = ((RouteNode)dlg.originComboBox.SelectedValue).ID;
@@ -360,7 +366,60 @@ namespace Client
 
         private void addIntlPortButton_Click(object sender, RoutedEventArgs e)
         {
-
+            
         }
+
+
+        private void editRoute_Click(object sender, RoutedEventArgs e)
+        {
+            // Instantiate the dialog box
+            var dlg = new AddRouteDialogBox(_clientState);
+            var r = ((Route)routesList.SelectedItem);
+            // Open the dialog box modally 
+            dlg.ShowDialog();
+            dlg.Title = "Edit Route";
+
+            //uneditable fields
+            dlg.originComboBox.IsEditable = false;
+            dlg.originComboBox.Text = r.Origin.Country.Name;
+            dlg.destComboBox.IsEditable = false;
+            dlg.destComboBox.Text = r.Destination.Country.Name;
+            dlg.companyComboBox.IsEditable = false;
+            dlg.companyComboBox.Text = r.Company.Name;
+            dlg.transportComboBox.IsEditable = false;
+            dlg.transportComboBox.Text = r.TransportType.ToString();
+
+            //editable fields
+            dlg.duration.Text = Convert.ToString(r.Duration);
+            dlg.weightCost.Text = Convert.ToString(r.CostPerGram);
+            dlg.volumeCost.Text = Convert.ToString(r.PricePerCm3);
+            dlg.maxWeight.Text = Convert.ToString(r.MaxWeight);
+            dlg.maxVolume.Text = Convert.ToString(r.MaxVolume);
+
+
+            if (dlg.DialogResult != false)
+            {
+
+                var times = new List<WeeklyTime>();
+
+                try
+                {
+                    _clientCon.EditRoute(r.ID, Convert.ToInt32(dlg.weightCost.Text),
+                                         Convert.ToInt32(dlg.volumeCost.Text), Convert.ToInt32(dlg.maxWeight),
+                                         Convert.ToInt32(dlg.maxVolume), Convert.ToInt32(dlg.duration), times);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+            }
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new System.Uri("ViewStats.xaml", UriKind.RelativeOrAbsolute));
+        }
+
     }
 }
