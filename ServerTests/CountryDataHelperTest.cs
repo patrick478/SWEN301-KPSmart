@@ -496,5 +496,65 @@ namespace ServerTests
 
 
 
+
+        /// <summary>
+        ///A test for LoadAll
+        ///</summary>
+        [TestMethod()]
+        public void LoadAllTest3()
+        {
+            CountryDataHelper target = new CountryDataHelper(); // TODO: Initialize to an appropriate value
+            DateTime snapshotTime = new DateTime(); // TODO: Initialize to an appropriate value
+            IDictionary<int, Country> expected = null; // TODO: Initialize to an appropriate value
+            IDictionary<int, Country> actual;
+            actual = target.LoadAll(snapshotTime);
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        /// <summary>
+        ///A test for LoadAll
+        ///</summary>
+        [TestMethod()]
+        public void LoadAllTest4()
+        {
+            CountryDataHelper target = new CountryDataHelper(); // TODO: Initialize to an appropriate value
+            DateTime snapshotTime = new DateTime(); // TODO: Initialize to an appropriate value
+            IDictionary<int, Country> expected = null; // TODO: Initialize to an appropriate value
+            IDictionary<int, Country> actual;
+            actual = target.LoadAll(snapshotTime);
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        /// <summary>
+        ///A test for LoadAll
+        ///</summary>
+        [TestMethod()]
+        public void LoadAllTimestamp1()
+        {
+            Country newCountry = new Country();
+            newCountry.Name = "TestCountry";
+            newCountry.Code = "TST";
+            CountryDataHelper target = new CountryDataHelper(); // TODO: Initialize to an appropriate value
+            DateTime timestamp;
+            Console.WriteLine("Create start");
+            target.Create(newCountry);
+            Console.WriteLine("Create end");
+            timestamp = DateTime.Now;
+            Console.WriteLine("Delete start");
+            target.Delete(newCountry);
+            Console.WriteLine("Delete end");
+
+            Console.WriteLine("LoadAll() start");
+            Assert.IsTrue(target.LoadAll().Count == 0);
+            Console.WriteLine("LoadAll() end");
+
+            Console.WriteLine("LoadAll(timestamp) start");
+            var data = target.LoadAll(timestamp);
+            Country[] returned = new Country[data.Count];
+            data.Values.CopyTo(returned, 0);
+            Assert.IsTrue(returned.Length == 1);
+        }
     }
 }

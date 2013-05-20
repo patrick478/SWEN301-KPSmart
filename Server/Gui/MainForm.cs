@@ -75,6 +75,8 @@ namespace Server.Gui
                     country = countryService.Create("Wellington", "WLG");
                 }
 
+                Logger.WriteLine("# from LoadAll(Timestamp=now) is: {0}", cdh.LoadAll(((DateTime)(DateTime.Now - new TimeSpan(2013, 4, 25)))).Count);
+
                 // perform updates
                 country = countryService.Update(country.ID, "WLN");
                 country = countryService.Update(country.ID, "BEN");
