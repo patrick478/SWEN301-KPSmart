@@ -13,13 +13,24 @@ namespace Common
     public abstract class RouteNode : DataObject
     {
         protected RouteNode(Country country)
-        {
+        {           
             Country = country;
         }
 
         // the country that the RouteNode is in
-        public Country Country { get; protected set; }
+        private Country country;
+        public Country Country
+        {
+            get { return country; }
+            set
+            {
+                // validation
+                if (value == null)
+                    throw new InvalidObjectStateException("Country", "Country cannot be set to null.");
 
+                this.country = value;
+            }
+        }
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
