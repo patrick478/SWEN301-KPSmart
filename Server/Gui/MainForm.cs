@@ -183,6 +183,14 @@ namespace Server.Gui
                 price.PricePerGram = 10;
                 price.ID = 1;
                 //priceDataHelper.Update(price);
+
+                //priceDataHelper.Load(1);
+
+                var prices = priceDataHelper.LoadAll();
+
+                //priceDataHelper.Delete(1);
+
+                prices = priceDataHelper.LoadAll();
                 
             }
             catch (Exception e) 
