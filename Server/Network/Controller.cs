@@ -230,7 +230,7 @@ namespace Server.Network
             foreach (Country l in countryService.GetAll())
                 SendUpdateForSync(client, NetCodes.OBJECT_COUNTRY, l.ToNetString());
             foreach (RouteNode n in locationService.GetAll())
-                SendUpdateForSync(client, NetCodes.OBJECT_ROUTE, n.ToNetString());
+                SendUpdateForSync(client, NetCodes.OBJECT_ROUTENODE, n.ToNetString());
             foreach (Price p in priceService.GetAll())
                 SendUpdateForSync(client, NetCodes.OBJECT_PRICE, p.ToNetString());
             foreach (Route r in routeService.GetAll())
