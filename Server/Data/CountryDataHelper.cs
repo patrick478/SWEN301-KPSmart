@@ -148,7 +148,7 @@ namespace Server.Data
             lock (Database.Instance)
             {
 
-                sql = String.Format("SELECT id, name, code, created FROM `countries` WHERE created < \"{0}\" GROUP BY country_id ORDER BY created DESC", timestamp);
+                sql = String.Format("SELECT id, name, code, created FROM 'countries' WHERE created < \"{0}\" GROUP BY country_id ORDER BY created DESC", timestamp);
                 Logger.WriteLine("sql: {0}", sql);
                 rows = Database.Instance.FetchRows(sql);
             }

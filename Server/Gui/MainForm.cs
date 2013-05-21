@@ -81,6 +81,8 @@ namespace Server.Gui
                 // get latest version
                 Country loadedCountry = countryService.Get(country.ID);
 
+                cdh.LoadAll(DateTime.Now);
+
                 // create new zealand
                 country = new Country { Name = "New Zealand", Code = "NZ" };
                 if (!countryService.Exists(country))
