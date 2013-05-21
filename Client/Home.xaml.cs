@@ -34,6 +34,10 @@ namespace Client
                 case NetCodes.OBJECT_COMPANY:
                     ReloadCompanies();
                     return;
+                case NetCodes.OBJECT_ALL:
+                    ReloadCompanies();
+                    ReloadCountries();
+                    return;
             }
         }
 

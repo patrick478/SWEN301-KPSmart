@@ -29,17 +29,7 @@ namespace Server.Network
             this.routeService = routeService;
             this.locationService = locationService;
 
-            // TODO NETWORK EVENT SUBSCRIPTIONS HERE
             Network.Instance.MessageReceived += new Network.MessageReceivedDelegate(OnReceived);
-        }
-
-        /// <summary>
-        /// Actions to be performed when a Client first connects.
-        /// </summary>
-        /// <param name="client">Client that connected.</param>
-        public void OnConnected(Client client)
-        {
-
         }
 
         /// <summary>
@@ -219,11 +209,12 @@ namespace Server.Network
                 SendUpdateForSync(client, NetCodes.OBJECT_PRICE, p.ToNetString());
             foreach (Route r in routeService.GetAll())
                 SendUpdateForSync(client, NetCodes.OBJECT_ROUTE, r.ToNetString());
+            client.SendMessage(NetCodes.SV_SYNC_DONE);
         }
 
         private void SendUpdateForSync(Client client, string objectType, string objectDef)
         {
-            client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_UPDATE, DateTime.UtcNow.ToString(), objectType, objectDef));
+            client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_SYNC_UPDATE, DateTime.UtcNow.ToString(), objectType, objectDef));
         }
 
         private void SendObjectUpdate(string objectType, string objectDef)
