@@ -85,7 +85,7 @@ namespace Common
                 if (value.Equals(Origin))
                     throw new InvalidObjectStateException("Destination", "Destination cannot be the same as the Origin.");
 
-                this.origin = value;
+                this.destination = value;
             }
         }
 
