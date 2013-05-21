@@ -16,6 +16,7 @@ namespace Server.Data
         public DeliveryDataHelper () 
         {
             this.routeNodeDataHelper = new RouteNodeDataHelper();
+            this.deliveryRouteInstanceDataHelper = new DeliveryRouteInstanceDataHelper();
             TABLE_NAME = "deliveries";
             ID_COL_NAME = "delivery_id";     
         }
@@ -292,12 +293,12 @@ namespace Server.Data
             }
             // LOCK ENDS HERE
 
-            // save route instances
-            deliveryRouteInstanceDataHelper.Create(delivery.ID, eventId, delivery.Routes);
-
             // set id and lastedited
             delivery.ID = row[0].ToInt();
             delivery.LastEdited = (DateTime)row[1];
+
+            // save route instances
+            deliveryRouteInstanceDataHelper.Create(delivery.ID, eventId, delivery.Routes);
 
             Logger.WriteLine("Created delivery: " + delivery);
         }

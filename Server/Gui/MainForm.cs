@@ -65,7 +65,7 @@ namespace Server.Gui
         {
             try
             {
-                
+            
                 CountryDataHelper cdh = new CountryDataHelper();
                 
                 // create country if doesn't exist
@@ -173,7 +173,7 @@ namespace Server.Gui
 
                 deliveryDataHelper.Create(delivery);
 
-                deliveryDataHelper.Load(1);
+                deliveryDataHelper.Load(delivery.ID);
 
                 deliveryDataHelper.LoadAll();
 

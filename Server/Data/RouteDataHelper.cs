@@ -42,13 +42,22 @@ namespace Server.Data
 
         public override Route Load(int id)
         {
+            return Load(id, false);
+        }
+
+        public Route Load(int id, bool includeInactive) 
+        {
             string sql;
             object[] row;
 
             // LOCK BEGINS HERE
             lock (Database.Instance)
             {
-                sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, id.ToString(), new string[] { "origin_id", 
+
+                if (!includeInactive)
+                {
+
+                    sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, ID_COL_NAME, id.ToString(), new string[] { "origin_id", 
                                                                                                                             "destination_id",
                                                                                                                             "company_id",
                                                                                                                             "transport_type",
@@ -58,6 +67,12 @@ namespace Server.Data
                                                                                                                             "cost_per_cm3",
                                                                                                                             "cost_per_gram",
                                                                                                                             "created" });
+                }
+                else {
+                    // query to include deleted routes
+                    sql = "SELECT origin_id, destination_id, company_id, transport_type, duration, max_weight, max_volume, cost_per_cm3, cost_per_gram, created, active FROM `routes` WHERE active!=-1 GROUP BY route_id ORDER BY event_id DESC";
+                }
+
                 row = Database.Instance.FetchRow(sql);
             }
             // LOCK ENDS HERE
@@ -78,6 +93,7 @@ namespace Server.Data
             int costPerCm3 = row[7].ToInt();
             int costPerGram = row[8].ToInt();
             DateTime created = (DateTime)row[9];
+            bool active = includeInactive && (((int)row[10]) == 0) ? false : true;  // if we also want to bring back inactive records, check, otherwise it is active.
 
 
             // load origin
@@ -96,25 +112,28 @@ namespace Server.Data
             var departureTimes = departureTimeDataHelper.Load(id);
 
 
-            var route = new Route { 
-                                    Origin = origin, 
-                                    Destination = destination, 
-                                    Company = company, 
-                                    TransportType = transportType, 
-                                    Duration = duration, 
-                                    MaxWeight = maxWeight, 
-                                    MaxVolume = maxVolume, 
-                                    CostPerCm3 = costPerCm3, 
-                                    CostPerGram = costPerGram, 
-                                    DepartureTimes = departureTimes,
-                                    ID = id,
-                                    LastEdited = created
-                                 };
+            var route = new Route
+            {
+                Origin = origin,
+                Destination = destination,
+                Company = company,
+                TransportType = transportType,
+                Duration = duration,
+                MaxWeight = maxWeight,
+                MaxVolume = maxVolume,
+                CostPerCm3 = costPerCm3,
+                CostPerGram = costPerGram,
+                DepartureTimes = departureTimes,
+                ID = id,
+                LastEdited = created,
+                Active = active
+            };
 
-            Logger.WriteLine("Loaded route: " + route );
+            Logger.WriteLine("Loaded route: " + route);
 
-            return route;
+            return route;       
         }
+
 
         public override IDictionary<int, Route> LoadAll()
         {

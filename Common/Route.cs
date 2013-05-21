@@ -25,6 +25,10 @@ namespace Common
         // fields that determine uniqueness of the Route
         //----------------------------------------------
 
+        // whether the route has been deleted or not
+        public bool Active { get; set; }
+
+
         private Company company;
         public Company Company
         {

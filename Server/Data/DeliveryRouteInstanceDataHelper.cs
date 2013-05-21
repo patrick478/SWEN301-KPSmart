@@ -38,7 +38,7 @@ namespace Server.Data
             {
                 int route_id = row[0].ToInt();
                 DateTime departureTime = (DateTime)row[1];
-                Route route = routeDataHelper.Load(route_id);
+                Route route = routeDataHelper.Load(route_id, true);
 
                 list.Add(new RouteInstance(route, departureTime));
             }
