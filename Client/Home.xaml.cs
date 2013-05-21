@@ -120,9 +120,13 @@ namespace Client
 
         //Helper methods to make it easier to referesh the information shown in a DataGrid
 
-        private void ReloadCountries()
-        {
+        delegate void NullArgumentDelegate();
+        NullArgumentDelegate reloadCompaniesDelegate;
+        NullArgumentDelegate reloadCountriesDelegate;
 
+        private void _doReloadCountries()
+        {
+            MessageBox.Show("Reloading companies: " + _clientState.GetAllCountries().Count.ToString());
             countriesList.Items.Clear();
 
             foreach (var c in _clientState.GetAllCountries())
@@ -132,15 +136,50 @@ namespace Client
         }
 
 
-        private void ReloadCompanies()
-        {
 
+
+
+        private void ReloadCountries()
+        {
+            try
+            {
+                countriesList.Dispatcher.VerifyAccess();
+                _doReloadCountries();
+            }
+            catch (InvalidOperationException e)
+            {
+                if (reloadCountriesDelegate == null)
+                    reloadCountriesDelegate = new NullArgumentDelegate(_doReloadCountries);
+                countriesList.Dispatcher.Invoke(reloadCountriesDelegate);
+            }
+        }
+
+        private void _doReloadCompanies()
+        {
+            MessageBox.Show("Reloading companies: " + _clientState.GetAllCompanies().Count.ToString());
             companiesList.Items.Clear();
 
             foreach (var c in _clientState.GetAllCompanies())
             {
-                countriesList.Items.Add(c);
+                companiesList.Items.Add(c);
             }
+        }
+
+        private void ReloadCompanies()
+        {
+            try
+            {
+                companiesList.Dispatcher.VerifyAccess();
+                _doReloadCompanies();
+            }
+            catch(InvalidOperationException e)
+            {
+                if (reloadCompaniesDelegate == null)
+                    reloadCompaniesDelegate = new NullArgumentDelegate(_doReloadCompanies);
+                companiesList.Dispatcher.Invoke(reloadCompaniesDelegate);
+            }
+
+         
         }
 
        
@@ -202,8 +241,6 @@ namespace Client
                     MessageBox.Show(ex.Message);
                 }
             }
-
-            ReloadCountries();
         }
 
         
