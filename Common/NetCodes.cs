@@ -46,7 +46,12 @@ namespace Common
         public const string OBJECT_PRICE = "p";     // ... - Origin Location ID (int) - Destination Location ID (int) - Priority (PRIORITY_) - *Price/gram (int) - *Price/cm3 (int)
         public const string OBJECT_ROUTE = "r";     // ... - Origin Location ID (int) - Destination Location ID (int) - Company ID (int) - Transport Type (TRANSPORT_) - *Cost/gram (int) - *Cost/cm3 (int) - *Max Weight (int) - *Max Capacity (int) - *Trip Duration (int) - *Trip Times 
         public const string OBJECT_COMPANY = "c";   // ... - Company Name (string)
+        public const string OBJECT_ROUTENODE = "n"; // ... - Node type (NODE_) - NODE_INTERNATIONAL - Country ID (int)
+                                                    //                         - NODE_DOMESTIC - Name (string)
         public const string OBJECT_ALL = "a";
+
+        public const string NODE_INTERNATIONAL = "i";
+        public const string NODE_DOMESTIC = "d";
 
         public const string PATH_AIR = "a";
         public const string PATH_STANDARD = "s";

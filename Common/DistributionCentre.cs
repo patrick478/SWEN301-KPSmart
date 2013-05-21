@@ -70,6 +70,10 @@ namespace Common
             return Name;
         }
 
+        public override string ToNetString()
+        {
+            return NetCodes.BuildObjectNetString(base.ToNetString(), NetCodes.NODE_DOMESTIC, Name);
+        }
 
     }
 }

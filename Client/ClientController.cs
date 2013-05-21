@@ -81,28 +81,29 @@ namespace Client
             
             int count = 1;
             DateTime timestamp = DateTime.Parse(tokens[count++]);
-            string updatedType = null;
-            switch (tokens[count])
+            string objectType = tokens[count++];
+            switch (objectType)
             {
                 case NetCodes.OBJECT_COUNTRY:
-                    state.SaveCountry(Country.ParseNetString(tokens[++count]));
-                    updatedType = NetCodes.OBJECT_COUNTRY;
+                    state.SaveCountry(Country.ParseNetString(tokens[count]));
                     break;
                 case NetCodes.OBJECT_COMPANY:
-                    state.SaveCompany(Company.ParseNetString(tokens[++count]));
-                    updatedType = NetCodes.OBJECT_COMPANY;
+                    state.SaveCompany(Company.ParseNetString(tokens[count]));
                     break;
                 case NetCodes.OBJECT_PRICE:
-                    state.SavePrice(Price.ParseNetString(tokens[++count], state));
-                     updatedType = NetCodes.OBJECT_PRICE;
+                    state.SavePrice(Price.ParseNetString(tokens[count], state));
                     break;
                 case NetCodes.OBJECT_ROUTE:
-                    state.SaveRoute(Route.ParseNetString(tokens[++count], state));
-                    updatedType = NetCodes.OBJECT_ROUTE;
+                    state.SaveRoute(Route.ParseNetString(tokens[count], state));
                     break;
+                case NetCodes.OBJECT_ROUTENODE:
+                    state.SaveRouteNode(RouteNode.ParseNetString(tokens[count], state));
+                    break;
+                default:
+                    return;
             }
             if (notify && Updated != null)
-                Updated(updatedType);
+                Updated(objectType);
             state.SetUpdateTime(timestamp);
         }
 
@@ -114,29 +115,30 @@ namespace Client
         {
             int count = 1;
             DateTime timestamp = DateTime.Parse(tokens[count++]);
-            string updatedType = null;
             int id = Convert.ToInt32(tokens[count+1]);  // Note the different order here.
-            switch (tokens[count])
+            string objectType = tokens[count];
+            switch (objectType)
             {
                 case NetCodes.OBJECT_COUNTRY:
                     state.RemoveCountry(id);
-                    updatedType = NetCodes.OBJECT_COUNTRY;
                     break;
                 case NetCodes.OBJECT_PRICE:
                     state.RemovePrice(id);
-                    updatedType = NetCodes.OBJECT_PRICE;
                     break;
                 case NetCodes.OBJECT_ROUTE:
                     state.RemoveRoute(id);
-                    updatedType = NetCodes.OBJECT_ROUTE;
                     break;
                 case NetCodes.OBJECT_COMPANY:
                     state.RemoveCompany(id);
-                    updatedType = NetCodes.OBJECT_COMPANY;
                     break;
+                case NetCodes.OBJECT_ROUTENODE:
+                    state.RemoveRouteNode(id);
+                    break;
+                default:
+                    return;
             }
             if (notify && Updated != null)
-                Updated(updatedType);
+                Updated(objectType);
             state.SetUpdateTime(timestamp);
         }
 
@@ -244,6 +246,35 @@ namespace Client
         public void DeleteCompany(int id)
         {
             Send(NetCodes.CL_OBJECT_DELETE, Convert.ToString(id), NetCodes.OBJECT_COMPANY);
+        }
+        #endregion
+
+        #region RouteNodes
+        /// <summary>
+        /// Add a new Company.
+        /// </summary>
+        /// <param name="name">Company name.</param>
+        public void AddDistributionCentre(string name)
+        {
+            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_ROUTENODE, NetCodes.NODE_DOMESTIC, name);
+        }
+
+        /// <summary>
+        /// Add a new Company.
+        /// </summary>
+        /// <param name="name">Company name.</param>
+        public void AddInternationalPort(int countryId)
+        {
+            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_ROUTENODE, NetCodes.NODE_INTERNATIONAL, Convert.ToString(countryId));
+        }
+
+        /// <summary>
+        /// Delete an existing Company.
+        /// </summary>
+        /// <param name="id">ID of Company to delete.</param>
+        public void DeleteRouteNode(int id)
+        {
+            Send(NetCodes.CL_OBJECT_DELETE, Convert.ToString(id), NetCodes.OBJECT_ROUTENODE);
         }
         #endregion
 

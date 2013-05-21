@@ -108,6 +108,23 @@ namespace Server.Network
                     Route route = routeService.Create(routeTransport, routeCompany, routeOriginId, routeDestinationId, routeTimes, routeDuration, routeWeightMax, routeVolumeMax, routeWeightCost, routeVolumeCost);
                     SendObjectUpdate(NetCodes.OBJECT_ROUTE, route.ToNetString());
                     return;
+                case NetCodes.OBJECT_ROUTENODE:
+                    RouteNode node = null;
+                    string nodeType = tokens[count++];
+                    if (nodeType == NetCodes.NODE_DOMESTIC)
+                    {
+                        string nodeName = tokens[count++];
+                        node = locationService.CreateDistributionCentre(nodeName);
+                    }
+                    else if (nodeType == NetCodes.NODE_DOMESTIC)
+                    {
+                        int nodeCountryId = Convert.ToInt32(tokens[count++]);
+                        node = locationService.CreateInternationalPort(nodeCountryId);
+                    }
+                    else
+                        return;
+                    SendObjectUpdate(NetCodes.OBJECT_ROUTENODE, node.ToNetString());
+                    return;
             } 
         }
 
@@ -141,6 +158,9 @@ namespace Server.Network
                     Route route = routeService.Update(id, routeTimes, routeDuration, routeWeightMax, routeVolumeMax, routeWeightCost, routeVolumeCost);
                     SendObjectUpdate(NetCodes.OBJECT_ROUTE, route.ToNetString());
                     return;
+                case NetCodes.OBJECT_ROUTENODE:
+                    // send back error saying you can't edit companies. maybe?
+                    return;
             }
         }
 
@@ -165,6 +185,10 @@ namespace Server.Network
                 case NetCodes.OBJECT_ROUTE:
                     routeService.Delete(id);
                     SendObjectDelete(NetCodes.OBJECT_ROUTE, id);
+                    return;
+                case NetCodes.OBJECT_ROUTENODE:
+                    locationService.Delete(id);
+                    SendObjectDelete(NetCodes.OBJECT_ROUTENODE, id);
                     return;
             }
         }
@@ -205,6 +229,8 @@ namespace Server.Network
                 SendUpdateForSync(client, NetCodes.OBJECT_COMPANY, c.ToNetString());
             foreach (Country l in countryService.GetAll())
                 SendUpdateForSync(client, NetCodes.OBJECT_COUNTRY, l.ToNetString());
+            foreach (RouteNode n in locationService.GetAll())
+                SendUpdateForSync(client, NetCodes.OBJECT_ROUTE, n.ToNetString());
             foreach (Price p in priceService.GetAll())
                 SendUpdateForSync(client, NetCodes.OBJECT_PRICE, p.ToNetString());
             foreach (Route r in routeService.GetAll())

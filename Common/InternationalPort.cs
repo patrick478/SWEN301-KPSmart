@@ -5,6 +5,8 @@
 // 
 //////////////////////
 
+using System;
+
 namespace Common
 {
     /// <summary>
@@ -31,6 +33,11 @@ namespace Common
         public override string ToShortString ()
         {
             return Country.Name;
+        }
+
+        public override string ToNetString()
+        {
+            return NetCodes.BuildObjectNetString(base.ToNetString(), NetCodes.NODE_INTERNATIONAL, Convert.ToString(Country.ID));
         }
 
     }

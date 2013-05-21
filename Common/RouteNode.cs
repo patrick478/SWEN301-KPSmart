@@ -5,6 +5,8 @@
 // 
 //////////////////////
 
+using System;
+
 namespace Common
 {
     /// <summary>
@@ -47,6 +49,23 @@ namespace Common
         public override int GetHashCode()
         {
             return (Country != null ? Country.GetHashCode() : 0);
+        }
+
+        public static RouteNode ParseNetString(string objectDef, State state)
+        {
+            string[] tokens = objectDef.Split(NetCodes.SEPARATOR_FIELD);
+            int count = 0;
+            string type = tokens[count++];
+            if (type == NetCodes.NODE_INTERNATIONAL)
+            {
+                int countryId = Convert.ToInt32(tokens[count++]);
+                return new InternationalPort(state.GetCountry(countryId));
+            }
+            else
+            {
+                string name = tokens[count++];
+                return new DistributionCentre(name);
+            }
         }
     }
 }
