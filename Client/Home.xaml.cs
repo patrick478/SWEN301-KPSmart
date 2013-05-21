@@ -121,7 +121,7 @@ namespace Client
 
         private void _doReloadCountries()
         {
-            MessageBox.Show("Reloading companies: " + _clientState.GetAllCountries().Count.ToString());
+            MessageBox.Show("Reloading countries: " + _clientState.GetAllCountries().Count.ToString());
             countriesList.Items.Clear();
 
             foreach (var c in _clientState.GetAllCountries())
