@@ -165,7 +165,7 @@ namespace Server.Gui
 
                 var routes = routeDataHelper.LoadAll();
 
-                var delivery = new Delivery { Origin = routeNode, Destination = destination, Priority = Priority.Air, WeightInGrams = 200, VolumeInCm3 = 2000, TotalPrice = 2500, TotalCost = 1000, TimeOfRequest = DateTime.UtcNow, TimeOfDelivery = DateTime.UtcNow.AddHours(5.5) };
+                var delivery = new Delivery { Origin = routeNode, Destination = destination, Priority = Priority.Air, WeightInGrams = 200, VolumeInCm3 = 2000, TotalPrice = 2500, TotalCost = 1000, TimeOfRequest = DateTime.UtcNow, TimeOfDelivery = DateTime.UtcNow.AddHours(5.5), Routes = new List<RouteInstance> { new RouteInstance(route, DateTime.UtcNow)} };
 
                 var deliveryDataHelper = new DeliveryDataHelper();
 
