@@ -358,11 +358,26 @@ namespace Client
             {
                 ComboBoxItem origin = dlg.originComboBox.SelectedItem as ComboBoxItem;
                 ComboBoxItem dest = dlg.destComboBox.SelectedItem as ComboBoxItem;
-                            
+
+                TransportType transport = TransportType.Land;
+                switch (dlg.transportComboBox.Text)
+                {
+                    case "Air":
+                        transport = TransportType.Air;
+                        break;
+                    case "Land":
+                        transport = TransportType.Land;
+                        break;
+                    case "Sea":
+                        transport = TransportType.Sea;
+                        break;
+                }
+
+
 
                 try
                 {
-                    //_clientCon.AddRoute();
+                    _clientCon.AddRoute(Convert.ToInt32(origin.Tag), Convert.ToInt32(dest.Tag), transport, Convert.ToInt32(dlg.weightCost.Text), Convert.ToInt32(dlg.volumeCost.Text), Convert.ToInt32(dlg.maxWeight.Text), Convert.ToInt32(dlg.maxVolume.Text), Convert.ToInt32(dlg.duration.Text),  new List<WeeklyTime>() );
                 }
                 catch (Exception ex)
                 {
