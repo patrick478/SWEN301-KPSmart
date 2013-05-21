@@ -108,16 +108,7 @@ namespace Client
             editRoute.IsEnabled = false;
             editIntlPortButton.IsEnabled = false;
 
-
-
-            ReloadCountries();
-            ReloadCompanies();
-            //ReloadDeliveries();
-           // ReloadPrices();
-            //ReloadRouteNodes();
-           // ReloadRoutes();
-
-            
+                        
 
         }
 
@@ -255,19 +246,24 @@ namespace Client
             var dlg = new AddCountryDialogBox
                 {
                     countryName = {Text = ((Country) countriesList.SelectedItem).Name},
-                    countryCode = { Text = ((Country)countriesList.SelectedItem).Code }
+                    countryCode = { Text = ((Country)countriesList.SelectedItem).Code },
+                    Title = "Edit Country",
+            
                 };
 
             // Open the dialog box modally 
+            dlg.Title = "Edit Country";
+            dlg.countryName.IsReadOnly = true;
             dlg.ShowDialog();
-
+            
+            dlg.countryName.IsReadOnly = true;
             if (dlg.DialogResult != false)
             {
 
-                //do stuff
+                _clientCon.EditCountry(((Country)countriesList.SelectedItem).ID, dlg.countryCode.Text);
                 
             }
-            ReloadCountries();
+           
         }
 
         private void deleteCountry_Click(object sender, RoutedEventArgs e)
@@ -360,8 +356,9 @@ namespace Client
 
             if (dlg.DialogResult != false)
             {
-                var originID = ((RouteNode)dlg.originComboBox.SelectedValue).ID;
-             
+                ComboBoxItem origin = dlg.originComboBox.SelectedItem as ComboBoxItem;
+                ComboBoxItem dest = dlg.destComboBox.SelectedItem as ComboBoxItem;
+                            
 
                 try
                 {
@@ -431,13 +428,13 @@ namespace Client
             dlg.Title = "Edit Route";
 
             //uneditable fields
-            dlg.originComboBox.IsEditable = false;
+            dlg.originComboBox.IsReadOnly = true;
             dlg.originComboBox.Text = r.Origin.Country.Name;
-            dlg.destComboBox.IsEditable = false;
+            dlg.destComboBox.IsReadOnly = true;
             dlg.destComboBox.Text = r.Destination.Country.Name;
-            dlg.companyComboBox.IsEditable = false;
+            dlg.companyComboBox.IsReadOnly = true;
             dlg.companyComboBox.Text = r.Company.Name;
-            dlg.transportComboBox.IsEditable = false;
+            dlg.transportComboBox.IsReadOnly = true;
             dlg.transportComboBox.Text = r.TransportType.ToString();
 
             //editable fields

@@ -19,6 +19,28 @@ namespace Client.DialogBoxes
             timesGrid.Columns.Add(new DataGridTextColumn { Header = "Hour", Binding = new Binding("Hour") });
             timesGrid.Columns.Add(new DataGridTextColumn { Header = "Minute", Binding = new Binding("Minute") });
 
+            foreach (var country in client.GetAllCountries())
+            {
+                //this.originComboBox.Items.Add(countries.Name);
+                ComboBoxItem cbi = new ComboBoxItem();
+                cbi.Content = country.Name;
+                cbi.Tag = country.ID;
+                this.originComboBox.Items.Add(cbi);
+
+                ComboBoxItem cbi2 = new ComboBoxItem();
+                cbi2.Content = country.Name;
+                cbi2.Tag = country.ID;
+                this.destComboBox.Items.Add(cbi2);
+            }
+
+            foreach (var company in client.GetAllCompanies())
+            {
+                ComboBoxItem cbi = new ComboBoxItem();
+                cbi.Content = company.Name;
+                cbi.Tag = company.ID;
+                this.companyComboBox.Items.Add(cbi);
+            }
+            
         } 
 
         private void okButton_Click(object sender, RoutedEventArgs e)
