@@ -17,7 +17,7 @@ namespace Client
         {
             this.state = state;
             Network.Instance.DataReady += new Network.DataReadyDelegate(OnReceived);
-            Network.Instance.OnConnectComplete += new Network.OnConnectDelegate(OnConnected);
+            Network.Instance.LoginComplete += new Network.LoginCompleteDelegate(OnLogin);
         }
 
         #region Receiving
@@ -42,10 +42,10 @@ namespace Client
             switch (tokens[0])
             {
                 case NetCodes.SV_OBJECT_UPDATE:
-                    ObjectUpdate(tokens);
+                    ObjectUpdate(tokens, true);
                     return;
                 case NetCodes.SV_OBJECT_DELETE:
-                    ObjectDelete(tokens);
+                    ObjectDelete(tokens, true);
                     return;
                 case NetCodes.SV_DELIVERY_PRICES:
                     DeliveryOptions(tokens);
@@ -55,22 +55,28 @@ namespace Client
                     return;
                 case NetCodes.SV_ERROR:
                     //TODO
+                case NetCodes.SV_SYNC_UPDATE:
+                    ObjectUpdate(tokens, false);;
+                    return;
+                case NetCodes.SV_SYNC_DONE:
+                    Updated(NetCodes.OBJECT_ALL);
                     return;
 
                 // TODO once implemented, add the business figures stuff
             }
         }
 
-        private void OnConnected()
+        private void OnLogin(bool success)
         {
-            Send(NetCodes.CL_SYNC_STATE, state.GetUpdateTime().ToString());
+            if (success)
+                Send(NetCodes.CL_SYNC_STATE, state.GetUpdateTime().ToString());
         }
 
         /// <summary>
         /// Updates the Client's state with an Add/Edit of a DataObject.
         /// </summary>
         /// <param name="tokens">Network Message.</param>
-        private void ObjectUpdate(string[] tokens)
+        private void ObjectUpdate(string[] tokens, bool notify)
         {
             
             int count = 1;
@@ -95,7 +101,7 @@ namespace Client
                     updatedType = NetCodes.OBJECT_ROUTE;
                     break;
             }
-            if (Updated != null)
+            if (notify && Updated != null)
                 Updated(updatedType);
             state.SetUpdateTime(timestamp);
         }
@@ -104,7 +110,7 @@ namespace Client
         /// Deletes the encoded DataObject from the Client's state.
         /// </summary>
         /// <param name="tokens">Network Message.</param>
-        private void ObjectDelete(string[] tokens)
+        private void ObjectDelete(string[] tokens, bool notify)
         {
             int count = 1;
             DateTime timestamp = DateTime.Parse(tokens[count++]);
@@ -129,7 +135,7 @@ namespace Client
                     updatedType = NetCodes.OBJECT_COMPANY;
                     break;
             }
-            if (Updated != null)
+            if (notify && Updated != null)
                 Updated(updatedType);
             state.SetUpdateTime(timestamp);
         }

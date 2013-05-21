@@ -38,12 +38,15 @@ namespace Common
         public const string SV_ERROR = "er"; // Error Message (string ...)   // CHECK unless we want to have error codes. Or have both; a code followed by a string.
         public const string SV_OBJECT_UPDATE = "ou";    // DateTime String - Type (OBJECT_) - ID (int) - See specific object for rest of protocol...
         public const string SV_OBJECT_DELETE = "od";    // DateTime String - Type (OBJECT_) - ID (int)
+        public const string SV_SYNC_UPDATE = "su";
+        public const string SV_SYNC_DONE = "sd";
 
         // State Updates - Fields marked with astericks are for fields also used in EDITs
         public const string OBJECT_COUNTRY = "l";   // ... - *Location Code (3char string) - Location Name (string)     TODO Later if we get really pro with maps integration: - Longitude - Latititude. Unless we just pass the name along to the api and it finds it itself.
         public const string OBJECT_PRICE = "p";     // ... - Origin Location ID (int) - Destination Location ID (int) - Priority (PRIORITY_) - *Price/gram (int) - *Price/cm3 (int)
         public const string OBJECT_ROUTE = "r";     // ... - Origin Location ID (int) - Destination Location ID (int) - Company ID (int) - Transport Type (TRANSPORT_) - *Cost/gram (int) - *Cost/cm3 (int) - *Max Weight (int) - *Max Capacity (int) - *Trip Duration (int) - *Trip Times 
         public const string OBJECT_COMPANY = "c";   // ... - Company Name (string)
+        public const string OBJECT_ALL = "a";
 
         public const string PATH_AIR = "a";
         public const string PATH_STANDARD = "s";
