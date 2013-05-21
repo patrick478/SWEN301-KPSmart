@@ -214,7 +214,7 @@ namespace Client
         /// <param name="code">New 3-character country code to use.</param>
         public void EditCountry(int id, string code)
         {
-            Send(NetCodes.CL_OBJECT_EDIT, NetCodes.OBJECT_COUNTRY, code);
+            Send(NetCodes.CL_OBJECT_EDIT, Convert.ToString(id), NetCodes.OBJECT_COUNTRY, code);
         }
 
         /// <summary>
