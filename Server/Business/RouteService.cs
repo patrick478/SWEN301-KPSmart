@@ -27,8 +27,7 @@ namespace Server.Business
             // initialise current routes from DB
             if (!state.RoutesInitialised)
             {
-                //var routes = dataHelper.LoadAll();
-                var routes = new Dictionary<int, Route>();
+                var routes = dataHelper.LoadAll();
                 state.InitialiseRoutes(routes);
             }
         }

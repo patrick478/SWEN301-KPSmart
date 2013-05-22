@@ -20,8 +20,7 @@ namespace Server.Business
             // initialise current deliveries from DB
             if (!state.DeliveriesInitialised)
             {             
-                //var deliveries = dataHelper.LoadAll();
-                var deliveries = new Dictionary<int, Delivery>();
+                var deliveries = dataHelper.LoadAll();
                 state.InitialiseDeliveries(deliveries);
             }
 
