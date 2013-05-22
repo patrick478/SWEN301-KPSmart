@@ -92,7 +92,7 @@ namespace Server.Data
                     results[id] = new InternationalPort(country){ID = id, LastEdited = created};
 
                 if(name != String.Empty)
-                    results[id] = new DistributionCentre(name) {ID=id, LastEdited = created};
+                    results[id] = new DistributionCentre(name) {ID=id, LastEdited = created, Country = country};
 
                 Logger.WriteLine(results[id].ToString());
             }
