@@ -330,7 +330,7 @@ namespace Client
         /// <param name="times">Departing times.</param>
         public void AddRoute(int originId, int destinationId, int companyId, TransportType type, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration, List<WeeklyTime> times)
         {
-            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_ROUTE, Convert.ToString(originId), Convert.ToString(destinationId), type.ToNetString(), Convert.ToString(weightCost), Convert.ToString(volumeCost), Convert.ToString(weightMax), Convert.ToString(volumeMax), Convert.ToString(duration), WeeklyTime.BuildTimesNetString(times));
+            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_ROUTE, Convert.ToString(originId), Convert.ToString(destinationId), Convert.ToString(companyId), type.ToNetString(), Convert.ToString(weightCost), Convert.ToString(volumeCost), Convert.ToString(weightMax), Convert.ToString(volumeMax), Convert.ToString(duration), WeeklyTime.BuildTimesNetString(times));
         }
 
         /// <summary>
