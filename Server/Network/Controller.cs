@@ -73,6 +73,11 @@ namespace Server.Network
             }
         }
 
+        /// <summary>
+        /// Parses an Object Add command from a client.
+        /// </summary>
+        /// <param name="client">Client the command originated from.</param>
+        /// <param name="tokens">The network message.</param>
         private void ObjectAdd(Client client, string[] tokens)
         {
             int count = 1;
@@ -115,12 +120,12 @@ namespace Server.Network
                 case NetCodes.OBJECT_ROUTENODE:
                     RouteNode node = null;
                     string nodeType = tokens[count++];
-                    if (nodeType == NetCodes.NODE_DOMESTIC)
+                    if (nodeType == NetCodes.NODE_DISTRIBUTION)
                     {
                         string nodeName = tokens[count++];
                         node = locationService.CreateDistributionCentre(nodeName);
                     }
-                    else if (nodeType == NetCodes.NODE_DOMESTIC)
+                    else if (nodeType == NetCodes.NODE_DISTRIBUTION)
                     {
                         int nodeCountryId = Convert.ToInt32(tokens[count++]);
                         node = locationService.CreateInternationalPort(nodeCountryId);
@@ -132,6 +137,11 @@ namespace Server.Network
             } 
         }
 
+        /// <summary>
+        /// Parses an Object Edit command from a client.
+        /// </summary>
+        /// <param name="client">Client the command originated from.</param>
+        /// <param name="tokens">The network message.</param>
         private void ObjectEdit(Client client, string[] tokens)
         {
             int count = 1;
@@ -168,6 +178,11 @@ namespace Server.Network
             }
         }
 
+        /// <summary>
+        /// Parses an Object Delete command from a client.
+        /// </summary>
+        /// <param name="client">Client the command originated from.</param>
+        /// <param name="tokens">The network message.</param>
         private void ObjectDelete(Client client, string[] tokens)
         {
             int count = 1;
@@ -197,6 +212,11 @@ namespace Server.Network
             }
         }
 
+        /// <summary>
+        /// Parses a Delivery Request command from a client.
+        /// </summary>
+        /// <param name="client">Client the command originated from.</param>
+        /// <param name="tokens">The network message.</param>
         private void DeliveryRequest(Client client, string[] tokens)
         {
             int count = 1;
@@ -211,6 +231,11 @@ namespace Server.Network
                 client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_PRICES,PathTypeExtensions.BuildOptionsNetString(options)));
         }
 
+        /// <summary>
+        /// Parses a Delivery Select command from a client.
+        /// </summary>
+        /// <param name="client">Client the command originated from.</param>
+        /// <param name="tokens">The network message.</param>
         private void DeliverySelect(Client client, string[] tokens)
         {
             int count = 1;
@@ -225,6 +250,11 @@ namespace Server.Network
             client.SendMessage(NetCodes.SV_DELIVERY_CONFIRMED);
         }
 
+        /// <summary>
+        /// Parses a Sync State command from a client.
+        /// </summary>
+        /// <param name="client">Client the command originated from.</param>
+        /// <param name="tokens">The network message.</param>
         private void SyncState(Client client, string[] tokens)
         {
             DateTime clientTime = DateTime.Parse(tokens[1]);
@@ -257,6 +287,11 @@ namespace Server.Network
             Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_DELETE, DateTime.UtcNow.ToString(), objectType, Convert.ToString(id)));
         }
 
+        /// <summary>
+        /// Parses a Stats Retrieval command from a client.
+        /// </summary>
+        /// <param name="client">Client the command originated from.</param>
+        /// <param name="tokens">The network message.</param>
         private void StatsRequest(Client client, string[] tokens)
         {
             //Statistics stats = null;

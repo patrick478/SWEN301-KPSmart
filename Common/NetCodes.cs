@@ -60,7 +60,7 @@ namespace Common
         public const string OBJECT_ALL = "a";
 
         public const string NODE_INTERNATIONAL = "i";
-        public const string NODE_DOMESTIC = "d";
+        public const string NODE_DISTRIBUTION = "d";
 
         public const string PATH_AIR = "a";
         public const string PATH_STANDARD = "s";

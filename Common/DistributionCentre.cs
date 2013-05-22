@@ -72,7 +72,7 @@ namespace Common
 
         public override string ToNetString()
         {
-            return NetCodes.BuildObjectNetString(base.ToNetString(), NetCodes.NODE_DOMESTIC, Name);
+            return NetCodes.BuildObjectNetString(base.ToNetString(), NetCodes.NODE_DISTRIBUTION, Name);
         }
 
     }

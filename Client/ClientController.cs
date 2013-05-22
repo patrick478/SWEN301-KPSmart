@@ -67,6 +67,10 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// Actions to perform on a Login.
+        /// </summary>
+        /// <param name="success">If the login succeeded or not.</param>
         private void OnLogin(bool success)
         {
             if (success)
@@ -143,6 +147,10 @@ namespace Client
             state.SetUpdateTime(timestamp);
         }
 
+        /// <summary>
+        /// Performs the actions for receiving a Delivery Options network message from the Server.
+        /// </summary>
+        /// <param name="tokens">Network Message.</param>
         private void DeliveryOptions(string[] tokens)
         {
             int count = 1;
@@ -159,6 +167,10 @@ namespace Client
 
         }
 
+        /// <summary>
+        /// Performs the actions for receiving a Delivery Confirmation network message from the Server.
+        /// </summary>
+        /// <param name="tokens">Network Message.</param>
         private void DeliveryConfirmed(string[] tokens)
         {
             if (DeliveryOK != null)
@@ -252,27 +264,27 @@ namespace Client
 
         #region RouteNodes
         /// <summary>
-        /// Add a new Company.
+        /// Add a new Distribution Centre.
         /// </summary>
-        /// <param name="name">Company name.</param>
+        /// <param name="name">Name of the Distribution Centre.</param>
         public void AddDistributionCentre(string name)
         {
-            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_ROUTENODE, NetCodes.NODE_DOMESTIC, name);
+            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_ROUTENODE, NetCodes.NODE_DISTRIBUTION, name);
         }
 
         /// <summary>
-        /// Add a new Company.
+        /// Add a new International Port.
         /// </summary>
-        /// <param name="name">Company name.</param>
+        /// <param name="countryId">ID of Country this port is for.</param>
         public void AddInternationalPort(int countryId)
         {
             Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_ROUTENODE, NetCodes.NODE_INTERNATIONAL, Convert.ToString(countryId));
         }
 
         /// <summary>
-        /// Delete an existing Company.
+        /// Delete an existing RouteNode.
         /// </summary>
-        /// <param name="id">ID of Company to delete.</param>
+        /// <param name="id">ID of RouteNode to delete.</param>
         public void DeleteRouteNode(int id)
         {
             Send(NetCodes.CL_OBJECT_DELETE, Convert.ToString(id), NetCodes.OBJECT_ROUTENODE);
@@ -361,8 +373,6 @@ namespace Client
         /// <summary>
         /// Alias method for sending message to server.
         /// </summary>
-        /// <param name="first"></param>
-        /// <param name="rest"></param>
         private void Send(string first, params string[] rest)
         {
             Network.Instance.WriteLine(NetCodes.BuildNetworkString(first, rest));
