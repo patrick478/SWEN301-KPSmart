@@ -55,7 +55,9 @@ namespace Server.Gui
             var controller = new Controller(countryService, companyService, deliveryService, priceService, routeService,
                                             locationService);
 
-            BenDBTests(countryService, routeService);
+            //BenDBTests(countryService, routeService);
+            SetUpDatabaseWithData();
+
         }
 
 
@@ -98,7 +100,38 @@ namespace Server.Gui
             var dunedin = new DistributionCentre("Dunedin");
             routeNodeDataHelper.Create(dunedin);
 
-            
+            // company
+            var companyDataHelper = new CompanyDataHelper();
+            var nzPost = new Company{ Name = "NZ Post" };
+            companyDataHelper.Create(nzPost);
+            var quantas = new Company{ Name = "Quantas" };
+            companyDataHelper.Create(quantas);
+            var airNZ = new Company { Name = "Air New Zealand" };
+            companyDataHelper.Create(airNZ);
+
+            // routes
+            var routeDataHelper = new RouteDataHelper();
+            var wellToAuckLand = new Route { Origin = wellington, Destination = auckland, Company = nzPost, TransportType = TransportType.Land, CostPerCm3 = 2, CostPerGram = 2, MaxVolume = 10000, MaxWeight = 5000, Duration = 480, DepartureTimes = new List<WeeklyTime> { new WeeklyTime(DayOfWeek.Monday, 8, 0), new WeeklyTime(DayOfWeek.Tuesday, 8, 0), new WeeklyTime(DayOfWeek.Wednesday, 8, 0), new WeeklyTime(DayOfWeek.Thursday, 8, 0), new WeeklyTime(DayOfWeek.Friday, 8, 0) } };
+            routeDataHelper.Create(wellToAuckLand);
+
+            var wellToAuckAir = new Route { Origin = wellington, Destination = auckland, Company = airNZ, TransportType = TransportType.Air, CostPerCm3 = 8, CostPerGram = 10, MaxVolume = 10000, MaxWeight = 5000, Duration = 100, DepartureTimes = new List<WeeklyTime> { new WeeklyTime(DayOfWeek.Monday, 8, 0), new WeeklyTime(DayOfWeek.Tuesday, 8, 0), new WeeklyTime(DayOfWeek.Wednesday, 8, 0), new WeeklyTime(DayOfWeek.Thursday, 8, 0), new WeeklyTime(DayOfWeek.Friday, 8, 0) } };
+            routeDataHelper.Create(wellToAuckAir);
+
+            var auckToAusAir = new Route { Origin = auckland, Destination = australiaP, Company = airNZ, TransportType = TransportType.Air, CostPerCm3 = 10, CostPerGram = 12, MaxVolume = 8000, MaxWeight = 3000, Duration = 150, DepartureTimes = new List<WeeklyTime> { new WeeklyTime(DayOfWeek.Monday, 11, 0), new WeeklyTime(DayOfWeek.Tuesday, 11, 0), new WeeklyTime(DayOfWeek.Wednesday, 11, 0), new WeeklyTime(DayOfWeek.Thursday, 11, 0), new WeeklyTime(DayOfWeek.Friday, 11, 0) } };
+            routeDataHelper.Create(auckToAusAir);
+
+
+            // prices
+            var priceDataHelper = new PriceDataHelper();
+            var wellToAuckStandardPrice = new Price { Origin = wellington, Destination = auckland, Priority = Priority.Standard, PricePerCm3 = 4, PricePerGram = 4 };
+            priceDataHelper.Create(wellToAuckStandardPrice);
+
+            var wellToAuckAirPrice = new Price { Origin = wellington, Destination = auckland, Priority = Priority.Air, PricePerCm3 = 12, PricePerGram = 12 };
+            priceDataHelper.Create(wellToAuckAirPrice);
+
+            var auckToAusAirPrice = new Price { Origin = auckland, Destination = australiaP, Priority = Priority.Air, PricePerCm3 = 15, PricePerGram = 15 };
+            priceDataHelper.Create(auckToAusAirPrice);
+
 
 
 
