@@ -50,11 +50,11 @@ namespace Server.Data
             RouteNode routeNode;
             if (name == String.Empty)
             {
-                routeNode = new InternationalPort(country) {ID = country_id, LastEdited = created};
+                routeNode = new InternationalPort(country) {ID = id, LastEdited = created};
             }
             else
             {
-                routeNode = new DistributionCentre(name){ID = country_id, LastEdited = created};
+                routeNode = new DistributionCentre(name){ID = id, LastEdited = created};
             }
 
             //Logger.WriteLine("Loaded routeNode: " + routeNode);
