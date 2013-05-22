@@ -327,7 +327,7 @@ namespace Common
 
         public override string ToNetString()
         {
-            return NetCodes.BuildObjectNetString(base.ToNetString(), Convert.ToString(Origin.ID), Convert.ToString(Destination.ID), TransportType.ToNetString(), Convert.ToString(PricePerGram), Convert.ToString(PricePerCm3), Convert.ToString(MaxWeight), Convert.ToString(MaxVolume), Convert.ToString(Duration), WeeklyTime.BuildTimesNetString(DepartureTimes));
+            return NetCodes.BuildObjectNetString(base.ToNetString(), Convert.ToString(Origin.ID), Convert.ToString(Destination.ID), Convert.ToString(Company.ID), TransportType.ToNetString(), Convert.ToString(PricePerGram), Convert.ToString(PricePerCm3), Convert.ToString(MaxWeight), Convert.ToString(MaxVolume), Convert.ToString(Duration), WeeklyTime.BuildTimesNetString(DepartureTimes));
         }
 
         public static Route ParseNetString(string objectDef, State state)

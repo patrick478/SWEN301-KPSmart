@@ -61,6 +61,10 @@ namespace Server.Network
                     ObjectDelete(client, tokens);
                     return;
 
+                case NetCodes.CL_STATS_REQUEST:
+                    StatsRequest(client, tokens);
+                    return;
+
                 case NetCodes.CL_SYNC_STATE:
                     SyncState(client, tokens);
                     return;
@@ -251,6 +255,21 @@ namespace Server.Network
         private void SendObjectDelete(string objectType, int id)
         {
             Network.Instance.SendMessageToAll(NetCodes.BuildNetworkString(NetCodes.SV_OBJECT_DELETE, DateTime.UtcNow.ToString(), objectType, Convert.ToString(id)));
+        }
+
+        private void StatsRequest(Client client, string[] tokens)
+        {
+            //Statistics stats = null;
+
+            if (tokens[1] == NetCodes.STATS_NOW)
+            {
+                ;
+            }
+            else
+            {
+                ;
+            }
+            //client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_STATS_ANSWER, stats.
         }
     }
 }

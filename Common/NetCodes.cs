@@ -31,15 +31,24 @@ namespace Common
 
         public const string CL_SYNC_STATE = "ss";   // Timestamp (DateTime)
 
+        public const string CL_STATS_REQUEST = "bf";
+
         // Server to Client - First token of a message sent by the Server, identifies the information the Server is sending (and the format for the rest of the message).
 
         public const string SV_DELIVERY_PRICES = "dp";    // PATH_CANCEL or PATH_ 
         public const string SV_DELIVERY_CONFIRMED = "dc";    // 
-        public const string SV_ERROR = "er"; // Error Message (string ...)   // CHECK unless we want to have error codes. Or have both; a code followed by a string.
+
         public const string SV_OBJECT_UPDATE = "ou";    // DateTime String - Type (OBJECT_) - ID (int) - See specific object for rest of protocol...
         public const string SV_OBJECT_DELETE = "od";    // DateTime String - Type (OBJECT_) - ID (int)
+
         public const string SV_SYNC_UPDATE = "su";
         public const string SV_SYNC_DONE = "sd";
+
+        public const string SV_STATS_ANSWER = "bf";     // DateTime String - 
+
+        public const string SV_ERROR = "er"; // Error Message (string ...)   // CHECK unless we want to have error codes. Or have both; a code followed by a string.
+
+
 
         // State Updates - Fields marked with astericks are for fields also used in EDITs
         public const string OBJECT_COUNTRY = "l";   // ... - *Location Code (3char string) - Location Name (string)     TODO Later if we get really pro with maps integration: - Longitude - Latititude. Unless we just pass the name along to the api and it finds it itself.
@@ -65,6 +74,8 @@ namespace Common
         public const string TRANSPORT_AIR = "a";
         public const string TRANSPORT_LAND = "l";
         public const string TRANSPORT_SEA = "s";
+
+        public const string STATS_NOW = "now";
 
         /// <summary>Character used to seperate tokens in a network message.</summary>
         public const char SEPARATOR = '^';

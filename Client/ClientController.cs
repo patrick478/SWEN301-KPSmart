@@ -55,14 +55,15 @@ namespace Client
                     return;
                 case NetCodes.SV_ERROR:
                     //TODO
+                case NetCodes.SV_STATS_ANSWER:
+                    //TODO
+                    return;
                 case NetCodes.SV_SYNC_UPDATE:
                     ObjectUpdate(tokens, false);;
                     return;
                 case NetCodes.SV_SYNC_DONE:
                     Updated(NetCodes.OBJECT_ALL);
                     return;
-
-                // TODO once implemented, add the business figures stuff
             }
         }
 
@@ -319,6 +320,7 @@ namespace Client
         /// </summary>
         /// <param name="originId">ID of Origin Location.</param>
         /// <param name="destinationId">ID of Destination Location.</param>
+        /// <param name="companyId">ID of the Company providing this route.</param>
         /// <param name="type">Transport type.</param>
         /// <param name="weightCost">Cost per Gram.</param>
         /// <param name="volumeCost">Cost per cm^3.</param>
@@ -326,7 +328,7 @@ namespace Client
         /// <param name="volumeMax">Maximum volume (cm^3) per trip.</param>
         /// <param name="duration">Trip duration.</param>
         /// <param name="times">Departing times.</param>
-        public void AddRoute(int originId, int destinationId, TransportType type, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration, List<WeeklyTime> times)
+        public void AddRoute(int originId, int destinationId, int companyId, TransportType type, int weightCost, int volumeCost, int weightMax, int volumeMax, int duration, List<WeeklyTime> times)
         {
             Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_ROUTE, Convert.ToString(originId), Convert.ToString(destinationId), type.ToNetString(), Convert.ToString(weightCost), Convert.ToString(volumeCost), Convert.ToString(weightMax), Convert.ToString(volumeMax), Convert.ToString(duration), WeeklyTime.BuildTimesNetString(times));
         }
