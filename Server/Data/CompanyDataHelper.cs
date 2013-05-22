@@ -56,7 +56,7 @@ namespace Server.Data
             DateTime created = (DateTime)row[1];
 
             var company = new Company { Name = name, ID = id, LastEdited = created };
-            Logger.WriteLine("Loaded company: " + company);
+            //Logger.WriteLine("Loaded company: " + company);
 
             return company;
         }

@@ -57,7 +57,7 @@ namespace Server.Data
                 routeNode = new DistributionCentre(name){ID = country_id, LastEdited = created};
             }
 
-            Logger.WriteLine("Loaded routeNode: " + routeNode);
+            //Logger.WriteLine("Loaded routeNode: " + routeNode);
             return routeNode;
         }
 

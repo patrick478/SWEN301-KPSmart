@@ -129,7 +129,7 @@ namespace Server.Data
                 Active = active
             };
 
-            Logger.WriteLine("Loaded route: " + route);
+            //Logger.WriteLine("Loaded route: " + route);
 
             return route;       
         }

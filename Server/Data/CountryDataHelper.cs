@@ -41,18 +41,13 @@ namespace Server.Data
                 row = Database.Instance.FetchRow(sql);
             }
             // LOCK ENDS HERE
-            
-            if (row.Length == 0)
-            {
-                return null;
-            }
 
             string name = row[0] as string;
             string code = row[1] as string;
             DateTime created = (DateTime)row[2];
 
             var country = new Country {Name = name, Code = code, ID = id, LastEdited = created};
-            Logger.WriteLine("Loaded country: " + country);
+            //Logger.WriteLine("Loaded country: " + country);
 
             return country;
         }
@@ -149,7 +144,6 @@ namespace Server.Data
             {
 
                 sql = String.Format("SELECT id, name, code, created FROM 'countries' WHERE created < \"{0}\" GROUP BY country_id ORDER BY created DESC", timestamp);
-                Logger.WriteLine("sql: {0}", sql);
                 rows = Database.Instance.FetchRows(sql);
             }
             // END LOCK HERE

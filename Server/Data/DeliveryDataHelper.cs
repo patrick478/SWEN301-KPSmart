@@ -116,11 +116,7 @@ namespace Server.Data
             }
             // LOCK ENDS HERE
 
-            if (rows.Length == 0)
-            {
-                return null;
-            }
-
+            Logger.WriteLine("Loaded " + rows.Length + " deliveries:");
 
             foreach (object[] row in rows)
             {

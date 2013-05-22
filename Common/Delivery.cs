@@ -195,5 +195,11 @@ namespace Common
             get { return TimeOfDelivery.Subtract(TimeOfRequest); }
         }
 
+
+        public override string ToString ()
+        {
+            return String.Format("Delivery[ID:{0}, Origin:{1}, Destination:{2}, Priority:{3}, TimeOfRequest:{4}, TimeOfDelivery:{5}, TotalPrice:{6}, TotalCost:{7}, WeightInGrams:{8}, VolumeInCm3:{9}, LastEdited:{10}]", ID, Origin.ToShortString(), Destination.ToShortString(), Priority.ToString(), TimeOfRequest.ToString(), TimeOfDelivery.ToString(), TotalPrice, TotalCost, WeightInGrams, VolumeInCm3, LastEdited );
+        }
+
     }
 }
