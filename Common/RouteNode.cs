@@ -55,16 +55,21 @@ namespace Common
         {
             string[] tokens = objectDef.Split(NetCodes.SEPARATOR_FIELD);
             int count = 0;
+            int id = Convert.ToInt32(tokens[count++]);
             string type = tokens[count++];
             if (type == NetCodes.NODE_INTERNATIONAL)
             {
                 int countryId = Convert.ToInt32(tokens[count++]);
-                return new InternationalPort(state.GetCountry(countryId));
+                InternationalPort port = new InternationalPort(state.GetCountry(countryId));
+                port.ID = id;
+                return port;
             }
             else
             {
                 string name = tokens[count++];
-                return new DistributionCentre(name);
+                DistributionCentre distro = new DistributionCentre(name);
+                distro.ID = id;
+                return distro;
             }
         }
     }
