@@ -38,6 +38,12 @@ namespace Common
             private set;
         }
 
+        public List<Route> CriticalRoutes
+        {
+            get;
+            private set;
+        }
+
 
         public void GetStatistics(){
 
@@ -46,6 +52,15 @@ namespace Common
 
             //Total Events - The number of events used to generate these figures.
             TotalEvents = deliveries.Count;
+
+            Dictionary<Route, int> routeRevenue = new Dictionary<Route, int>();
+
+            foreach (Route route in state.GetAllRoutes())
+            {
+                routeRevenue.Add(route, 0);
+            }
+
+
 
             foreach (Delivery delivery in deliveries)
             {
@@ -68,7 +83,31 @@ namespace Common
 
                 //Critical Routes - List of Triples* where the average transport cost is more than the average customer price.
                 triple.TotalRevenue += revenue;
+
+
+                foreach (RouteInstance inst in delivery.Routes)
+                {
+                    Price price = state.GetRoutePrice(inst.Route, delivery.Priority);
+
+                    int routeCost = inst.Route.CostPerCm3 * delivery.VolumeInCm3;
+                    routeCost += inst.Route.CostPerGram * delivery.WeightInGrams;
+
+                    int routePrice = price.PricePerCm3 * delivery.VolumeInCm3;
+                    routePrice += price.PricePerGram * delivery.WeightInGrams;
+
+                    routeRevenue[inst.Route] += routePrice - routeCost;
+                }
             }
+
+            List<Route> criticalRoutes = new List<Route>();
+            foreach (Route route in routeRevenue.Keys)
+            {
+                if (routeRevenue[route] < 0)
+                {
+                    criticalRoutes.Add(route);
+                }
+            }
+            CriticalRoutes = criticalRoutes;
         }
 
 
