@@ -69,7 +69,9 @@ namespace Server.Network
                     SyncState(client, tokens);
                     return;
 
-                // TODO once implemented, add the business figures stuff
+                default:
+                    SendErrorMessage(client, "Unrecognised command.");
+                    return;
             }
         }
 
@@ -80,61 +82,68 @@ namespace Server.Network
         /// <param name="tokens">The network message.</param>
         private void ObjectAdd(Client client, string[] tokens)
         {
-            int count = 1;
-            switch (tokens[count++])
+            try
             {
-                case NetCodes.OBJECT_COUNTRY:
-                    string countryCode = tokens[count++];
-                    string countryName = tokens[count++];
-                    Country country = countryService.Create(countryName, countryCode);
-                    SendObjectUpdate(NetCodes.OBJECT_COUNTRY, country.ToNetString());
-                    return;
-                case NetCodes.OBJECT_COMPANY:
-                    string companyName = tokens[count++];
-                    Company company = companyService.Create(companyName);
-                    SendObjectUpdate(NetCodes.OBJECT_COMPANY, company.ToNetString());
-                    return;
-                case NetCodes.OBJECT_PRICE:
-                    int priceOriginId = Convert.ToInt32(tokens[count++]);
-                    int priceDestinationId = Convert.ToInt32(tokens[count++]);
-                    Priority pricePrio = PriorityExtensions.ParseNetString(tokens[count++]);
-                    int priceWeight = Convert.ToInt32(tokens[count++]);
-                    int priceVolume = Convert.ToInt32(tokens[count++]);
-                    Price price = priceService.Create(priceOriginId, priceDestinationId, pricePrio, priceWeight, priceVolume);
-                    SendObjectUpdate(NetCodes.OBJECT_PRICE, price.ToNetString());
-                    return;
-                case NetCodes.OBJECT_ROUTE:
-                    int routeOriginId = Convert.ToInt32(tokens[count++]);
-                    int routeDestinationId = Convert.ToInt32(tokens[count++]);
-                    int routeCompany = Convert.ToInt32(tokens[count++]);
-                    TransportType routeTransport = TransportTypeExtensions.ParseNetString(tokens[count++]);
-                    int routeWeightCost = Convert.ToInt32(tokens[count++]);
-                    int routeVolumeCost = Convert.ToInt32(tokens[count++]);
-                    int routeWeightMax = Convert.ToInt32(tokens[count++]);
-                    int routeVolumeMax = Convert.ToInt32(tokens[count++]);
-                    int routeDuration = Convert.ToInt32(tokens[count++]);
-                    List<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
-                    Route route = routeService.Create(routeTransport, routeCompany, routeOriginId, routeDestinationId, routeTimes, routeDuration, routeWeightMax, routeVolumeMax, routeWeightCost, routeVolumeCost);
-                    SendObjectUpdate(NetCodes.OBJECT_ROUTE, route.ToNetString());
-                    return;
-                case NetCodes.OBJECT_ROUTENODE:
-                    RouteNode node = null;
-                    string nodeType = tokens[count++];
-                    if (nodeType == NetCodes.NODE_DISTRIBUTION)
-                    {
-                        string nodeName = tokens[count++];
-                        node = locationService.CreateDistributionCentre(nodeName);
-                    }
-                    else if (nodeType == NetCodes.NODE_DISTRIBUTION)
-                    {
-                        int nodeCountryId = Convert.ToInt32(tokens[count++]);
-                        node = locationService.CreateInternationalPort(nodeCountryId);
-                    }
-                    else
+                int count = 1;
+                switch (tokens[count++])
+                {
+                    case NetCodes.OBJECT_COUNTRY:
+                        string countryCode = tokens[count++];
+                        string countryName = tokens[count++];
+                        Country country = countryService.Create(countryName, countryCode);
+                        SendObjectUpdate(NetCodes.OBJECT_COUNTRY, country.ToNetString());
                         return;
-                    SendObjectUpdate(NetCodes.OBJECT_ROUTENODE, node.ToNetString());
-                    return;
-            } 
+                    case NetCodes.OBJECT_COMPANY:
+                        string companyName = tokens[count++];
+                        Company company = companyService.Create(companyName);
+                        SendObjectUpdate(NetCodes.OBJECT_COMPANY, company.ToNetString());
+                        return;
+                    case NetCodes.OBJECT_PRICE:
+                        int priceOriginId = Convert.ToInt32(tokens[count++]);
+                        int priceDestinationId = Convert.ToInt32(tokens[count++]);
+                        Priority pricePrio = PriorityExtensions.ParseNetString(tokens[count++]);
+                        int priceWeight = Convert.ToInt32(tokens[count++]);
+                        int priceVolume = Convert.ToInt32(tokens[count++]);
+                        Price price = priceService.Create(priceOriginId, priceDestinationId, pricePrio, priceWeight, priceVolume);
+                        SendObjectUpdate(NetCodes.OBJECT_PRICE, price.ToNetString());
+                        return;
+                    case NetCodes.OBJECT_ROUTE:
+                        int routeOriginId = Convert.ToInt32(tokens[count++]);
+                        int routeDestinationId = Convert.ToInt32(tokens[count++]);
+                        int routeCompany = Convert.ToInt32(tokens[count++]);
+                        TransportType routeTransport = TransportTypeExtensions.ParseNetString(tokens[count++]);
+                        int routeWeightCost = Convert.ToInt32(tokens[count++]);
+                        int routeVolumeCost = Convert.ToInt32(tokens[count++]);
+                        int routeWeightMax = Convert.ToInt32(tokens[count++]);
+                        int routeVolumeMax = Convert.ToInt32(tokens[count++]);
+                        int routeDuration = Convert.ToInt32(tokens[count++]);
+                        List<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
+                        Route route = routeService.Create(routeTransport, routeCompany, routeOriginId, routeDestinationId, routeTimes, routeDuration, routeWeightMax, routeVolumeMax, routeWeightCost, routeVolumeCost);
+                        SendObjectUpdate(NetCodes.OBJECT_ROUTE, route.ToNetString());
+                        return;
+                    case NetCodes.OBJECT_ROUTENODE:
+                        RouteNode node = null;
+                        string nodeType = tokens[count++];
+                        if (nodeType == NetCodes.NODE_DISTRIBUTION)
+                        {
+                            string nodeName = tokens[count++];
+                            node = locationService.CreateDistributionCentre(nodeName);
+                        }
+                        else if (nodeType == NetCodes.NODE_DISTRIBUTION)
+                        {
+                            int nodeCountryId = Convert.ToInt32(tokens[count++]);
+                            node = locationService.CreateInternationalPort(nodeCountryId);
+                        }
+                        else
+                            return;
+                        SendObjectUpdate(NetCodes.OBJECT_ROUTENODE, node.ToNetString());
+                        return;
+                }
+            }
+            catch (FormatException e)
+            {
+                SendErrorMessage(client, "Malformed network message.");
+            }
         }
 
         /// <summary>
@@ -144,37 +153,44 @@ namespace Server.Network
         /// <param name="tokens">The network message.</param>
         private void ObjectEdit(Client client, string[] tokens)
         {
-            int count = 1;
-            int id = Convert.ToInt32(tokens[count++]);
-            switch (tokens[count++])
+            try
             {
-                case NetCodes.OBJECT_COUNTRY:
-                    string countryCode = tokens[count++];
-                    Country country = countryService.Update(id, countryCode);
-                    SendObjectUpdate(NetCodes.OBJECT_COUNTRY, country.ToNetString());
-                    return;
-                case NetCodes.OBJECT_COMPANY:
-                    // send back error saying you can't edit companies. maybe?
-                    return;
-                case NetCodes.OBJECT_PRICE:
-                    int priceWeight = Convert.ToInt32(tokens[count++]);
-                    int priceVolume = Convert.ToInt32(tokens[count++]);
-                    Price price = priceService.Update(id, priceWeight, priceVolume);
-                    SendObjectUpdate(NetCodes.OBJECT_PRICE, price.ToNetString());
-                    return;
-                case NetCodes.OBJECT_ROUTE:
-                    int routeWeightCost = Convert.ToInt32(tokens[count++]);
-                    int routeVolumeCost = Convert.ToInt32(tokens[count++]);
-                    int routeWeightMax = Convert.ToInt32(tokens[count++]);
-                    int routeVolumeMax = Convert.ToInt32(tokens[count++]);
-                    int routeDuration = Convert.ToInt32(tokens[count++]);
-                    List<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
-                    Route route = routeService.Update(id, routeTimes, routeDuration, routeWeightMax, routeVolumeMax, routeWeightCost, routeVolumeCost);
-                    SendObjectUpdate(NetCodes.OBJECT_ROUTE, route.ToNetString());
-                    return;
-                case NetCodes.OBJECT_ROUTENODE:
-                    // send back error saying you can't edit companies. maybe?
-                    return;
+                int count = 1;
+                int id = Convert.ToInt32(tokens[count++]);
+                switch (tokens[count++])
+                {
+                    case NetCodes.OBJECT_COUNTRY:
+                        string countryCode = tokens[count++];
+                        Country country = countryService.Update(id, countryCode);
+                        SendObjectUpdate(NetCodes.OBJECT_COUNTRY, country.ToNetString());
+                        return;
+                    case NetCodes.OBJECT_COMPANY:
+                        // send back error saying you can't edit companies. maybe?
+                        return;
+                    case NetCodes.OBJECT_PRICE:
+                        int priceWeight = Convert.ToInt32(tokens[count++]);
+                        int priceVolume = Convert.ToInt32(tokens[count++]);
+                        Price price = priceService.Update(id, priceWeight, priceVolume);
+                        SendObjectUpdate(NetCodes.OBJECT_PRICE, price.ToNetString());
+                        return;
+                    case NetCodes.OBJECT_ROUTE:
+                        int routeWeightCost = Convert.ToInt32(tokens[count++]);
+                        int routeVolumeCost = Convert.ToInt32(tokens[count++]);
+                        int routeWeightMax = Convert.ToInt32(tokens[count++]);
+                        int routeVolumeMax = Convert.ToInt32(tokens[count++]);
+                        int routeDuration = Convert.ToInt32(tokens[count++]);
+                        List<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
+                        Route route = routeService.Update(id, routeTimes, routeDuration, routeWeightMax, routeVolumeMax, routeWeightCost, routeVolumeCost);
+                        SendObjectUpdate(NetCodes.OBJECT_ROUTE, route.ToNetString());
+                        return;
+                    case NetCodes.OBJECT_ROUTENODE:
+                        // send back error saying you can't edit companies. maybe?
+                        return;
+                }
+            }
+            catch (FormatException e)
+            {
+                SendErrorMessage(client, "Malformed network message.");
             }
         }
 
@@ -185,30 +201,37 @@ namespace Server.Network
         /// <param name="tokens">The network message.</param>
         private void ObjectDelete(Client client, string[] tokens)
         {
-            int count = 1;
-            int id = Convert.ToInt32(tokens[count++]);
-            switch (tokens[count++])
+            try
             {
-                case NetCodes.OBJECT_COUNTRY:
-                    countryService.Delete(id);
-                    SendObjectDelete(NetCodes.OBJECT_COUNTRY, id);
-                    return;
-                case NetCodes.OBJECT_COMPANY:
-                    companyService.Delete(id);
-                    SendObjectDelete(NetCodes.OBJECT_COMPANY, id);
-                    return;
-                case NetCodes.OBJECT_PRICE:
-                    priceService.Delete(id);
-                    SendObjectDelete(NetCodes.OBJECT_PRICE, id);
-                    return;
-                case NetCodes.OBJECT_ROUTE:
-                    routeService.Delete(id);
-                    SendObjectDelete(NetCodes.OBJECT_ROUTE, id);
-                    return;
-                case NetCodes.OBJECT_ROUTENODE:
-                    locationService.Delete(id);
-                    SendObjectDelete(NetCodes.OBJECT_ROUTENODE, id);
-                    return;
+                int count = 1;
+                int id = Convert.ToInt32(tokens[count++]);
+                switch (tokens[count++])
+                {
+                    case NetCodes.OBJECT_COUNTRY:
+                        countryService.Delete(id);
+                        SendObjectDelete(NetCodes.OBJECT_COUNTRY, id);
+                        return;
+                    case NetCodes.OBJECT_COMPANY:
+                        companyService.Delete(id);
+                        SendObjectDelete(NetCodes.OBJECT_COMPANY, id);
+                        return;
+                    case NetCodes.OBJECT_PRICE:
+                        priceService.Delete(id);
+                        SendObjectDelete(NetCodes.OBJECT_PRICE, id);
+                        return;
+                    case NetCodes.OBJECT_ROUTE:
+                        routeService.Delete(id);
+                        SendObjectDelete(NetCodes.OBJECT_ROUTE, id);
+                        return;
+                    case NetCodes.OBJECT_ROUTENODE:
+                        locationService.Delete(id);
+                        SendObjectDelete(NetCodes.OBJECT_ROUTENODE, id);
+                        return;
+                }
+            }
+            catch (FormatException e)
+            {
+                SendErrorMessage(client, "Malformed network message.");
             }
         }
 
@@ -219,16 +242,23 @@ namespace Server.Network
         /// <param name="tokens">The network message.</param>
         private void DeliveryRequest(Client client, string[] tokens)
         {
-            int count = 1;
-            int originID = Convert.ToInt32(tokens[count++]);
-            int destinationID = Convert.ToInt32(tokens[count++]);
-            int weight = Convert.ToInt32(tokens[count++]);
-            int volume = Convert.ToInt32(tokens[count++]);
-            IDictionary<PathType,Delivery> options = deliveryService.GetBestRoutes(client.ID, originID, destinationID, weight, volume);
-            if (options.Count <= 0)
-                client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_PRICES,NetCodes.PATH_CANCEL));
-            else
-                client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_PRICES,PathTypeExtensions.BuildOptionsNetString(options)));
+            try
+            {
+                int count = 1;
+                int originID = Convert.ToInt32(tokens[count++]);
+                int destinationID = Convert.ToInt32(tokens[count++]);
+                int weight = Convert.ToInt32(tokens[count++]);
+                int volume = Convert.ToInt32(tokens[count++]);
+                IDictionary<PathType, Delivery> options = deliveryService.GetBestRoutes(client.ID, originID, destinationID, weight, volume);
+                if (options.Count <= 0)
+                    client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_PRICES, NetCodes.PATH_CANCEL));
+                else
+                    client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_DELIVERY_PRICES, PathTypeExtensions.BuildOptionsNetString(options)));
+            }
+            catch (FormatException e)
+            {
+                SendErrorMessage(client, "Malformed network message.");
+            }
         }
 
         /// <summary>
@@ -258,7 +288,6 @@ namespace Server.Network
         private void SyncState(Client client, string[] tokens)
         {
             DateTime clientTime = DateTime.Parse(tokens[1]);
-            //TODO
             foreach (Company c in companyService.GetAll())
                 SendUpdateForSync(client, NetCodes.OBJECT_COMPANY, c.ToNetString());
             foreach (Country l in countryService.GetAll())
@@ -305,6 +334,11 @@ namespace Server.Network
                 ;
             }
             //client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_STATS_ANSWER, stats.
+        }
+
+        private void SendErrorMessage(Client client, string error)
+        {
+            client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_ERROR, error));
         }
     }
 }
