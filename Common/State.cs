@@ -53,7 +53,7 @@ namespace Common
 
         public Price GetRoutePrice (Route route, Priority priority) 
         {
-            return GetAllPrices().AsQueryable().First<Price>(t => t.Origin.Equals(route.Origin) && t.Destination.Equals(route.Destination) && t.Priority.Equals(priority));
+            return GetAllPrices().AsQueryable().Where(t => t.Origin.Equals(route.Origin) && t.Destination.Equals(route.Destination) && t.Priority.Equals(priority)).FirstOrDefault<Price>();
         }
         #endregion
 

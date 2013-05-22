@@ -123,6 +123,11 @@ namespace Server.Business
             return state.GetRoute(id);
         }
 
+        public Price GetRoutePrice (Route route, Priority priority) 
+        {
+            return state.GetRoutePrice(route, priority);
+        }
+
         public override IList<Route> GetAll()
         {
             return state.GetAllRoutes();

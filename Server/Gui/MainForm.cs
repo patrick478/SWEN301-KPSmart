@@ -15,7 +15,7 @@ namespace Server.Gui
             InitializeComponent();
         }
 
-
+        private CurrentState currentState;
         private CountryService countryService;
         private CompanyService companyService;
         private RouteService routeService;
@@ -34,7 +34,7 @@ namespace Server.Gui
             Database.Instance.Connect();
 
             // initialise the state object
-            var currentState = new CurrentState();
+            currentState = new CurrentState();
 
             // initialise all the services (they set up the state themselves) and pathfinder
             countryService = new CountryService(currentState);
@@ -206,14 +206,9 @@ namespace Server.Gui
 
                 price.PricePerGram = 10;
                 price.ID = 1;
-                //priceDataHelper.Update(price);
-                //priceDataHelper.Load(1);
 
-                var prices = priceDataHelper.LoadAll();
-
-                //priceDataHelper.Delete(1);
-
-                prices = priceDataHelper.LoadAll();            
+                Logger.WriteLine(price.ToString());
+                
             }
             catch (Exception e) 
             {
