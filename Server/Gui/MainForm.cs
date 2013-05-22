@@ -40,7 +40,7 @@ namespace Server.Gui
             countryService = new CountryService(currentState);
             companyService = new CompanyService(currentState);
             routeService = new RouteService(currentState);
-            var pathFinder = new PathFinder(routeService); // pathfinder needs the RouteService
+            var pathFinder = new PathFinder(routeService, currentState); // pathfinder needs the RouteService and state
             deliveryService = new DeliveryService(currentState, pathFinder); // DeliveryService needs the PathFinder
             priceService = new PriceService(currentState);      
             locationService = new LocationService(currentState);
@@ -57,6 +57,29 @@ namespace Server.Gui
 
             BenDBTests(countryService, routeService);
         }
+
+
+        private void SetUpDatabaseWithData () 
+        {
+            var countryDataHelper = new CountryDataHelper();
+            
+            // countries
+            var newZealand = new Country { Name = "New Zealand", Code = "NZ"};
+            countryDataHelper.Create(newZealand);
+
+            var australia = new Country { Name = "Australia", Code = "AUS" };
+            
+
+
+
+        
+        
+        }
+
+
+
+
+
 
 
 

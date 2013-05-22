@@ -87,7 +87,7 @@ namespace ServerTests
             var routeService = new RouteService(state);
 
             // initialise pathfinder
-            pathFinder = new PathFinder(routeService);
+            pathFinder = new PathFinder(routeService, state);
         
             
         }

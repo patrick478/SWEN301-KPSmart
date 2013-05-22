@@ -191,38 +191,7 @@ namespace Common
                 this.costPerCm3 = value;
             }
         }
-
-        // in cents - this isn't a property of Route, just for reference
-        private int pricePerGram;
-        public int PricePerGram
-        {
-            get { return pricePerGram; }
-            set
-            {
-                // validation
-                if (value <= 0)
-                    throw new InvalidObjectStateException("PricePerGram", "PricePerGram cannot be less than or equal to 0.");
-
-                this.pricePerGram = value;
-            }
-        }
-
-        // in cents - this isn't a property of Route, just for reference
-        private int pricePerCm3;
-        public int PricePerCm3
-        {
-
-            get { return pricePerCm3; }
-            set
-            {
-                // validation
-                if (value <= 0)
-                    throw new InvalidObjectStateException("PricePerCm3", "PricePerCm3 cannot be less than or equal to 0.");
-
-                this.pricePerCm3 = value;
-            }
-        }
-        
+       
         public void AddDepartureTime(WeeklyTime weeklyTime)
         {
             // validation
@@ -327,7 +296,7 @@ namespace Common
 
         public override string ToNetString()
         {
-            return NetCodes.BuildObjectNetString(base.ToNetString(), Convert.ToString(Origin.ID), Convert.ToString(Destination.ID), Convert.ToString(Company.ID), TransportType.ToNetString(), Convert.ToString(PricePerGram), Convert.ToString(PricePerCm3), Convert.ToString(MaxWeight), Convert.ToString(MaxVolume), Convert.ToString(Duration), WeeklyTime.BuildTimesNetString(DepartureTimes));
+            return NetCodes.BuildObjectNetString(base.ToNetString(), Convert.ToString(Origin.ID), Convert.ToString(Destination.ID), Convert.ToString(Company.ID), TransportType.ToNetString(), Convert.ToString(MaxWeight), Convert.ToString(MaxVolume), Convert.ToString(Duration), WeeklyTime.BuildTimesNetString(DepartureTimes));
         }
 
         public static Route ParseNetString(string objectDef, State state)

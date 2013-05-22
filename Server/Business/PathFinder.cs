@@ -16,6 +16,7 @@ namespace Server.Business
     public class PathFinder
     {
         private RouteService routeService;
+        private CurrentState currentState;
 
         private NodeEvaluator time;
         private NodeEvaluator cost;
@@ -28,8 +29,9 @@ namespace Server.Business
         private SortedList<RouteNode, double> fringe;
 
 
-        public PathFinder(RouteService routeService)
+        public PathFinder(RouteService routeService, CurrentState currentState)
         {
+            this.currentState = currentState;
             this.routeService = routeService;
             time = new TimeEvaluator(this);
             cost = new CostEvaluator(this);

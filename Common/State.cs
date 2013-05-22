@@ -41,13 +41,19 @@ namespace Common
 
         #region routes
         public Route GetRoute(int id)
-        {
-            return routes.ContainsKey(id)? routes[id]:null;
+        {  
+            var route = routes.ContainsKey(id)? routes[id]:null;
+            return route;
         }
 
         public IList<Route> GetAllRoutes()
         {
             return new List<Route>(routes.Values);
+        }
+
+        public Price GetRoutePrice (Route route, Priority priority) 
+        {
+            return GetAllPrices().AsQueryable().First<Price>(t => t.Origin.Equals(route.Origin) && t.Destination.Equals(route.Destination) && t.Priority.Equals(priority));
         }
         #endregion
 

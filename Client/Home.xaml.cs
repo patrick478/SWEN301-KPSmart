@@ -454,7 +454,7 @@ namespace Client
             //editable fields
             dlg.duration.Text = Convert.ToString(r.Duration);
             dlg.weightCost.Text = Convert.ToString(r.CostPerGram);
-            dlg.volumeCost.Text = Convert.ToString(r.PricePerCm3);
+            dlg.volumeCost.Text = Convert.ToString(r.CostPerCm3);
             dlg.maxWeight.Text = Convert.ToString(r.MaxWeight);
             dlg.maxVolume.Text = Convert.ToString(r.MaxVolume);
 
