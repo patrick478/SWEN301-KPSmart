@@ -218,6 +218,12 @@ namespace Server.Gui
 
         }
 
+        private void logBox_TextChanged(object sender, EventArgs e)
+        {
+            logBox.SelectionStart = logBox.Text.Length;
+            logBox.ScrollToCaret();
+        }
+
 
 
     }

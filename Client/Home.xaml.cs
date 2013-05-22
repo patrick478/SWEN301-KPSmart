@@ -34,9 +34,22 @@ namespace Client
                 case NetCodes.OBJECT_COMPANY:
                     ReloadCompanies();
                     return;
+                case NetCodes.OBJECT_PRICE:
+                    ReloadPrices();
+                    return;
+                case NetCodes.OBJECT_ROUTE:
+                    ReloadRoutes();
+                    return;
+                
+                case NetCodes.OBJECT_ROUTENODE:
+                    ReloadRouteNodes();
+                    return;
                 case NetCodes.OBJECT_ALL:
                     ReloadCompanies();
                     ReloadCountries();
+                    ReloadPrices();
+                    ReloadRoutes();
+                    ReloadRouteNodes();
                     return;
             }
         }
@@ -83,17 +96,17 @@ namespace Client
             distCenterList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
             distCenterList.Columns.Add(new DataGridTextColumn { Header = "Name", Binding = new Binding("Name") });
 
-            routesList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
+            /*routesList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
             routesList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
             routesList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
             routesList.Columns.Add(new DataGridTextColumn { Header = "Company", Binding = new Binding("Company") }); 
             routesList.Columns.Add(new DataGridTextColumn { Header = "TransportType", Binding = new Binding("TransportType") });
-
+            
             
             priceList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
             priceList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
             priceList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
-            priceList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
+            priceList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });*/
 
             intlPortList.Columns.Add(new DataGridTextColumn { Header = "Country", Binding = new Binding("Country") });
             
@@ -118,6 +131,9 @@ namespace Client
         delegate void NullArgumentDelegate();
         NullArgumentDelegate reloadCompaniesDelegate;
         NullArgumentDelegate reloadCountriesDelegate;
+        NullArgumentDelegate reloadRoutesDelegate;
+        NullArgumentDelegate reloadPricesDelegate;
+        NullArgumentDelegate reloadRouteNodesDelegate;
 
         private void _doReloadCountries()
         {
@@ -177,9 +193,24 @@ namespace Client
          
         }
 
-       
-
         private void ReloadRoutes()
+        {
+            try
+            {
+                routesList.Dispatcher.VerifyAccess();
+                _doReloadRoutes();
+            }
+            catch (InvalidOperationException e)
+            {
+                if (reloadRoutesDelegate == null)
+                    reloadRoutesDelegate = new NullArgumentDelegate(_doReloadRoutes);
+                routesList.Dispatcher.Invoke(reloadRoutesDelegate);
+            }
+
+
+        }
+
+        private void _doReloadRoutes()
         {
 
             routesList.Items.Clear();
@@ -192,12 +223,66 @@ namespace Client
 
         private void ReloadPrices()
         {
+            try
+            {
+                priceList.Dispatcher.VerifyAccess();
+                _doReloadPrices();
+            }
+            catch (InvalidOperationException e)
+            {
+                if (reloadPricesDelegate == null)
+                    reloadPricesDelegate = new NullArgumentDelegate(_doReloadPrices);
+                priceList.Dispatcher.Invoke(reloadPricesDelegate);
+            }
+
+
+        }
+
+        private void _doReloadPrices()
+        {
 
             priceList.Items.Clear();
 
             foreach (var c in _clientState.GetAllPrices())
             {
                 priceList.Items.Add(c);
+            }
+        }
+
+        private void ReloadRouteNodes()
+        {
+            try
+            {
+                intlPortList.Dispatcher.VerifyAccess();
+                distCenterList.Dispatcher.VerifyAccess();
+                _doReloadPrices();
+            }
+            catch (InvalidOperationException e)
+            {
+                if (reloadRouteNodesDelegate == null)
+                    reloadRouteNodesDelegate = new NullArgumentDelegate(_doReloadRouteNodes);
+                intlPortList.Dispatcher.Invoke(reloadRouteNodesDelegate);
+            }
+
+
+        }
+
+        private void _doReloadRouteNodes()
+        {
+
+            distCenterList.Items.Clear();
+            intlPortList.Items.Clear();
+
+            foreach (var c in _clientState.GetAllRouteNodes())
+            {
+                if (c is DistributionCentre)
+                {
+                    distCenterList.Items.Add(c);
+                }
+                else if (c is InternationalPort)
+                {
+                    intlPortList.Items.Add(c);
+                }
             }
         }
 
@@ -261,7 +346,6 @@ namespace Client
             {
 
                 _clientCon.EditCountry(((Country)countriesList.SelectedItem).ID, dlg.countryCode.Text);
-                
             }
            
         }
@@ -372,11 +456,42 @@ namespace Client
                         break;
                 }
 
+                var times = new List<WeeklyTime>();
+                foreach (DayMinuteHourHolder time in dlg.timesGrid.Items)
+                {
+                    DayOfWeek day = DayOfWeek.Monday;
+                    switch (time.Day)
+                    {
+                        case "Monday":
+                            day = DayOfWeek.Monday;
+                            break;
+                        case "Tuesday":
+                            day = DayOfWeek.Tuesday;
+                            break;
+                        case "Wednesday":
+                            day = DayOfWeek.Wednesday;
+                            break;
+                        case "Thursday":
+                            day = DayOfWeek.Thursday;
+                            break;
+                        case "Friday":
+                            day = DayOfWeek.Friday;
+                            break;
+                        case "Saturday":
+                            day = DayOfWeek.Saturday;
+                            break;
+                        case "Sunday":
+                            day = DayOfWeek.Sunday;
+                            break;
+                    }
+                    times.Add(new WeeklyTime(day, time.Hour, time.Minute));
+                }
 
+                
 
                 try
                 {
-                    _clientCon.AddRoute(Convert.ToInt32(origin.Tag), Convert.ToInt32(dest.Tag),Convert.ToInt32(company.Tag) , transport, Convert.ToInt32(dlg.weightCost.Text), Convert.ToInt32(dlg.volumeCost.Text), Convert.ToInt32(dlg.maxWeight.Text), Convert.ToInt32(dlg.maxVolume.Text), Convert.ToInt32(dlg.duration.Text),  new List<WeeklyTime>() );
+                    _clientCon.AddRoute(Convert.ToInt32(origin.Tag), Convert.ToInt32(dest.Tag),Convert.ToInt32(company.Tag) , transport, Convert.ToInt32(dlg.weightCost.Text), Convert.ToInt32(dlg.volumeCost.Text), Convert.ToInt32(dlg.maxWeight.Text), Convert.ToInt32(dlg.maxVolume.Text), Convert.ToInt32(dlg.duration.Text),  times );
                 }
                 catch (Exception ex)
                 {
@@ -391,14 +506,14 @@ namespace Client
 
         private void addPrice_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new AddPriceDialogBox();
+            var dlg = new AddPriceDialogBox(_clientState);
 
             // Open the dialog box modally 
             dlg.ShowDialog();
             if (dlg.DialogResult != false)
             {
-                var originID = Convert.ToInt32(dlg.origin.Text);
-                var destId = Convert.ToInt32(dlg.destination.Text);
+                ComboBoxItem origin = dlg.origin.SelectedItem as ComboBoxItem;
+                ComboBoxItem dest = dlg.dest.SelectedItem as ComboBoxItem;
                 Priority priority = Priority.Standard;
                 if (dlg.priority.SelectedIndex == 0)
                     priority = Priority.Standard;
@@ -414,7 +529,7 @@ namespace Client
 
                 try
                 {
-                    _clientCon.AddPrice(originID, destId, priority, weightPrice, volumePrice);
+                    _clientCon.AddPrice(Convert.ToInt32(origin.Tag), Convert.ToInt32(dest.Tag), priority, weightPrice, volumePrice);
                 }
                 catch (Exception ex)
                 {
@@ -427,8 +542,26 @@ namespace Client
 
         private void addIntlPortButton_Click(object sender, RoutedEventArgs e)
         {
+            var dlg = new AddIntlPortDialogBox(_clientState);
 
-            
+            // Open the dialog box modally 
+            dlg.ShowDialog();
+            if (dlg.DialogResult != false)
+            {
+                ComboBoxItem country = dlg.countries.SelectedItem as ComboBoxItem;
+                
+
+                try
+                {
+                    _clientCon.AddInternationalPort(Convert.ToInt32(country.Tag));
+                    
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+
         }
 
 
@@ -481,6 +614,28 @@ namespace Client
         private void button2_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new System.Uri("ViewStats.xaml", UriKind.RelativeOrAbsolute));
+        }
+
+        private void addDistCenterButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new AddDistCenterDialogBox();
+
+            // Open the dialog box modally 
+            dlg.ShowDialog();
+            if (dlg.DialogResult != false)
+            {
+                
+
+                try
+                {
+                    _clientCon.AddDistributionCentre(dlg.name.Text);
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 
 

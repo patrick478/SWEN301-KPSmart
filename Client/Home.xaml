@@ -25,7 +25,7 @@
                         <ColumnDefinition Width="40*" />
                         <ColumnDefinition Width="678*" />
                     </Grid.ColumnDefinitions>
-                    <Button Content="Add Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,234,0,0" Name="addDistCenterButton" VerticalAlignment="Top" Width="125" />
+                    <Button Content="Add Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,234,0,0" Name="addDistCenterButton" VerticalAlignment="Top" Width="125" Click="addDistCenterButton_Click" />
                     <Button Content="Edit Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,292,0,0" Name="editDistCenter" VerticalAlignment="Top" Width="125" />
                     <Button Content="Delete Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,350,0,0" Name="deleteDistCenter" VerticalAlignment="Top" Width="125" />
                     <DataGrid AutoGenerateColumns="False" DataContext="{Binding}" FontSize="12" FontWeight="Normal" Grid.Column="2" Height="234" HorizontalAlignment="Left" Margin="0,234,0,0" Name="distCenterList" VerticalAlignment="Top" Width="713" />

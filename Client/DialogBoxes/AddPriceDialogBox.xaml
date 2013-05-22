@@ -9,12 +9,10 @@
         WindowStartupLocation="CenterOwner" 
         FocusManager.FocusedElement="{Binding ElementName=companyName}">
     <Grid>
-        <Label Content="Origin ID:" Height="28" HorizontalAlignment="Left" Margin="41,19,0,0" Name="label1" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="156,19,0,0" Name="origin" VerticalAlignment="Top" Width="120" />
+        <Label Content="Origin:" Height="28" HorizontalAlignment="Left" Margin="41,19,0,0" Name="label1" VerticalAlignment="Top" />
         <Button Content="Enter" Height="23" HorizontalAlignment="Left" Margin="167,180,0,0" Name="okButton" VerticalAlignment="Top" Width="75" IsDefault="True" Click="okButton_Click" />
         <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,180,12,0" Name="button1" VerticalAlignment="Top" Width="75" IsCancel="True" />
-        <Label Content="Destination ID:" Height="28" HorizontalAlignment="Left" Margin="41,52,0,0" Name="label2" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="156,54,0,0" Name="destination" VerticalAlignment="Top" Width="120" />
+        <Label Content="Destination:" Height="28" HorizontalAlignment="Left" Margin="41,52,0,0" Name="label2" VerticalAlignment="Top" />
         <Label Content="Price per gram:" Height="28" HorizontalAlignment="Left" Margin="41,115,0,0" Name="label3" VerticalAlignment="Top" />
         <TextBox Height="23" HorizontalAlignment="Left" Margin="156,117,0,0" Name="gramPrice" VerticalAlignment="Top" Width="120" />
         <Label Content="Price per cubic cm:" Height="28" HorizontalAlignment="Left" Margin="41,149,0,0" Name="label4" VerticalAlignment="Top" />
@@ -24,5 +22,7 @@
             <ComboBoxItem Content="Standard" IsSelected="True" />
             <ComboBoxItem Content="Air" />
         </ComboBox>
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="156,21,0,0" Name="origin" VerticalAlignment="Top" Width="120" IsReadOnly="False" IsEditable="True"></ComboBox>
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="156,54,0,0" Name="dest" VerticalAlignment="Top" Width="120" IsEditable="True"></ComboBox>
     </Grid>
 </Window>
