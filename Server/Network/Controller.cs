@@ -289,17 +289,28 @@ namespace Server.Network
         private void SyncState(Client client, string[] tokens)
         {
             DateTime clientTime = DateTime.Parse(tokens[1]);
-            foreach (Company c in companyService.GetAll())
+            var companies = companyService.GetAll();
+            foreach (Company c in companies)
                 SendUpdateForSync(client, NetCodes.OBJECT_COMPANY, c.ToNetString());
-            foreach (Country l in countryService.GetAll())
+
+            var countries = countryService.GetAll();
+            foreach (Country l in countries)
                 SendUpdateForSync(client, NetCodes.OBJECT_COUNTRY, l.ToNetString());
-            foreach (RouteNode n in locationService.GetAll())
+
+            var routeNodes = locationService.GetAll();
+            foreach (RouteNode n in routeNodes)
                 SendUpdateForSync(client, NetCodes.OBJECT_ROUTENODE, n.ToNetString());
-            foreach (Price p in priceService.GetAll())
+
+            var prices = priceService.GetAll();
+            foreach (Price p in prices)
                 SendUpdateForSync(client, NetCodes.OBJECT_PRICE, p.ToNetString());
-            foreach (Route r in routeService.GetAll())
+
+            var routes = routeService.GetAll();
+            foreach (Route r in routes)
                 SendUpdateForSync(client, NetCodes.OBJECT_ROUTE, r.ToNetString());
+
             client.SendMessage(NetCodes.SV_SYNC_DONE);
+            
         }
 
         private void SendUpdateForSync(Client client, string objectType, string objectDef)

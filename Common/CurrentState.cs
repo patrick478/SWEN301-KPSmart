@@ -135,13 +135,12 @@ namespace Common
         #region prices
         public void SavePrice(Price price)
         {
-            prices.Add(price.ID, price);
+            prices[price.ID] = price;
         }
 
         public void RemovePrice(int id)
         {
             prices.Remove(id);
-
         }
 
         /// <summary>

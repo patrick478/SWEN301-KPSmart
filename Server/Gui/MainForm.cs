@@ -68,12 +68,41 @@ namespace Server.Gui
             countryDataHelper.Create(newZealand);
 
             var australia = new Country { Name = "Australia", Code = "AUS" };
+            countryDataHelper.Create(australia);
+
+            var japan = new Country { Name = "Japan", Code = "JAP" };
+            countryDataHelper.Create(japan);
+
+
+            var routeNodeDataHelper = new RouteNodeDataHelper();
+            // international ports
+            var australiaP = new InternationalPort(australia);
+            routeNodeDataHelper.Create(australiaP);
+
+            var japanP = new InternationalPort(japan);
+            routeNodeDataHelper.Create(japanP);
+
+            // distribution centres
+            var auckland = new DistributionCentre("Auckland");
+            routeNodeDataHelper.Create(auckland);
+            var wellington = new DistributionCentre("Wellington");
+            routeNodeDataHelper.Create(wellington);
+            var christchurch = new DistributionCentre("Christchurch");
+            routeNodeDataHelper.Create(christchurch);
+            var hamilton = new DistributionCentre("Hamilton");
+            routeNodeDataHelper.Create(hamilton);
+            var rotorua = new DistributionCentre("Rotorua");
+            routeNodeDataHelper.Create(rotorua);
+            var palmerstonNorth = new DistributionCentre("Palmerston North");
+            routeNodeDataHelper.Create(palmerstonNorth);
+            var dunedin = new DistributionCentre("Dunedin");
+            routeNodeDataHelper.Create(dunedin);
+
             
 
 
 
-        
-        
+
         }
 
 
