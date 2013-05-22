@@ -36,7 +36,7 @@ namespace Client
             InitializeComponent();
             var state = new CurrentState();
             var routeService = new RouteService(state);
-            _pathFinder = new PathFinder(routeService, state);
+            _pathFinder = new PathFinder(routeService);
             _clientState = clientState;
             _pathfindService = new DeliveryService(state, _pathFinder);
             _clientController = clientCon;

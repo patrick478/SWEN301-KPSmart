@@ -40,7 +40,7 @@ namespace Server.Gui
             countryService = new CountryService(currentState);
             companyService = new CompanyService(currentState);
             routeService = new RouteService(currentState);
-            var pathFinder = new PathFinder(routeService, currentState); // pathfinder needs the RouteService and state
+            var pathFinder = new PathFinder(routeService); // pathfinder needs the RouteService and state
             deliveryService = new DeliveryService(currentState, pathFinder); // DeliveryService needs the PathFinder
             priceService = new PriceService(currentState);      
             locationService = new LocationService(currentState);
