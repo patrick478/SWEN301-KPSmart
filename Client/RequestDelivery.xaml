@@ -18,8 +18,6 @@
                 <Label Canvas.Left="199" Canvas.Top="189" Content="Destination:" Height="28" Name="label3" Width="109" />
                 <Label Canvas.Left="199" Canvas.Top="223" Content="Weight (gms):" Height="28" Name="label4" Width="109" />
                 <Label Canvas.Left="199" Canvas.Top="257" Content="Volume (cm^3):" Height="28" Name="label5" Width="109" />
-                <TextBox Canvas.Left="303" Canvas.Top="157" Height="23" Name="origin" Width="120" />
-                <TextBox Canvas.Left="303" Canvas.Top="194" Height="23" Name="destination" Width="120" />
                 <TextBox Canvas.Left="303" Canvas.Top="228" Height="23" Name="weight" Width="120" />
                 <TextBox Canvas.Left="303" Canvas.Top="262" Height="23" Name="volume" Width="120" />
                 <Button Canvas.Left="680" Canvas.Top="401" Content="Submit" Height="23" Name="submitButton" Width="75" Click="submitButton_Click" />
@@ -28,6 +26,8 @@
                 <RadioButton Canvas.Left="554" Canvas.Top="223" Content="RadioButton" Height="16" Name="air" GroupName="options" Visibility="Hidden" IsEnabled="True" />
                 <RadioButton Canvas.Left="554" Canvas.Top="257" Content="RadioButton" Height="16" Name="airExpress" GroupName="options" Visibility="Hidden" IsEnabled="True" />
                 <Label Canvas.Left="17" Canvas.Top="16" Content="Request Delivery" Height="56" Name="label6" FontSize="28" Width="266" />
+                <ComboBox Canvas.Left="303" Canvas.Top="160" Height="23" Name="origin" Width="120" />
+                <ComboBox Canvas.Left="303" Canvas.Top="194" Height="23" Name="destination" Width="120" />
             </Canvas>
         </Canvas>
     </Grid>

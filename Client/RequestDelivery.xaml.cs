@@ -28,16 +28,38 @@ namespace Client
         private readonly PathFinder _pathFinder;
         private readonly ClientState _clientState;
         private DeliveryService _pathfindService;
+        private ClientController _clientController;
 
-        public RequestDelivery()
+        public RequestDelivery(ClientController clientCon, ClientState clientState)
         {
             
             InitializeComponent();
             var state = new CurrentState();
             var routeService = new RouteService(state);
             _pathFinder = new PathFinder(routeService);
-            _clientState = new ClientState();
+            _clientState = clientState;
             _pathfindService = new DeliveryService(state, _pathFinder);
+            _clientController = clientCon;
+
+            foreach (var country in _clientState.GetAllCountries())
+            {
+                //this.originComboBox.Items.Add(countries.Name);
+                ComboBoxItem cbi = new ComboBoxItem();
+                cbi.Content = country.Name;
+                cbi.Tag = country.ID;
+                this.origin.Items.Add(cbi);
+
+                ComboBoxItem cbi2 = new ComboBoxItem();
+                cbi2.Content = country.Name;
+                cbi2.Tag = country.ID;
+                this.destination.Items.Add(cbi2);
+            }
+
+
+
+
+
+            //_clientController.Updated += new ClientController.DeliveryOptionsDelegate(DeliveryOptions_Returned));
 
         }
 
@@ -68,14 +90,14 @@ namespace Client
 
             try
             {
-                int originNode = Convert.ToInt32(origin.Text);
-                int destNode = Convert.ToInt32(destination.Text);
+                int originNode = Convert.ToInt32(origin.Tag);
+                int destNode = Convert.ToInt32(destination.Tag);
                
 
 
 
-                var results = _pathfindService.GetBestRoutes(0,originNode, destNode, Convert.ToInt32(weight),
-                                                                                           Convert.ToInt32(volume));
+                var results = _pathfindService.GetBestRoutes(0,originNode, destNode, Convert.ToInt32(weight.Text),
+                                                                                           Convert.ToInt32(volume.Text));
 
                 
                 var standardDelivery = results[PathType.Standard];

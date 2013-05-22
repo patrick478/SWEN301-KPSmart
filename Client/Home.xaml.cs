@@ -356,6 +356,7 @@ namespace Client
             {
                 ComboBoxItem origin = dlg.originComboBox.SelectedItem as ComboBoxItem;
                 ComboBoxItem dest = dlg.destComboBox.SelectedItem as ComboBoxItem;
+                ComboBoxItem company = dlg.companyComboBox.SelectedItem as ComboBoxItem;
 
                 TransportType transport = TransportType.Land;
                 switch (dlg.transportComboBox.Text)
@@ -375,7 +376,7 @@ namespace Client
 
                 try
                 {
-                    _clientCon.AddRoute(Convert.ToInt32(origin.Tag), Convert.ToInt32(dest.Tag), transport, Convert.ToInt32(dlg.weightCost.Text), Convert.ToInt32(dlg.volumeCost.Text), Convert.ToInt32(dlg.maxWeight.Text), Convert.ToInt32(dlg.maxVolume.Text), Convert.ToInt32(dlg.duration.Text),  new List<WeeklyTime>() );
+                    _clientCon.AddRoute(Convert.ToInt32(origin.Tag), Convert.ToInt32(dest.Tag),Convert.ToInt32(company.Tag) , transport, Convert.ToInt32(dlg.weightCost.Text), Convert.ToInt32(dlg.volumeCost.Text), Convert.ToInt32(dlg.maxWeight.Text), Convert.ToInt32(dlg.maxVolume.Text), Convert.ToInt32(dlg.duration.Text),  new List<WeeklyTime>() );
                 }
                 catch (Exception ex)
                 {
