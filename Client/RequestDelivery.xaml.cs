@@ -59,7 +59,38 @@ namespace Client
 
 
 
-            //_clientController.Updated += new ClientController.DeliveryOptionsDelegate(DeliveryOptions_Returned));
+            _clientController.OptionsReceived += new ClientController.DeliveryOptionsDelegate(DeliveryOptions_Returned);
+
+        }
+
+
+        public void DeliveryOptions_Returned(IDictionary<PathType, int> prices)
+        {
+            MessageBox.Show("Recieved options!!!");
+
+
+            var standardDelivery = prices[PathType.Standard];
+            var expressDelivery = prices[PathType.Express];
+            var airStandardDelivery = prices[PathType.AirStandard];
+            var airExpressDelivery = prices[PathType.AirExpress];
+
+            var standardPrice = 0;
+            var standardExpressPrice = 0;
+            var airPrice = 0;
+            var airExpressPrice = 0;
+
+
+
+
+            air.Visibility = Visibility.Visible;
+            airExpress.Visibility = Visibility.Visible;
+            standard.Visibility = Visibility.Visible;
+            standardExpress.Visibility = Visibility.Visible;
+
+            air.Content = "Air: " + airPrice;
+            airExpress.Content = "Air Express: " + airExpressPrice;
+            standard.Content = "Standard: " + standardPrice;
+            standardExpress.Content = "Standard Express: " + standardExpressPrice;
 
         }
 
@@ -88,45 +119,19 @@ namespace Client
 
             submitButton.Visibility = Visibility.Hidden;
 
-            try
-            {
-                int originNode = Convert.ToInt32(origin.Tag);
-                int destNode = Convert.ToInt32(destination.Tag);
+           
+            int originNode = Convert.ToInt32(origin.Tag);
+            int destNode = Convert.ToInt32(destination.Tag);
                
 
 
 
-                var results = _pathfindService.GetBestRoutes(0,originNode, destNode, Convert.ToInt32(weight.Text),
+            
+            _clientController.RequestDelivery(originNode, destNode, Convert.ToInt32(weight.Text),
                                                                                            Convert.ToInt32(volume.Text));
-
                 
-                var standardDelivery = results[PathType.Standard];
-                var expressDelivery = results[PathType.Express];
-                var airStandardDelivery  = results[PathType.AirStandard];
-                var airExpressDelivery = results[PathType.AirExpress];
-
-                var standardPrice = 0;
-                var standardExpressPrice = 0;
-                var airPrice = 0;
-                var airExpressPrice = 0;
-
-
                 
-
-                air.Visibility = Visibility.Visible;
-                airExpress.Visibility = Visibility.Visible;
-                standard.Visibility = Visibility.Visible;
-                standardExpress.Visibility = Visibility.Visible;
-
-                air.Content = "Air: " + airPrice;
-                airExpress.Content = "Air Express: " + airExpressPrice;
-                standard.Content = "Standard: " + standardPrice;
-                standardExpress.Content = "Standard Express: " + standardExpressPrice;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            
             
         }
 

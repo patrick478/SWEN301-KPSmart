@@ -322,7 +322,7 @@ namespace Client
 
         private void requestDelivery_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new System.Uri("RequestDelivery.xaml", UriKind.RelativeOrAbsolute));
+            NavigationService.Navigate(new RequestDelivery(_clientCon, _clientState));
         }
 
         private void deleteCompanyButton_Click(object sender, RoutedEventArgs e)
