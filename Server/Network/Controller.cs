@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Common;
 using Server.Business;
+using Server.Gui;
 
 namespace Server.Network
 {
@@ -338,6 +339,7 @@ namespace Server.Network
 
         private void SendErrorMessage(Client client, string error)
         {
+            Logger.WriteLine("Error processing Client ({0}) request: {1}", client.ID, error);
             client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_ERROR, error));
         }
     }

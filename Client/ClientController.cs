@@ -30,13 +30,15 @@ namespace Client
         public delegate void DeliveryConfirmedDelegate();
         public event DeliveryConfirmedDelegate DeliveryOK;
 
+        public delegate void ErrorMessageDelegate(string error);
+        public event ErrorMessageDelegate Error;
+
         /// <summary>
         /// Reads a message received from the Server and performs the appropriate actions.
         /// </summary>
         /// <param name="data">The message.</param>
         public void OnReceived(string data)
         {
-            // TODO try catches for string arrays that are missing expected arguments. And can't be converted etc.
             var tokens = data.Split(NetCodes.SEPARATOR);
 
             switch (tokens[0])
@@ -54,9 +56,10 @@ namespace Client
                     DeliveryConfirmed(tokens);
                     return;
                 case NetCodes.SV_ERROR:
-                    //TODO
+                    ErrorMessage(tokens);
+                    return;
                 case NetCodes.SV_STATS_ANSWER:
-                    //TODO
+                    StatsReceived(tokens);
                     return;
                 case NetCodes.SV_SYNC_UPDATE:
                     ObjectUpdate(tokens, false);;
@@ -175,6 +178,18 @@ namespace Client
         {
             if (DeliveryOK != null)
                 DeliveryOK();
+        }
+
+        private void StatsReceived(string[] tokens)
+        {
+            ;
+        }
+
+        private void ErrorMessage(string[] tokens)
+        {
+            string message = tokens[1];
+            if (Error != null)
+                Error(message);
         }
         #endregion
 
