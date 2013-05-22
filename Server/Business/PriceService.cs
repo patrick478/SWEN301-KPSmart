@@ -14,7 +14,8 @@ namespace Server.Business
             // initialise current prices from DB
             if (!state.PricesInitialised)
             {
-                var prices = dataHelper.LoadAll();
+                //var prices = dataHelper.LoadAll();
+                var prices = new Dictionary<int, Price>();
                 state.InitialisePrices(prices);
             }
         }

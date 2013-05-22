@@ -351,9 +351,7 @@ namespace Client
             // Open the dialog box modally 
             dlg.ShowDialog();
 
-            dlg.originComboBox.ItemsSource = _currentState.GetAllRouteNodes();
-            dlg.destComboBox.ItemsSource = _currentState.GetAllRouteNodes();
-
+            
             if (dlg.DialogResult != false)
             {
                 ComboBoxItem origin = dlg.originComboBox.SelectedItem as ComboBoxItem;
