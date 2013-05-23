@@ -307,8 +307,8 @@ namespace Server.Data
 
                 // insert new 'deleted' row
                 sql = SQLQueryBuilder.InsertFields(TABLE_NAME,
-                                                   new string[] { EVENT_ID, ID_COL_NAME, "active", "name", "code" },
-                                                   new string[] { eventId.ToString(), id.ToString(), "-1", "", "" });
+                                                   new string[] { EVENT_ID, ID_COL_NAME, "active", "name" },
+                                                   new string[] { eventId.ToString(), id.ToString(), "-1", "" });
                 Database.Instance.InsertQuery(sql);
             }
             // LOCK ENDS HERE
