@@ -106,7 +106,39 @@ namespace Server.Data
         /// <returns></returns>
         public override IDictionary<int, Company> LoadAll(DateTime snapshotTime)
         {
-            throw new NotImplementedException();
+            string sql;
+            object[][] rows;
+
+            string timestamp = String.Format("{0}-{1}-{2} {3}:{4}:{5}", snapshotTime.Year, snapshotTime.Month, snapshotTime.Day, snapshotTime.Hour, snapshotTime.Minute, snapshotTime.Second); //2013-05-20 09:53:10"
+
+            // BEGIN LOCK HERE
+            lock (Database.Instance)
+            {
+
+                sql = String.Format("SELECT id, name, created FROM 'companies' WHERE created < \"{0}\" GROUP BY country_id ORDER BY created DESC", timestamp);
+                rows = Database.Instance.FetchRows(sql);
+            }
+            // END LOCK HERE
+            Logger.WriteLine("Loaded {0} countries:", rows.Length);
+
+            var results = new Dictionary<int, Company>();
+            foreach (object[] row in rows)
+            {
+                // extract data
+                long id = (long)row[0];
+                string name = row[1] as string;
+                DateTime created = (DateTime)row[3];
+
+                // make country
+                var company = new Company { ID = (int)id, Name = name, LastEdited = created };
+                Logger.WriteLine(company.ToString());
+
+                // add country to results
+                Console.WriteLine("got data: {0}, {1}, {2}", id, name);
+                results.Add((int)id, company);
+            }
+
+            return results;
         }
 
         /// <summary>
