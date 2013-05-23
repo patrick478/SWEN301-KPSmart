@@ -116,10 +116,10 @@ namespace Client
 
             //editCompanyButton.IsEnabled = false;
 
-            editDistCenter.IsEnabled = false;
+            /*editDistCenter.IsEnabled = false;
             editPrice.IsEnabled = false;
             editRoute.IsEnabled = false;
-            editIntlPortButton.IsEnabled = false;
+            editIntlPortButton.IsEnabled = false;*/
 
                         
 
@@ -352,16 +352,10 @@ namespace Client
 
         private void deleteCountry_Click(object sender, RoutedEventArgs e)
         {
-            try
-
-            {
-                _clientCon.DeleteCountry(((Country) countriesList.SelectedItem).ID);
-            }
-            catch (Exception ex)
-            {
-               MessageBox.Show(ex.Message);
-            }
-            ReloadCountries();
+           
+            _clientCon.DeleteCountry(((Country) countriesList.SelectedItem).ID);
+            
+            
         }
             
 
@@ -413,7 +407,7 @@ namespace Client
         {
             try
             {
-               // _clientCon.DeleteCompany(((Company)companiesList.SelectedItem).ID);
+                _clientCon.DeleteCompany(((Company)companiesList.SelectedItem).ID);
             }
             catch (Exception ex)
             {
@@ -422,11 +416,7 @@ namespace Client
             ReloadCompanies();
         }
 
-        private void editIntlPortButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
+        
         private void addRoute_Click(object sender, RoutedEventArgs e)
         {
         // Instantiate the dialog box
@@ -569,19 +559,18 @@ namespace Client
         {
             // Instantiate the dialog box
             var dlg = new AddRouteDialogBox(_clientState);
-            var r = ((Route)routesList.SelectedItem);
-            // Open the dialog box modally 
-            dlg.ShowDialog();
+            var r = ((Route) routesList.SelectedItem);
+
             dlg.Title = "Edit Route";
 
             //uneditable fields
-            dlg.originComboBox.IsReadOnly = true;
+            dlg.originComboBox.IsEnabled = false;
             dlg.originComboBox.Text = r.Origin.Country.Name;
-            dlg.destComboBox.IsReadOnly = true;
+            dlg.destComboBox.IsEnabled = false;
             dlg.destComboBox.Text = r.Destination.Country.Name;
-            dlg.companyComboBox.IsReadOnly = true;
+            dlg.companyComboBox.IsEnabled = false;
             dlg.companyComboBox.Text = r.Company.Name;
-            dlg.transportComboBox.IsReadOnly = true;
+            dlg.transportComboBox.IsEnabled = false;
             dlg.transportComboBox.Text = r.TransportType.ToString();
 
             //editable fields
@@ -591,23 +580,96 @@ namespace Client
             dlg.maxWeight.Text = Convert.ToString(r.MaxWeight);
             dlg.maxVolume.Text = Convert.ToString(r.MaxVolume);
 
+            var timesForList = new List<DayMinuteHourHolder>();
+
+            foreach (var time in r.DepartureTimes)
+            {
+                String day = "";
+                switch (time.DayComponent)
+                {
+                    case DayOfWeek.Monday:
+                        day = "Monday";
+                        break;
+                    case DayOfWeek.Tuesday:
+                        day = "Tuesday";
+                        break;
+                    case DayOfWeek.Wednesday:
+                        day = "Wednesday";
+                        break;
+                    case DayOfWeek.Thursday:
+                        day = "Thursday";
+                        break;
+                    case DayOfWeek.Friday:
+                        day = "Friday";
+                        break;
+                    case DayOfWeek.Saturday:
+                        day = "Saturday";
+                        break;
+                    case DayOfWeek.Sunday:
+                        day = "Sunday";
+                        break;
+
+                }
+
+
+                timesForList.Add(new DayMinuteHourHolder()
+                    {
+                        Day = day,
+                        Hour = time.HourComponent,
+                        Minute = time.MinuteComponent
+                    });
+            }
+
+            foreach (var dayMinuteHourHolder in timesForList)
+            {
+                dlg.timesGrid.Items.Add(dayMinuteHourHolder);
+            }
+
+
+            // Open the dialog box modally 
+            dlg.ShowDialog();
 
             if (dlg.DialogResult != false)
             {
 
                 var times = new List<WeeklyTime>();
-
-                try
+                foreach (DayMinuteHourHolder time in dlg.timesGrid.Items)
                 {
-                    _clientCon.EditRoute(r.ID, Convert.ToInt32(dlg.weightCost.Text),
-                                         Convert.ToInt32(dlg.volumeCost.Text), Convert.ToInt32(dlg.maxWeight),
-                                         Convert.ToInt32(dlg.maxVolume), Convert.ToInt32(dlg.duration), times);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
+                    DayOfWeek day = DayOfWeek.Monday;
+                    switch (time.Day)
+                    {
+                        case "Monday":
+                            day = DayOfWeek.Monday;
+                            break;
+                        case "Tuesday":
+                            day = DayOfWeek.Tuesday;
+                            break;
+                        case "Wednesday":
+                            day = DayOfWeek.Wednesday;
+                            break;
+                        case "Thursday":
+                            day = DayOfWeek.Thursday;
+                            break;
+                        case "Friday":
+                            day = DayOfWeek.Friday;
+                            break;
+                        case "Saturday":
+                            day = DayOfWeek.Saturday;
+                            break;
+                        case "Sunday":
+                            day = DayOfWeek.Sunday;
+                            break;
+                    }
+                    times.Add(new WeeklyTime(day, time.Hour, time.Minute));
 
+
+                   
+                        _clientCon.EditRoute(r.ID, Convert.ToInt32(dlg.weightCost.Text),
+                                             Convert.ToInt32(dlg.volumeCost.Text), Convert.ToInt32(dlg.maxWeight.Text),
+                                             Convert.ToInt32(dlg.maxVolume.Text), Convert.ToInt32(dlg.duration.Text), times);
+                  
+
+                }
             }
         }
 
@@ -636,6 +698,76 @@ namespace Client
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
+
+        private void editPrice_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new AddPriceDialogBox(_clientState);
+
+            // Open the dialog box modally 
+            var price = ((Price) priceList.SelectedItem);
+            dlg.Title = "Edit Price";
+            dlg.origin.IsReadOnly = true;
+            dlg.dest.IsReadOnly = true;
+            dlg.priority.IsReadOnly = true;
+
+            
+
+            dlg.gramPrice.Text = Convert.ToString(((Price) priceList.SelectedItem).PricePerGram);
+            dlg.cubicCmPrice.Text = Convert.ToString(((Price)priceList.SelectedItem).PricePerCm3);
+
+            dlg.ShowDialog();
+            if (dlg.DialogResult != false)
+            {
+                ComboBoxItem origin = dlg.origin.SelectedItem as ComboBoxItem;
+                ComboBoxItem dest = dlg.dest.SelectedItem as ComboBoxItem;
+                Priority priority = Priority.Standard;
+                if (dlg.priority.SelectedIndex == 0)
+                    priority = Priority.Standard;
+                else if (dlg.priority.SelectedIndex == 1)
+                    priority = Priority.Air;
+                else
+                {
+                    //should never happen
+                    MessageBox.Show("You must select Standard or Air priorty.");
+                }
+                var weightPrice = Convert.ToInt32(dlg.gramPrice.Text);
+                var volumePrice = Convert.ToInt32(dlg.cubicCmPrice.Text);
+
+                try
+                {
+                    _clientCon.EditPrice(price.ID, weightPrice, volumePrice);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void deletePrice_Click(object sender, RoutedEventArgs e)
+        {
+            _clientCon.DeletePrice(((Price)priceList.SelectedItem).ID);
+        }
+
+        private void deleteRoute_Click(object sender, RoutedEventArgs e)
+        {
+            _clientCon.DeleteRoute(((Route)routesList.SelectedItem).ID);
+        }
+
+        private void deleteIntlPortButton_Click(object sender, RoutedEventArgs e)
+        {
+            _clientCon.DeleteRouteNode(((RouteNode)intlPortList.SelectedItem).ID);
+        }
+
+        private void editDistCenter_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void deleteDistCenter_Click(object sender, RoutedEventArgs e)
+        {
+            _clientCon.DeleteRouteNode(((RouteNode)distCenterList.SelectedItem).ID);
         }
 
 

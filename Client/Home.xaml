@@ -26,12 +26,10 @@
                         <ColumnDefinition Width="678*" />
                     </Grid.ColumnDefinitions>
                     <Button Content="Add Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,234,0,0" Name="addDistCenterButton" VerticalAlignment="Top" Width="125" Click="addDistCenterButton_Click" />
-                    <Button Content="Edit Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,292,0,0" Name="editDistCenter" VerticalAlignment="Top" Width="125" />
-                    <Button Content="Delete Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,350,0,0" Name="deleteDistCenter" VerticalAlignment="Top" Width="125" />
+                    <Button Content="Delete Dist. Center" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,289,0,0" Name="deleteDistCenter" VerticalAlignment="Top" Width="125" Click="deleteDistCenter_Click" />
                     <DataGrid AutoGenerateColumns="False" DataContext="{Binding}" FontSize="12" FontWeight="Normal" Grid.Column="2" Height="234" HorizontalAlignment="Left" Margin="0,234,0,0" Name="distCenterList" VerticalAlignment="Top" Width="713" />
                     <Button Content="Add Intl. Port" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,24,0,0" Name="addIntlPortButton" VerticalAlignment="Top" Width="125" Click="addIntlPortButton_Click" />
-                    <Button Content="Edit Intl. Port" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,82,0,0" Name="editIntlPortButton" VerticalAlignment="Top" Width="125" Click="editIntlPortButton_Click" />
-                    <Button Content="Delete Intl. Port" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,140,0,0" Name="deleteIntlPortButton" VerticalAlignment="Top" Width="125" />
+                    <Button Content="Delete Intl. Port" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="22,79,0,0" Name="deleteIntlPortButton" VerticalAlignment="Top" Width="125" Click="deleteIntlPortButton_Click" />
                     <DataGrid AutoGenerateColumns="False" DataContext="{Binding}" FontSize="12" FontWeight="Normal" Grid.Column="2" Height="204" HorizontalAlignment="Left" Margin="0,24,0,0" Name="intlPortList" VerticalAlignment="Top" Width="713" />
                 </Grid>
             </TabItem>
@@ -58,15 +56,15 @@
                 <Grid Height="656" Width="976">
                     <Button Content="Add Route" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="35,53,0,0" Name="addRoute" VerticalAlignment="Top" Width="125" Click="addRoute_Click" />
                     <Button Content="Edit Route" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="35,111,0,0" Name="editRoute" VerticalAlignment="Top" Width="125" Click="editRoute_Click" />
-                    <Button Content="Delete Route" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="35,169,0,0" Name="deleteRoute" VerticalAlignment="Top" Width="125" />
+                    <Button Content="Delete Route" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="35,169,0,0" Name="deleteRoute" VerticalAlignment="Top" Width="125" Click="deleteRoute_Click" />
                     <DataGrid AutoGenerateColumns="False" DataContext="{Binding}" FontSize="12" FontWeight="Normal" Height="455" HorizontalAlignment="Left" Margin="226,53,0,0" Name="routesList" VerticalAlignment="Top" Width="713" />
                 </Grid>
             </TabItem>
             <TabItem Header="Prices" Name="Prices">
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Button Content="Add Price" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="35,51,0,0" Name="addPrice" VerticalAlignment="Top" Width="125" Click="addPrice_Click" />
-                    <Button Content="Edit Price" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="35,108,0,0" Name="editPrice" VerticalAlignment="Top" Width="125" />
-                    <Button Content="Delete Price" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="35,166,0,0" Name="deletePrice" VerticalAlignment="Top" Width="125" />
+                    <Button Content="Edit Price" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="35,108,0,0" Name="editPrice" VerticalAlignment="Top" Width="125" Click="editPrice_Click" />
+                    <Button Content="Delete Price" FontSize="12" FontWeight="Bold" Height="36" HorizontalAlignment="Left" Margin="35,166,0,0" Name="deletePrice" VerticalAlignment="Top" Width="125" Click="deletePrice_Click" />
                     <DataGrid AutoGenerateColumns="False" DataContext="{Binding}" FontSize="12" FontWeight="Normal" Height="455" HorizontalAlignment="Left" Margin="225,51,0,0" Name="priceList" VerticalAlignment="Top" Width="713" />
                 </Grid>
             </TabItem>
