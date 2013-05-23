@@ -100,7 +100,7 @@ namespace Server.Business
                 throw new ArgumentException(string.Format("There is no route with id = {0}", routeId), "routeId");
             
             // throws an exception if invalid
-            var newRoute = new Route { TransportType = route.TransportType, Company = route.Company, Origin = route.Origin, Destination = route.Destination, DepartureTimes = deliveryTimes, Duration = duration, MaxWeight = maxWeight, MaxVolume = maxVolume, CostPerGram = costPerGram, CostPerCm3 = costPerCm3 };
+            var newRoute = new Route {ID = routeId,  TransportType = route.TransportType, Company = route.Company, Origin = route.Origin, Destination = route.Destination, DepartureTimes = deliveryTimes, Duration = duration, MaxWeight = maxWeight, MaxVolume = maxVolume, CostPerGram = costPerGram, CostPerCm3 = costPerCm3 };
 
             // throws a database exception if doesn't exist
             dataHelper.Update(newRoute);

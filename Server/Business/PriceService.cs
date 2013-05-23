@@ -116,7 +116,7 @@ namespace Server.Business
                 throw new ArgumentException("No price was found with id: " + priceId, "priceId");
             
             // throws an exception if invalid
-            var newPrice = new Price { Origin = price.Origin, Destination = price.Destination, Priority = price.Priority, PricePerGram = pricePerGram, PricePerCm3 = pricePerCm3 };
+            var newPrice = new Price { ID = priceId, Origin = price.Origin, Destination = price.Destination, Priority = price.Priority, PricePerGram = pricePerGram, PricePerCm3 = pricePerCm3 };
             newPrice.ID = priceId;
 
             // throws a database exception if exists already
