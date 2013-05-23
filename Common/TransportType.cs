@@ -53,16 +53,17 @@ namespace Common
 
         public static TransportType ParseTransportTypeFromString (this string raw) 
         {
-            switch (raw) 
+            switch (raw.ToLower()) 
             { 
-                case "Air":
+                case "air":
                     return TransportType.Air;
-                case "Land":
+                case "land":
                     return TransportType.Land;
-                case "Sea":
+                case "sea":
+
                     return TransportType.Sea;
                 default:
-                    throw new ArgumentException("Unsupported string value");
+                    throw new ArgumentException("Unsupported string value: " + raw);
             } 
        
         }
