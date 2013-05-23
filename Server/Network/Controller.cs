@@ -337,17 +337,15 @@ namespace Server.Network
         /// <param name="tokens">The network message.</param>
         private void StatsRequest(Client client, string[] tokens)
         {
-            //Statistics stats = null;
-
+            Statistics stats;
             if (tokens[1] == NetCodes.STATS_NOW)
-            {
-                ;
-            }
+                stats = statisticsService.GetStatisticsFromPoint(DateTime.UtcNow);
             else
             {
-                ;
+                DateTime time = DateTime.Parse(tokens[1]);
+                stats = statisticsService.GetStatisticsFromPoint(time);
             }
-            //client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_STATS_ANSWER, stats.
+            client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_STATS_ANSWER, stats.ToNetString()));
         }
 
         private void SendErrorMessage(Client client, string error)

@@ -31,7 +31,7 @@ namespace Common
 
         public const string CL_SYNC_STATE = "ss";   // Timestamp (DateTime)
 
-        public const string CL_STATS_REQUEST = "bf";
+        public const string CL_STATS_REQUEST = "bf";    // Time (DateTime)
 
         // Server to Client - First token of a message sent by the Server, identifies the information the Server is sending (and the format for the rest of the message).
 
@@ -44,7 +44,7 @@ namespace Common
         public const string SV_SYNC_UPDATE = "su";
         public const string SV_SYNC_DONE = "sd";
 
-        public const string SV_STATS_ANSWER = "bf";     // DateTime String - 
+        public const string SV_STATS_ANSWER = "bf";     // Statistics Def (Statistics.ParseNetString)
 
         public const string SV_ERROR = "er"; // Error Message (string ...)   // CHECK unless we want to have error codes. Or have both; a code followed by a string.
 

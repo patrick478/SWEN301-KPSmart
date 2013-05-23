@@ -185,7 +185,9 @@ namespace Client
 
         private void StatsAnswer(string[] tokens)
         {
-            ;
+            Statistics stats = Statistics.ParseNetString(tokens, 1, state);
+            if (StatsReceived != null)
+                StatsReceived(stats);
         }
 
         private void ErrorMessage(string[] tokens)

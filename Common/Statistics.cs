@@ -16,6 +16,9 @@ namespace Common
             GetStatistics();
         }
 
+        /// <summary>Used by ParseNetString</summary>
+        private Statistics();
+
         public int TotalRevenue
         {
             get;
@@ -182,6 +185,85 @@ namespace Common
                 get;
                 private set;
             }
+
+            public string ToNetString()
+            {
+                return NetCodes.BuildObjectNetString(Origin.ID.ToString(), Destination.ID.ToString(), Priority.ToNetString(), TotalMail.ToString(), TotalWeight.ToString(), TotalVolume.ToString(), TotalDeliveryTimes.ToString());
+            }
+
+            public static Triple ParseNetString(string tripleDef, State state)
+            {
+                string[] tokens = tripleDef.Split(NetCodes.SEPARATOR_FIELD);
+                int count = 0;
+                int originId = Convert.ToInt32(tokens[count++]);
+                int destinationId = Convert.ToInt32(tokens[count++]);
+                Priority prio = PriorityExtensions.ParseNetString(tokens[count++]);
+                int totalMail = Convert.ToInt32(tokens[count++]);
+                int totalWeight = Convert.ToInt32(tokens[count++]);
+                int totalVolume = Convert.ToInt32(tokens[count++]);
+                TimeSpan totalDeliveryTimes = TimeSpan.Parse(tokens[count++]);
+                Triple triple = new Triple(state.GetRouteNode(originId), state.GetRouteNode(destinationId), prio);
+                triple.TotalMail = totalMail;
+                triple.TotalVolume = totalVolume;
+                triple.TotalWeight = totalWeight;
+                triple.TotalDeliveryTimes = totalDeliveryTimes;
+                return triple;
+            }
+        }
+
+        public string ToNetString()
+        {
+
+
+            StringBuilder triplesBuilder = new StringBuilder();
+            bool first = true;
+            foreach (Triple t in Triples)
+            {
+                if (first)
+                    first = false;
+                else
+                    triplesBuilder.Append(NetCodes.SEPARATOR_ELEMENT);
+                triplesBuilder.Append(t.ToNetString());
+            }
+
+            StringBuilder critRoutesBuilder = new StringBuilder();
+            first = true;
+            foreach (Route r in CriticalRoutes)
+            {
+                if (first)
+                    first = false;
+                else
+                    critRoutesBuilder.Append(NetCodes.SEPARATOR_ELEMENT);
+                critRoutesBuilder.Append(r.ID);
+            }
+
+            return NetCodes.BuildNetworkString(TotalRevenue.ToString(), TotalExpenditure.ToString(), TotalEvents.ToString(), triplesBuilder.ToString(), critRoutesBuilder.ToString());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <param name="arrayOffset">The index in which the Statistics definition actually starts. So we don't have to build and pass subset arrays.</param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public static Statistics ParseNetString(string[] tokens, int arrayOffset, State state)
+        {
+            int totalRevenue = Convert.ToInt32(tokens[arrayOffset++]);
+            int totalExpenditrue = Convert.ToInt32(tokens[arrayOffset++]);
+            int totalEvents = Convert.ToInt32(tokens[arrayOffset++]);
+
+            List<Triple> triples = new List<Triple>();
+            string[] tripleTokens = tokens[arrayOffset++].Split(NetCodes.SEPARATOR_ELEMENT);
+            for (int i = 0; i < tripleTokens.Length; ++i)
+                triples.Add(Triple.ParseNetString(tripleTokens[i], state));
+
+            List<Route> critRoutes = new List<Route>();
+            string[] critTokens = tokens[arrayOffset++].Split(NetCodes.SEPARATOR_ELEMENT);
+            for (int i = 0; i < critTokens.Length; ++i)
+                critRoutes.Add(state.GetRoute( Convert.ToInt32(critTokens[i]) ));
+
+            return new Statistics() { TotalRevenue = totalRevenue, TotalExpenditure = totalExpenditrue, TotalEvents = totalEvents, Triples = triples, CriticalRoutes = critRoutes };
         }
     }
 }
