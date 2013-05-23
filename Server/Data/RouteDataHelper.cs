@@ -220,7 +220,88 @@ namespace Server.Data
 
         public override IDictionary<int, Route> LoadAll(DateTime snapshotTime)
         {
-            throw new NotImplementedException();
+            string sql;
+            object[][] rows;
+
+            string timestamp = String.Format("{0}-{1}-{2} {3}:{4}:{5}", snapshotTime.Year, snapshotTime.Month, snapshotTime.Day, snapshotTime.Hour, snapshotTime.Minute, snapshotTime.Second); //2013-05-20 09:53:10"
+
+            // BEGIN LOCK HERE
+            lock (Database.Instance)
+            {
+
+                sql = String.Format("SELECT id, name, created FROM '{1}' WHERE created < \"{2}\" GROUP BY {1} ORDER BY created DESC", TABLE_NAME, ID_COL_NAME, timestamp);
+                sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[] { 
+                                                                              "origin_id", 
+                                                                              "destination_id",
+                                                                              "company_id",
+                                                                              "transport_type",
+                                                                              "duration",
+                                                                              "max_weight",
+                                                                              "max_volume",
+                                                                              "cost_per_cm3",
+                                                                              "cost_per_gram",
+                                                                              "created",
+                                                                              "route_id"});
+                rows = Database.Instance.FetchRows(sql);
+            }
+            // END LOCK HERE
+            Logger.WriteLine("Loaded {0} routes:", rows.Length);
+
+            var results = new Dictionary<int, Route>();
+            foreach (object[] row in rows)
+            {
+                // get field values
+                int originId = row[0].ToInt();
+                int destinationId = row[1].ToInt();
+                int companyId = row[2].ToInt();
+                string transType = row[3] as string;
+                int duration = row[4].ToInt();
+                int maxWeight = row[5].ToInt();
+                int maxVolume = row[6].ToInt();
+                int costPerCm3 = row[7].ToInt();
+                int costPerGram = row[8].ToInt();
+                DateTime created = (DateTime)row[9];
+                int id = row[10].ToInt();
+
+
+                // load origin
+                var origin = routeNodeDataHelper.Load(originId);
+
+                // load destination
+                var destination = routeNodeDataHelper.Load(destinationId);
+
+                // load company
+                var company = companyDataHelper.Load(companyId);
+
+                // load transportType
+                var transportType = transType.ParseTransportTypeFromString();
+
+                // load departure times
+                var departureTimes = departureTimeDataHelper.Load(id);
+
+                var route = new Route
+                {
+                    Origin = origin,
+                    Destination = destination,
+                    Company = company,
+                    TransportType = transportType,
+                    Duration = duration,
+                    MaxWeight = maxWeight,
+                    MaxVolume = maxVolume,
+                    CostPerCm3 = costPerCm3,
+                    CostPerGram = costPerGram,
+                    DepartureTimes = departureTimes,
+                    ID = id,
+                    LastEdited = created
+                };
+
+                Logger.WriteLine(route.ToString());
+
+                // add route to results
+                results.Add((int)id, route);
+            }
+
+            return results;
         }
 
         public override void Delete(int id)

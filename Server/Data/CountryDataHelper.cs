@@ -137,13 +137,11 @@ namespace Server.Data
             string sql;
             object[][] rows;
 
-            string timestamp = String.Format("{0}-{1}-{2} {3}:{4}:{5}", snapshotTime.Year, snapshotTime.Month, snapshotTime.Day, snapshotTime.Hour, snapshotTime.Minute, snapshotTime.Second); //2013-05-20 09:53:10"
-
             // BEGIN LOCK HERE
             lock (Database.Instance)
             {
 
-                sql = String.Format("SELECT id, name, code, created FROM 'countries' WHERE created < \"{0}\" GROUP BY country_id ORDER BY created DESC", timestamp);
+                sql = SQLQueryBuilder.SelectFieldsAtDateTime(TABLE_NAME, new string[] { ID_COL_NAME, "name", "code", "created" }, ID_COL_NAME, snapshotTime);
                 rows = Database.Instance.FetchRows(sql);
             }
             // END LOCK HERE

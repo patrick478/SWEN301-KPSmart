@@ -121,6 +121,26 @@ namespace Server.Data
             return sql;            
         }
 
+        public static string SelectFieldsAtDateTime(string tableName, string[] requiredFieldNames, string idColName, DateTime snapshotTime)
+        {
+            string timestamp = String.Format("{0}-{1}-{2} {3}:{4}:{5}", snapshotTime.Year, snapshotTime.Month, snapshotTime.Day, snapshotTime.Hour, snapshotTime.Minute, snapshotTime.Second); //2013-05-20 09:53:10"
+
+            // format the fields section
+            string fields = "";
+            foreach (string field in requiredFieldNames)
+            {
+                fields += field + ", ";
+            }
+            fields = fields.Trim();
+            fields = fields.Trim(',');
+
+            // build the query
+            var sql = String.Format("SELECT {0} FROM '{1}' WHERE created < \"{2}\" GROUP BY {3} ORDER BY created DESC", fields, tableName, timestamp, idColName);
+
+            return sql;      
+
+        }
+
         public static string InsertFields(string tableName, string[] fieldNames, string[] values) {
 
             // format the fieldNames section
