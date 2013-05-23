@@ -41,7 +41,7 @@ namespace Server.Business
 
         public DateTime GetDateOfFirstEvent () 
         {
-            return dataHelper.GetDateOfFirstEvent();
+            return dataHelper.GetDateTimeOfFirstEvent();
         
         }
 
