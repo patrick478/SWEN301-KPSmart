@@ -48,6 +48,22 @@ namespace Server.Business
             return newPrice;
         }
 
+        public DomesticPrice CreateDomesticPrice (Priority priority, int pricePerGram, int pricePerCm3) 
+        {
+            // throws an exception if invalid
+            var newPrice = new DomesticPrice(priority) { PricePerCm3 = pricePerCm3, PricePerGram = pricePerGram };
+
+            // throws a database exception if exists already
+            dataHelper.Create(newPrice);
+
+            // update state
+            state.SaveDomesticPrice(newPrice);
+            state.IncrementNumberOfEvents();
+
+            return newPrice; 
+        }
+
+
         /// <summary>
         /// Updates the given price.
         /// </summary>

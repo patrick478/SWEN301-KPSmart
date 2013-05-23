@@ -165,15 +165,45 @@ namespace Common
                 throw new ArgumentException("Cannot set all prices to null.", "prices");
             }
 
+            // add all domestic prices
+            domesticPrices = new ConcurrentDictionary<int, DomesticPrice>();
+            foreach (Price p in prices.Values) 
+            {
+                if (p.GetType() == typeof(DomesticPrice))
+                {
+                    domesticPrices[p.ID] = (p as DomesticPrice);                
+                }
+
+            }
+
+            // remove domestic prices from prices
+            foreach (Price p in domesticPrices.Values) 
+            {
+                prices.Remove(p.ID);
+            }
+
+            // initialise prices
             this.prices = new ConcurrentDictionary<int, Price>(prices);
         }
 
         public bool PricesInitialised
         {
-            get { return prices != null; }
+            get { return prices != null && domesticPrices != null; }
         }
         #endregion
 
+
+        #region domesticPrices
+        public void SaveDomesticPrice (DomesticPrice price)
+        {
+            domesticPrices[price.ID] = price;
+        }
+
+        public void RemoveDomesticPrice (int id)
+        {
+            domesticPrices.Remove(id);
+        }
+        #endregion
 
         #region countries
         public void SaveCountry(Country country)
