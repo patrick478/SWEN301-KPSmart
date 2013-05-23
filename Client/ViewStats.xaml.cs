@@ -26,6 +26,10 @@ namespace Client
         private DateTime lastDate;
         private DateTime firstDate;
 
+        delegate void DateArgumentDelegate(DateTime date);
+        DateArgumentDelegate initialDateDelegate;
+
+
         public ViewStats(ClientController clientCon)
         {
             _clientCon = clientCon;
@@ -37,15 +41,12 @@ namespace Client
             triples.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
 
             lastDate = DateTime.UtcNow;
-            firstDate = new DateTime(2013, 3, 12, 23, 59, 59);
 
-            var numDays = (lastDate - firstDate).Days;
+            dateSlider.IsEnabled = false;
 
-            dateSlider.Maximum = numDays;
+            _clientCon.StatsReceived += new ClientController.StatisticsReceivedDelegate(Stats_Recieved);
 
-            _clientCon.StatsReceived += new ClientController.StatisticsReceivedDelegate((Stats_Recieved));
-           
-            
+            _clientCon.InitialDateReceived += new ClientController.InitialDateDeleage(InitialDate_Recieved);
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -71,6 +72,35 @@ namespace Client
         public void Stats_Recieved(Statistics stats)
         {
             MessageBox.Show("Stats recieved");
+        }
+
+
+        private void InitialDate_Recieved(DateTime date)
+        {
+            try
+            {
+                dateSlider.Dispatcher.VerifyAccess();
+                do_InitialDate(date);
+            }
+            catch (InvalidOperationException e)
+            {
+                if (initialDateDelegate == null)
+                    initialDateDelegate = new DateArgumentDelegate(do_InitialDate);
+                //dateSlider.Dispatcher.Invoke(do_InitialDate(date));
+            }
+
+
+        }
+
+        private void do_InitialDate(DateTime date)
+        {
+            firstDate = date;
+
+            var numDays = (lastDate - firstDate).Days;
+
+            dateSlider.Maximum = numDays;
+            dateSlider.IsEnabled = true;
+           
         }
 
     }

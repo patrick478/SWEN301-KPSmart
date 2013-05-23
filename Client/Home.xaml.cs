@@ -839,6 +839,16 @@ namespace Client
             }
         }
 
+        private void reload_Click_1(object sender, RoutedEventArgs e)
+        {
+            ReloadCompanies();
+            ReloadIntlPrices();
+            ReloadPrices();
+            ReloadRouteNodes();
+            ReloadRoutes();
+            ReloadCountries();
+        }
+
 
         }
 
