@@ -174,7 +174,7 @@ namespace Server.Data
             // LOCK BEGINS HERE
             lock (Database.Instance)
             {
-                sql = String.Format("SELECT origin_id, destination_id, priority, weight_in_grams, volume_in_cm3, total_price, total_cost, time_of_request, time_of_delivery, created, delivery_id created FROM '{0}' WHERE created < \"{1}\" GROUP BY country_id ORDER BY created DESC", TABLE_NAME, timestamp);
+                sql = String.Format("SELECT origin_id, destination_id, priority, weight_in_grams, volume_in_cm3, total_price, total_cost, time_of_request, time_of_delivery, created, delivery_id created FROM '{0}' WHERE created < \"{1}\" GROUP BY delivery_id ORDER BY created DESC", TABLE_NAME, timestamp);
                 rows = Database.Instance.FetchRows(sql);
             }
             // LOCK ENDS HERE

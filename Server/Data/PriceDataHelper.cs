@@ -133,7 +133,56 @@ namespace Server.Data
 
         public override IDictionary<int, Price> LoadAll(DateTime snapshotTime)
         {
-            throw new NotImplementedException();
+            string sql;
+            object[][] rows;
+            IDictionary<int, Price> prices = new Dictionary<int, Price>();
+
+            string timestamp = String.Format("{0}-{1}-{2} {3}:{4}:{5}", snapshotTime.Year, snapshotTime.Month, snapshotTime.Day, snapshotTime.Hour, snapshotTime.Minute, snapshotTime.Second); //2013-05-20 09:53:10"
+
+            // BEGIN LOCK HERE
+            lock (Database.Instance)
+            {
+
+                sql = String.Format("SELECT destination_id, priority, price_per_cm3, price_per_gram, created, price_id FROM 'prices' WHERE created < \"{0}\" GROUP BY price_id ORDER BY created DESC", timestamp);
+                rows = Database.Instance.FetchRows(sql);
+            }
+            // LOCK ENDS HERE
+
+            Logger.WriteLine("Loaded prices: " + rows.Length);
+
+            foreach (object[] row in rows)
+            {
+                // get field values
+                int originId = row[0].ToInt();
+                int destinationId = row[1].ToInt();
+                Priority priority = row[2].ToString().Equals(Priority.Air.ToString()) ? Priority.Air : Priority.Standard;
+                int pricePerCm3 = row[3].ToInt();
+                int pricePerGram = row[4].ToInt();
+                DateTime created = (DateTime)row[5];
+
+                // load origin
+                var origin = routeNodeDataHelper.Load(originId);
+
+                // load destination
+                var destination = routeNodeDataHelper.Load(destinationId);
+
+                var price = new Price
+                {
+                    Origin = origin,
+                    Destination = destination,
+                    Priority = priority,
+                    PricePerCm3 = pricePerCm3,
+                    PricePerGram = pricePerGram,
+                    ID = row[6].ToInt(),
+                    LastEdited = created
+                };
+
+                Logger.WriteLine(price.ToString());
+
+                prices[price.ID] = price;
+            }
+
+            return prices;
         }
 
         public override void Delete(int id)
