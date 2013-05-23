@@ -112,6 +112,13 @@ namespace Server.Network
                         Price price = priceService.Create(priceOriginId, priceDestinationId, pricePrio, priceWeight, priceVolume);
                         SendObjectUpdate(NetCodes.OBJECT_PRICE, price.ToNetString());
                         return;
+                    case NetCodes.OBJECT_DOMESTIC_PRICE:
+                        Priority domesticPricePrio = PriorityExtensions.ParseNetString(tokens[count++]);
+                        int domesticPriceWeight = Convert.ToInt32(tokens[count++]);
+                        int domesticPriceVolume = Convert.ToInt32(tokens[count++]);
+                        DomesticPrice domesticPrice = priceService.CreateDomesticPrice(domesticPricePrio, domesticPriceWeight, domesticPriceVolume);
+                        SendObjectUpdate(NetCodes.OBJECT_DOMESTIC_PRICE, domesticPrice.ToNetString());
+                        return;
                     case NetCodes.OBJECT_ROUTE:
                         int routeOriginId = Convert.ToInt32(tokens[count++]);
                         int routeDestinationId = Convert.ToInt32(tokens[count++]);
@@ -178,6 +185,12 @@ namespace Server.Network
                         Price price = priceService.Update(id, priceWeight, priceVolume);
                         SendObjectUpdate(NetCodes.OBJECT_PRICE, price.ToNetString());
                         return;
+                    case NetCodes.OBJECT_DOMESTIC_PRICE:
+                        int domesticPriceWeight = Convert.ToInt32(tokens[count++]);
+                        int domesticPriceVolume = Convert.ToInt32(tokens[count++]);
+                        DomesticPrice domesticPrice = priceService.UpdateDomesticPrice(id, domesticPriceWeight, domesticPriceVolume);
+                        SendObjectUpdate(NetCodes.OBJECT_DOMESTIC_PRICE, domesticPrice.ToNetString());
+                        return;
                     case NetCodes.OBJECT_ROUTE:
                         int routeWeightCost = Convert.ToInt32(tokens[count++]);
                         int routeVolumeCost = Convert.ToInt32(tokens[count++]);
@@ -223,6 +236,9 @@ namespace Server.Network
                     case NetCodes.OBJECT_PRICE:
                         priceService.Delete(id);
                         SendObjectDelete(NetCodes.OBJECT_PRICE, id);
+                        return;
+                    case  NetCodes.OBJECT_DOMESTIC_PRICE:
+                        // Operation not supported.
                         return;
                     case NetCodes.OBJECT_ROUTE:
                         routeService.Delete(id);
@@ -311,6 +327,10 @@ namespace Server.Network
             var routeNodes = locationService.GetAll();
             foreach (RouteNode n in routeNodes)
                 SendUpdateForSync(client, NetCodes.OBJECT_ROUTENODE, n.ToNetString());
+
+            var domesticPrices = priceService.GetAllDomesticPrices();
+            foreach (DomesticPrice d in domesticPrices)
+                SendUpdateForSync(client, NetCodes.OBJECT_DOMESTIC_PRICE, d.ToNetString());
 
             var prices = priceService.GetAll();
             foreach (Price p in prices)

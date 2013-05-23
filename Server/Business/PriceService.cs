@@ -76,10 +76,14 @@ namespace Server.Business
             return newPrice; 
         }
 
-        public DomesticPrice UpdateDomesticPrice (int priceId, Priority priority, int pricePerGram, int pricePerCm3) 
+        public DomesticPrice UpdateDomesticPrice (int priceId, int pricePerGram, int pricePerCm3) 
         {
+            var domesticPrice = state.GetDomesticPrice(priceId);
+            if (domesticPrice == null)
+                throw new ArgumentException("No price was found with id: " + priceId, "priceId");
+
             // throws an exception if invalid
-            var newPrice = new DomesticPrice(priority) { ID = priceId, PricePerCm3 = pricePerCm3, PricePerGram = pricePerGram };
+            var newPrice = new DomesticPrice(domesticPrice.Priority) { ID = priceId, PricePerCm3 = pricePerCm3, PricePerGram = pricePerGram };
 
             // throws a database exception if doens't exist already
             dataHelper.Update(newPrice);

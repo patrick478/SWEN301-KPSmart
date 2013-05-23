@@ -24,6 +24,7 @@ namespace Client
             this.prices = new Dictionary<int, Price>();
             this.companies = new Dictionary<int, Company>();
             this.routeNodes = new Dictionary<int, RouteNode>();
+            this.domesticPrices = new Dictionary<int, DomesticPrice>();
         }
 
         public void SetUpdateTime(DateTime newTime)

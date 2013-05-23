@@ -110,6 +110,9 @@ namespace Client
                 case NetCodes.OBJECT_PRICE:
                     state.SavePrice(Price.ParseNetString(tokens[count], state));
                     break;
+                case NetCodes.OBJECT_DOMESTIC_PRICE:
+                    state.SaveDomesticPrice(DomesticPrice.ParseNetString(tokens[count]));
+                    break;
                 case NetCodes.OBJECT_ROUTE:
                     state.SaveRoute(Route.ParseNetString(tokens[count], state));
                     break;
@@ -141,6 +144,9 @@ namespace Client
                     break;
                 case NetCodes.OBJECT_PRICE:
                     state.RemovePrice(id);
+                    break;
+                case NetCodes.OBJECT_DOMESTIC_PRICE:
+                    state.RemoveDomesticPrice(id);
                     break;
                 case NetCodes.OBJECT_ROUTE:
                     state.RemoveRoute(id);
@@ -363,6 +369,30 @@ namespace Client
         }
         #endregion
 
+        #region Domestic Price
+        /// <summary>
+        /// Add a new Domestic Price.
+        /// </summary>
+        /// <param name="priority">Priority this Price applies to.</param>
+        /// <param name="weightPrice">Cost per Gram.</param>
+        /// <param name="volumePrice">Cost per cm^3.</param>
+        public void AddDomesticPrice(Priority priority, int weightPrice, int volumePrice)
+        {
+            Send(NetCodes.CL_OBJECT_ADD, NetCodes.OBJECT_DOMESTIC_PRICE, priority.ToNetString(), Convert.ToString(weightPrice), Convert.ToString(volumePrice));
+        }
+
+        /// <summary>
+        /// Edit an existing Domestic Price.
+        /// </summary>
+        /// <param name="id">ID of Price to edit.</param>
+        /// <param name="weightPrice">New Cost per Gram.</param>
+        /// <param name="volumePrice">New Cost per cm^3.</param>
+        public void EditDomesticPrice(int id, int weightPrice, int volumePrice)
+        {
+            Send(NetCodes.CL_OBJECT_EDIT, Convert.ToString(id), NetCodes.OBJECT_DOMESTIC_PRICE, Convert.ToString(weightPrice), Convert.ToString(volumePrice));
+        }
+        #endregion
+
         #region Route
         /// <summary>
         /// Add a new Route.
@@ -406,7 +436,6 @@ namespace Client
             Send(NetCodes.CL_OBJECT_DELETE, Convert.ToString(id), NetCodes.OBJECT_ROUTE);
         }
         #endregion
-
         /// <summary>
         /// Request Business Figures for the given point in time.
         /// </summary>

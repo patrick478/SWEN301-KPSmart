@@ -54,6 +54,7 @@ namespace Common
         // State Updates - Fields marked with astericks are for fields also used in EDITs
         public const string OBJECT_COUNTRY = "l";   // ... - *Location Code (3char string) - Location Name (string)     TODO Later if we get really pro with maps integration: - Longitude - Latititude. Unless we just pass the name along to the api and it finds it itself.
         public const string OBJECT_PRICE = "p";     // ... - Origin Location ID (int) - Destination Location ID (int) - Priority (PRIORITY_) - *Price/gram (int) - *Price/cm3 (int)
+        public const string OBJECT_DOMESTIC_PRICE = "d";     // ... - Priority (PRIORITY_) - *Price/gram (int) - *Price/cm3 (int)
         public const string OBJECT_ROUTE = "r";     // ... - Origin Location ID (int) - Destination Location ID (int) - Company ID (int) - Transport Type (TRANSPORT_) - *Cost/gram (int) - *Cost/cm3 (int) - *Max Weight (int) - *Max Capacity (int) - *Trip Duration (int) - *Trip Times 
         public const string OBJECT_COMPANY = "c";   // ... - Company Name (string)
         public const string OBJECT_ROUTENODE = "n"; // ... - Node type (NODE_) - NODE_INTERNATIONAL - Country ID (int)
