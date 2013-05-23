@@ -56,7 +56,7 @@ namespace Server.Gui
 
             // create controller
             var controller = new Controller(countryService, companyService, deliveryService, priceService, routeService,
-                                            locationService, statisticsService);
+                                            locationService, statisticsService, eventService);
 
             //BenDBTests(countryService, routeService);
             //SetUpDatabaseWithData();

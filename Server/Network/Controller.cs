@@ -21,8 +21,9 @@ namespace Server.Network
         private CountryService countryService;
         private CompanyService companyService;
         private StatisticsService statisticsService;
+        private EventService eventService;
 
-        public Controller(CountryService countryService, CompanyService companyService, DeliveryService deliveryService, PriceService priceService, RouteService routeService, LocationService locationService, StatisticsService statisticsService)
+        public Controller(CountryService countryService, CompanyService companyService, DeliveryService deliveryService, PriceService priceService, RouteService routeService, LocationService locationService, StatisticsService statisticsService, EventService eventService)
         {
             this.countryService = countryService;
             this.companyService = companyService;
@@ -31,6 +32,7 @@ namespace Server.Network
             this.routeService = routeService;
             this.locationService = locationService;
             this.statisticsService = statisticsService;
+            this.eventService = eventService;
 
             Network.Instance.MessageReceived += new Network.MessageReceivedDelegate(OnReceived);
         }
@@ -295,7 +297,7 @@ namespace Server.Network
         /// <param name="tokens">The network message.</param>
         private void SyncState(Client client, string[] tokens)
         {
-            //client.SendMessage(NetCodes.SV_STATS_BEGIN, eventService.
+            client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_STATS_BEGIN, eventService.GetDateOfFirstEvent().ToString()));
 
             DateTime clientTime = DateTime.Parse(tokens[1]);
             var companies = companyService.GetAll();

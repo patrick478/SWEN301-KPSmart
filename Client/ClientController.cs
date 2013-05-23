@@ -72,6 +72,7 @@ namespace Client
                     return;
                 case NetCodes.SV_STATS_BEGIN:
                     StatsInitialTime(tokens);
+                    return;
                 case NetCodes.SV_SYNC_DONE:
                     Updated(NetCodes.OBJECT_ALL);
                     return;
