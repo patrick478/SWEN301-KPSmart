@@ -20,8 +20,9 @@ namespace Server.Network
         private DeliveryService deliveryService;
         private CountryService countryService;
         private CompanyService companyService;
+        private StatisticsService statisticsService;
 
-        public Controller(CountryService countryService, CompanyService companyService, DeliveryService deliveryService, PriceService priceService, RouteService routeService, LocationService locationService)
+        public Controller(CountryService countryService, CompanyService companyService, DeliveryService deliveryService, PriceService priceService, RouteService routeService, LocationService locationService, StatisticsService statisticsService)
         {
             this.countryService = countryService;
             this.companyService = companyService;
@@ -29,6 +30,7 @@ namespace Server.Network
             this.priceService = priceService;
             this.routeService = routeService;
             this.locationService = locationService;
+            this.statisticsService = statisticsService;
 
             Network.Instance.MessageReceived += new Network.MessageReceivedDelegate(OnReceived);
         }

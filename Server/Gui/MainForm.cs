@@ -23,6 +23,7 @@ namespace Server.Gui
         private PriceService priceService;
         private LocationService locationService;
         private EventService eventService;
+        private StatisticsService statisticsService;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -45,6 +46,8 @@ namespace Server.Gui
             priceService = new PriceService(currentState);      
             locationService = new LocationService(currentState);
             eventService = new EventService(currentState);
+            statisticsService = new StatisticsService();
+                        
 
             // initialise network
             Network.Network network = Network.Network.Instance;
@@ -53,7 +56,7 @@ namespace Server.Gui
 
             // create controller
             var controller = new Controller(countryService, companyService, deliveryService, priceService, routeService,
-                                            locationService);
+                                            locationService, statisticsService);
 
             //BenDBTests(countryService, routeService);
             SetUpDatabaseWithData();

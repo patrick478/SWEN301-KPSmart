@@ -62,6 +62,7 @@
     <Compile Include="Business\PriceService.cs" />
     <Compile Include="Business\RouteService.cs" />
     <Compile Include="Business\Service.cs" />
+    <Compile Include="Business\StatisticsService.cs" />
     <Compile Include="Data\CompanyDataHelper.cs" />
     <Compile Include="Data\CountryDataHelper.cs" />
     <Compile Include="Data\DatabaseException.cs" />

@@ -27,7 +27,8 @@ namespace Common
                             IDictionary<int, Delivery> deliveries,
                             IDictionary<int, RouteNode> routeNodes,
                             IDictionary<int, Company> companies,
-                            IDictionary<int, Country> countries): base(routes, prices, deliveries, routeNodes, companies, countries)
+                            IDictionary<int, Country> countries,
+                            int numberOfEvents): base(routes, prices, deliveries, routeNodes, companies, countries, numberOfEvents)
         {
             this.timeRepresented = timeRepresented;
         }

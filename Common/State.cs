@@ -25,7 +25,7 @@ namespace Common
         {
         }
 
-        protected State(IDictionary<int, Route> routes, IDictionary<int, Price> prices, IDictionary<int, Delivery> deliveries, IDictionary<int, RouteNode> routeNodes, IDictionary<int, Company> companies, IDictionary<int, Country> countries)
+        protected State(IDictionary<int, Route> routes, IDictionary<int, Price> prices, IDictionary<int, Delivery> deliveries, IDictionary<int, RouteNode> routeNodes, IDictionary<int, Company> companies, IDictionary<int, Country> countries, int numberOfEvents)
         {
             this.routes = routes;
             this.prices = prices;
@@ -33,6 +33,7 @@ namespace Common
             this.routeNodes = routeNodes;
             this.companies = companies;
             this.countries = countries;
+            this.NumberOfEvents = numberOfEvents;
         }
 
         #region events

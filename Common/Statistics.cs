@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common
 {
-    class Statistics
+    public class Statistics
     {
 
         private State state;
