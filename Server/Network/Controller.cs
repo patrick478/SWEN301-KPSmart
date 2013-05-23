@@ -130,7 +130,7 @@ namespace Server.Network
                             string nodeName = tokens[count++];
                             node = locationService.CreateDistributionCentre(nodeName);
                         }
-                        else if (nodeType == NetCodes.NODE_DISTRIBUTION)
+                        else if (nodeType == NetCodes.NODE_INTERNATIONAL)
                         {
                             int nodeCountryId = Convert.ToInt32(tokens[count++]);
                             node = locationService.CreateInternationalPort(nodeCountryId);
