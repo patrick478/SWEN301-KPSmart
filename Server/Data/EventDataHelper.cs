@@ -32,7 +32,10 @@ namespace Server.Data
             throw new NotImplementedException();
         }
 
-
+        public DateTime GetDateOfFirstEvent () 
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }

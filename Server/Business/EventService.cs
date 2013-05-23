@@ -39,6 +39,12 @@ namespace Server.Business
             return state.NumberOfEvents;
         }
 
+        public DateTime GetDateOfFirstEvent () 
+        {
+            return dataHelper.GetDateOfFirstEvent();
+        
+        }
+
         /// <summary>
         /// Returns the number of events that were processed before the given time.
         /// </summary>
