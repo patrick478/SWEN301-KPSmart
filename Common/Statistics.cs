@@ -67,7 +67,6 @@ namespace Common
 
                 //Total Revenue - Total revenue from Customer charges.
                 //Total Expenditure - Total cost of transport charges.
-                int revenue = delivery.TotalPrice - delivery.TotalCost;
                 TotalRevenue += delivery.TotalPrice - delivery.TotalCost;
                 TotalExpenditure += delivery.TotalCost;
 
@@ -82,9 +81,6 @@ namespace Common
                 triple.TotalDeliveryTimes.Add(delivery.Duration);
 
                 //Critical Routes - List of Triples* where the average transport cost is more than the average customer price.
-                triple.TotalRevenue += revenue;
-
-
                 foreach (RouteInstance inst in delivery.Routes)
                 {
                     Price price = state.GetRoutePrice(inst.Route, delivery.Priority);
@@ -155,16 +151,8 @@ namespace Common
                     return (int)(time / ((num > 0) ? num: 0));
                 }
             }
-            public bool CriticalRoutes
-            {
-                get
-                {
-                    return TotalRevenue > 0;
-                }
-            }
 
             public TimeSpan TotalDeliveryTimes { get; set; }
-            public int TotalRevenue { get; set; }
 
             public List<Triple> AllInstances
             {
