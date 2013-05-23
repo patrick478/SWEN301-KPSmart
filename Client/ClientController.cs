@@ -30,6 +30,9 @@ namespace Client
         public delegate void DeliveryConfirmedDelegate();
         public event DeliveryConfirmedDelegate DeliveryOK;
 
+        public delegate void StatisticsReceivedDelegate(Statistics stats);
+        public event StatisticsReceivedDelegate StatsReceived;
+
         public delegate void ErrorMessageDelegate(string error);
         public event ErrorMessageDelegate Error;
 
@@ -59,7 +62,7 @@ namespace Client
                     ErrorMessage(tokens);
                     return;
                 case NetCodes.SV_STATS_ANSWER:
-                    StatsReceived(tokens);
+                    StatsAnswer(tokens);
                     return;
                 case NetCodes.SV_SYNC_UPDATE:
                     ObjectUpdate(tokens, false);;
@@ -180,7 +183,7 @@ namespace Client
                 DeliveryOK();
         }
 
-        private void StatsReceived(string[] tokens)
+        private void StatsAnswer(string[] tokens)
         {
             ;
         }
