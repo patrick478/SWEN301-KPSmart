@@ -41,7 +41,10 @@ namespace Server.Data
             DateTime retValue;
             try
             {
-                retValue = (DateTime)result[0];
+                if (result[0] is string)
+                    retValue = DateTime.Parse((string)result[0]);
+                else
+                    retValue = (DateTime)result[0];
             }
             catch(Exception ex)
             {
