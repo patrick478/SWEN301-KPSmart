@@ -314,7 +314,7 @@ namespace Common
             int volumeMax = Convert.ToInt32(tokens[count++]);
             int duration = Convert.ToInt32(tokens[count++]);
             List<WeeklyTime> routeTimes = WeeklyTime.ParseTimesNetString(tokens[count++]);
-            return new Route() { Origin = state.GetRouteNode(originId), Destination = state.GetRouteNode(destinationId), Company = state.GetCompany(companyId), TransportType = type, CostPerGram = weightCost, CostPerCm3 = volumeCost, MaxWeight = weightMax, MaxVolume = volumeMax, Duration = duration, DepartureTimes = routeTimes };
+            return new Route() { ID = id, Origin = state.GetRouteNode(originId), Destination = state.GetRouteNode(destinationId), Company = state.GetCompany(companyId), TransportType = type, CostPerGram = weightCost, CostPerCm3 = volumeCost, MaxWeight = weightMax, MaxVolume = volumeMax, Duration = duration, DepartureTimes = routeTimes };
         }
 
     }

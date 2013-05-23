@@ -20,7 +20,7 @@
                 <TextBox Canvas.Left="357" Canvas.Top="144" Height="23" Name="destination" Width="43" IsReadOnly="True" />
                 <TextBox Canvas.Left="573" Canvas.Top="144" Height="23" Name="weight" Width="43" IsReadOnly="True" />
                 <Label Canvas.Left="17" Canvas.Top="16" Content="View Stats" Height="56" Name="label6" FontSize="28" Width="266" />
-                <Slider Canvas.Left="62" Canvas.Top="78" Height="25" Name="dateSlider" Width="792" Maximum="100" />
+                <Slider Canvas.Left="62" Canvas.Top="78" Height="25" Name="dateSlider" Width="792" Maximum="100" ValueChanged="dateSlider_ValueChanged" IsMoveToPointEnabled="True" />
                 <Label Canvas.Left="47" Canvas.Top="95" Content="First day" Height="25" Width="84" />
                 <Label Canvas.Left="823" Canvas.Top="95" Content="Last day" Height="25" Width="84" />
                 <Label Canvas.Left="39" Canvas.Top="142" Content="Total revenue:" Height="25" Width="84" />
@@ -33,6 +33,8 @@
                 <Label Canvas.Left="620" Canvas.Top="342" Content="Total volume:" Height="25" Width="84" />
                 <TextBox Canvas.Left="769" Canvas.Top="373" Height="23" IsReadOnly="True" Name="textBox4" Width="43" />
                 <Label Canvas.Left="620" Canvas.Top="373" Content="Average delivery time:" Height="25" Width="143" />
+                <Label Canvas.Left="576" Canvas.Top="33" Content="Selected Date:" Height="27" Name="selectedDate" Width="160" />
+                <Button Canvas.Left="754" Canvas.Top="35" Content="Get Stats" Height="23" Name="submit" Width="75" Click="submit_Click" />
             </Canvas>
         </Canvas>
     </Grid>

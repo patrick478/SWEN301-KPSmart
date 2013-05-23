@@ -391,6 +391,15 @@ namespace Client
         #endregion
 
         /// <summary>
+        /// Request Business Figures for the given point in time.
+        /// </summary>
+        /// <param name="time">Point in time.</param>
+        public void StatsRequest(DateTime time)
+        {
+            Send(NetCodes.CL_STATS_REQUEST, time.ToString());
+        }
+
+        /// <summary>
         /// Alias method for sending message to server.
         /// </summary>
         private void Send(string first, params string[] rest)

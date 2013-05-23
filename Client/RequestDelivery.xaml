@@ -26,8 +26,8 @@
                 <RadioButton Canvas.Left="554" Canvas.Top="223" Content="RadioButton" Height="16" Name="air" GroupName="options" Visibility="Hidden" IsEnabled="True" />
                 <RadioButton Canvas.Left="554" Canvas.Top="257" Content="RadioButton" Height="16" Name="airExpress" GroupName="options" Visibility="Hidden" IsEnabled="True" />
                 <Label Canvas.Left="17" Canvas.Top="16" Content="Request Delivery" Height="56" Name="label6" FontSize="28" Width="266" />
-                <ComboBox Canvas.Left="303" Canvas.Top="160" Height="23" Name="origin" Width="120" />
-                <ComboBox Canvas.Left="303" Canvas.Top="194" Height="23" Name="destination" Width="120" />
+                <ComboBox Canvas.Left="303" Canvas.Top="160" Height="23" Name="origin" Width="120" IsHitTestVisible="True" IsEditable="True" />
+                <ComboBox Canvas.Left="303" Canvas.Top="194" Height="23" Name="destination" Width="120" IsEditable="True" />
             </Canvas>
         </Canvas>
     </Grid>

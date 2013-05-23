@@ -28,6 +28,11 @@ namespace Server.Business
             this.deliveryDataHelper = new DeliveryDataHelper();    
         }
 
+        /// <summary>
+        /// Returns the statistics for the given point in time.
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
         public Statistics GetStatisticsFromPoint (DateTime time) 
         {
 

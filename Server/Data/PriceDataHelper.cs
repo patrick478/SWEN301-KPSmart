@@ -52,22 +52,39 @@ namespace Server.Data
             int pricePerGram = row[4].ToInt();
             DateTime created = (DateTime)row[5];
 
-            // load origin
-            var origin = routeNodeDataHelper.Load(originId);
+            Price price;
 
-            // load destination
-            var destination = routeNodeDataHelper.Load(destinationId);
-
-            var price = new Price
+            // if its an international price
+            if (originId != 0 && destinationId != 0)
             {
-                Origin = origin,
-                Destination = destination,
-                Priority = priority,
-                PricePerCm3 = pricePerCm3,
-                PricePerGram = pricePerGram,
-                ID = id,
-                LastEdited = created
-            };
+                // load origin
+                var origin = routeNodeDataHelper.Load(originId);
+
+                // load destination
+                var destination = routeNodeDataHelper.Load(destinationId);
+
+                price = new Price
+                {
+                    Origin = origin,
+                    Destination = destination,
+                    Priority = priority,
+                    PricePerCm3 = pricePerCm3,
+                    PricePerGram = pricePerGram,
+                    ID = id,
+                    LastEdited = created
+                };
+            }
+            // otherwise it is a domestic price
+            else 
+            {
+                price = new DomesticPrice(priority)
+                {
+                    PricePerCm3 = pricePerCm3,
+                    PricePerGram = pricePerGram,
+                    ID = id,
+                    LastEdited = created
+                };
+            }
 
             Logger.WriteLine("Loaded price: " + price);
 
@@ -106,22 +123,40 @@ namespace Server.Data
                 int pricePerGram = row[4].ToInt();
                 DateTime created = (DateTime)row[5];
 
-                // load origin
-                var origin = routeNodeDataHelper.Load(originId);
 
-                // load destination
-                var destination = routeNodeDataHelper.Load(destinationId);
+                Price price;
 
-                var price = new Price
+                // if its an international price
+                if (originId != 0 && destinationId != 0)
                 {
-                    Origin = origin,
-                    Destination = destination,
-                    Priority = priority,
-                    PricePerCm3 = pricePerCm3,
-                    PricePerGram = pricePerGram,
-                    ID = row[6].ToInt(),
-                    LastEdited = created
-                };
+                    // load origin
+                    var origin = routeNodeDataHelper.Load(originId);
+
+                    // load destination
+                    var destination = routeNodeDataHelper.Load(destinationId);
+
+                    price = new Price
+                    {
+                        Origin = origin,
+                        Destination = destination,
+                        Priority = priority,
+                        PricePerCm3 = pricePerCm3,
+                        PricePerGram = pricePerGram,
+                        ID = row[6].ToInt(),
+                        LastEdited = created
+                    };
+                }
+                // otherwise it is a domestic price
+                else
+                {
+                    price = new DomesticPrice(priority)
+                    {
+                        PricePerCm3 = pricePerCm3,
+                        PricePerGram = pricePerGram,
+                        ID = row[6].ToInt(),
+                        LastEdited = created
+                    };
+                }
 
                 Logger.WriteLine(price.ToString());
 
@@ -190,8 +225,14 @@ namespace Server.Data
 
         public override void Delete(int id)
         {
-            if (Load(id) == null)
+
+            var price = Load(id);
+            
+            if (price == null)
                 throw new DatabaseException(String.Format("There is no active record with id='{0}'", id));
+
+            if (price.GetType() == typeof(DomesticPrice))
+                throw new DatabaseException("Domestic price cannot be deleted.");
 
             long eventId = 0;
 
@@ -231,8 +272,136 @@ namespace Server.Data
             Delete(price.ID);
         }
 
-        public override void Update(Price price)
+
+
+
+        public void Update(DomesticPrice price) 
         {
+            // check it has an id
+            if (price.ID == 0)
+                throw new DatabaseException("Cannot update a price with no ID.");
+        
+            if (price.Origin != null)
+                throw new DatabaseException("DomesticPrice cannot have an Origin.");
+
+            if (price.Destination != null)
+                throw new DatabaseException("DomesticPrice cannot have a Destination.");
+
+            if (price.PricePerGram <= 0)
+                throw new DatabaseException(String.Format("Route pricePerGram cannot be less than or equal to 0: {0}", price));
+
+            if (price.PricePerCm3 <= 0)
+                throw new DatabaseException(String.Format("Route pricePerCm3 cannot be less than or equal to 0: {0}", price));
+
+
+            // check against existing one
+            var existingPrice = Load(price.ID);
+
+            if (price.Priority != existingPrice.Priority)
+                throw new DatabaseException("Cannot modify the key field 'Priority' of the price.");
+
+            // check that some field is changing
+            var pricePerGramSame = price.PricePerGram == existingPrice.PricePerGram;
+            var pricePerCm3Same = price.PricePerCm3 == existingPrice.PricePerCm3;
+            if (pricePerCm3Same && pricePerGramSame)
+                throw new NoChangeException();
+
+
+            string sql;
+            object[] row;
+            long eventId = 0;
+
+            //LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+
+                // check that a price with same key fields already exists.
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldsEqual(TABLE_NAME, new[] { "origin_id", "destination_id", "priority" }, new string[] { "0", "0", price.Priority.ToString() }, new[] { "price_id" });
+                row = Database.Instance.FetchRow(sql);
+
+                if (row.Length == 0)
+                    throw new DatabaseException("No Domestic Price with that priority exists: " + price.Priority);
+
+                // create a transaction
+                SQLiteTransaction transaction = Database.Instance.BeginTransaction();
+                try
+                {
+
+                    // get event number
+                    sql = SQLQueryBuilder.SaveEvent(ObjectType.Route, EventType.Update);
+                    eventId = Database.Instance.InsertQuery(sql, transaction);
+
+                    // deactivate all previous records
+                    sql = String.Format("UPDATE `{0}` SET active=0 WHERE {1}={2}", TABLE_NAME, ID_COL_NAME,
+                                        price.ID);
+                    Database.Instance.InsertQuery(sql, transaction);
+
+
+                    // insert the route record
+                    sql = SQLQueryBuilder.InsertFields(TABLE_NAME,
+                                                              new string[] 
+                                                              { 
+                                                                  EVENT_ID, 
+                                                                  "price_id",
+                                                                  "active",
+                                                                  "origin_id", 
+                                                                  "destination_id", 
+                                                                  "priority", 
+                                                                  "price_per_gram",
+                                                                  "price_per_cm3"                                                            
+                                                              },
+                                                              new string[] 
+                                                              { 
+                                                                  eventId.ToString(), 
+                                                                  price.ID.ToString(),
+                                                                  "1",
+                                                                  "0", 
+                                                                  "0",
+                                                                  price.Priority.ToString(),
+                                                                  price.PricePerGram.ToString(),
+                                                                  price.PricePerCm3.ToString()
+                                                              });
+                    long inserted_id = Database.Instance.InsertQuery(sql);
+
+                    // commit transaction
+                    transaction.Commit();
+
+
+                    // get id and LastEdited
+                    var fields = new string[] { "created" };
+                    sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, "id", inserted_id.ToString(), fields);
+                    row = Database.Instance.FetchRow(sql);
+
+
+                }
+                catch (SQLiteException de)
+                {
+                    Console.WriteLine("Got here");
+                    transaction.Rollback();
+                    Console.WriteLine("Rollback complete");
+                    transaction.Dispose();
+                    throw de;
+                }
+                catch (Exception e)
+                {
+                    Logger.WriteLine("Exception occured during Country.Update() - rolling back:");
+                    Logger.WriteLine(e.Message);
+                }
+
+            }
+            // LOCK ENDS HERE
+
+
+            // update last edited
+            price.LastEdited = (DateTime)row[0];
+            Logger.WriteLine("Updated domestic price: " + price);
+
+        }
+
+
+
+        public override void Update(Price price)
+        {           
             // check it has an id
             if (price.ID == 0)
                 throw new DatabaseException("Cannot update a price with no ID.");
@@ -265,9 +434,6 @@ namespace Server.Data
 
             if (origin_id == destination_id)
                 throw new DatabaseException("Origin and destination cannot be the same");
-
-            if (price.Priority == null)
-                throw new DatabaseException(String.Format("Priority should not be null: {0}", price));
 
             if (price.PricePerGram <= 0)
                 throw new DatabaseException(String.Format("Route pricePerGram cannot be less than or equal to 0: {0}", price));
@@ -365,6 +531,63 @@ namespace Server.Data
             Logger.WriteLine("Updated price: " + price);
         }
 
+
+
+        public void Create(DomesticPrice price){
+            object[] row;
+            int ID;
+
+            // check it is legal
+            int priceId = GetId(price);
+
+            if (priceId != 0)
+                throw new DatabaseException("A domestic price with that priority already exists: " + price.ToString() );
+
+
+            // check values
+            if (price.Origin != null)
+                throw new DatabaseException("Origin must be null: " + price);
+
+            if (price.Destination != null)
+                throw new DatabaseException("Destination must be null: " + price);
+
+            if (price.PricePerCm3 <= 0)
+                throw new DatabaseException("Price per cm3 cannot be less than or equal to zero: " + price);
+
+            if (price.PricePerGram <= 0)
+                throw new DatabaseException("Price per gram cannot be less than or equal to zero: " + price);
+
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                // get event number
+                var sql = SQLQueryBuilder.SaveEvent(ObjectType.Price, EventType.Create);
+                long eventId = Database.Instance.InsertQuery(sql);
+
+                // insert the record
+                sql = SQLQueryBuilder.CreateNewRecord(TABLE_NAME,
+                                                          ID_COL_NAME,
+                                                          new string[] { EVENT_ID, "origin_id", "destination_id", "priority", "price_per_gram", "price_per_cm3" },
+                                                          new string[] { eventId.ToString(), "0", "0", price.Priority.ToString(), price.PricePerGram.ToString(), price.PricePerCm3.ToString() });
+                long inserted_id = Database.Instance.InsertQuery(sql);
+
+                // get id and LastEdited
+                var fields = new string[] { ID_COL_NAME, "created" };
+                sql = SQLQueryBuilder.SelectFieldsWhereFieldEquals(TABLE_NAME, "id", inserted_id.ToString(), fields);
+                row = Database.Instance.FetchRow(sql);
+                
+            }
+            // LOCK ENDS HERE
+
+            // set id and lastedited
+            price.ID = row[0].ToInt();
+            price.LastEdited = (DateTime)row[1];
+
+            Logger.WriteLine("Created domestic price: " + price);    
+        }
+
+
+
         public override void Create(Price price)
         {
             object[] row;
@@ -383,9 +606,6 @@ namespace Server.Data
 
             if (price.Destination == null)
                 throw new DatabaseException("Destination cannot be null: " + price);
-
-            if (price.Priority == null)
-                throw new DatabaseException("Priority cannot be null: " + price);
 
             if (price.PricePerCm3 == 0)
                 throw new DatabaseException("Price per cm3 cannot be zero: " + price);
@@ -432,8 +652,22 @@ namespace Server.Data
             int id = 0;
 
             // load ids of origin, destination, and company in case they aren't initialised.
-            var originId = routeNodeDataHelper.GetId(price.Origin).ToString();
-            var destinationId = routeNodeDataHelper.GetId(price.Destination).ToString();
+
+            string originId;
+            string destinationId;
+
+            // if domestic price
+            if (price.GetType() == typeof(DomesticPrice))
+            {
+                originId = "0";
+                destinationId = "0";
+            }
+            // if standard price
+            else
+            {
+                originId = routeNodeDataHelper.GetId(price.Origin).ToString();
+                destinationId = routeNodeDataHelper.GetId(price.Destination).ToString();
+            }
 
             //LOCK BEGINS HERE
             lock (Database.Instance)

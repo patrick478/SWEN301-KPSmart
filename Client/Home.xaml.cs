@@ -96,7 +96,7 @@ namespace Client
             distCenterList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
             distCenterList.Columns.Add(new DataGridTextColumn { Header = "Name", Binding = new Binding("Name") });
 
-            /*routesList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
+            routesList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
             routesList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
             routesList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
             routesList.Columns.Add(new DataGridTextColumn { Header = "Company", Binding = new Binding("Company") }); 
@@ -106,7 +106,7 @@ namespace Client
             priceList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
             priceList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
             priceList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
-            priceList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });*/
+            priceList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
 
             intlPortList.Columns.Add(new DataGridTextColumn { Header = "Country", Binding = new Binding("Country") });
             
@@ -613,7 +613,7 @@ namespace Client
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new System.Uri("ViewStats.xaml", UriKind.RelativeOrAbsolute));
+            NavigationService.Navigate(new ViewStats(_clientCon));
         }
 
         private void addDistCenterButton_Click(object sender, RoutedEventArgs e)

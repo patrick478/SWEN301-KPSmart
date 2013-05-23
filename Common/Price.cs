@@ -118,7 +118,7 @@ namespace Common
             Priority priority = PriorityExtensions.ParseNetString(tokens[count++]);
             int weightPrice = Convert.ToInt32(tokens[count++]);
             int volumePrice = Convert.ToInt32(tokens[count++]);
-            return new Price() { Origin = state.GetRouteNode(originId), Destination = state.GetRouteNode(destinationId), Priority = priority, PricePerGram = weightPrice, PricePerCm3 = volumePrice };
+            return new Price() { ID = id, Origin = state.GetRouteNode(originId), Destination = state.GetRouteNode(destinationId), Priority = priority, PricePerGram = weightPrice, PricePerCm3 = volumePrice };
         }
 
 

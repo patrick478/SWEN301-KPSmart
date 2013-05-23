@@ -59,7 +59,27 @@ namespace Server.Gui
                                             locationService, statisticsService);
 
             //BenDBTests(countryService, routeService);
-            SetUpDatabaseWithData();
+            //SetUpDatabaseWithData();
+            /*
+            try
+            {
+                var priceDH = new PriceDataHelper();
+
+                //var standardPrice = new DomesticPrice(Priority.Standard) { PricePerGram = 3, PricePerCm3 = 5 };
+                //priceDH.Create(standardPrice);
+
+                //standardPrice.PricePerCm3 = 8;
+                //priceDH.Update(standardPrice);
+
+                priceDH.Load(1);
+            }
+            catch (DatabaseException er) {
+                Logger.WriteLine(er.Message);
+                Logger.Write(er.StackTrace);
+            }
+            */
+
+
 
         }
 

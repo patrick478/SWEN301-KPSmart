@@ -47,6 +47,7 @@
     <Compile Include="DataObject.cs" />
     <Compile Include="DaysOfTheWeek.cs" />
     <Compile Include="Delivery.cs" />
+    <Compile Include="DomesticPrice.cs" />
     <Compile Include="IllegalActionException.cs" />
     <Compile Include="InvalidObjectStateException.cs" />
     <Compile Include="PathType.cs" />

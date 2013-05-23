@@ -16,6 +16,7 @@ namespace Common
     {
         protected IDictionary<int, Route> routes;
         protected IDictionary<int, Price> prices;
+        protected IDictionary<int, DomesticPrice> domesticPrices;
         protected IDictionary<int, Delivery> deliveries;
         protected IDictionary<int, RouteNode> routeNodes;
         protected IDictionary<int, Company> companies;
@@ -83,6 +84,19 @@ namespace Common
             return new List<Price>(prices.Values);
         }
         #endregion
+
+        #region domesticPrices
+        public DomesticPrice GetDomesticPrice (int id)
+        {
+            return domesticPrices.ContainsKey(id) ? domesticPrices[id] : null;
+        }
+
+        public IList<DomesticPrice> GetAllDomesticPrices ()
+        {
+            return new List<DomesticPrice>(domesticPrices.Values);
+        }
+        #endregion
+
 
         #region countries
         public Country GetCountry(int id)
