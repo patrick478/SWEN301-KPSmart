@@ -44,6 +44,7 @@ namespace Client
             dateSlider.Maximum = numDays;
 
             _clientCon.StatsReceived += new ClientController.StatisticsReceivedDelegate((Stats_Recieved));
+           
             
         }
 

@@ -101,12 +101,17 @@ namespace Client
             routesList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
             routesList.Columns.Add(new DataGridTextColumn { Header = "Company", Binding = new Binding("Company") }); 
             routesList.Columns.Add(new DataGridTextColumn { Header = "TransportType", Binding = new Binding("TransportType") });
-            
-            
-            priceList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
-            priceList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
-            priceList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
-            priceList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
+
+
+            domesticPriceList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
+            domesticPriceList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
+            domesticPriceList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
+            domesticPriceList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
+
+            intlPriceList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
+            intlPriceList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
+            intlPriceList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
+            intlPriceList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
 
             intlPortList.Columns.Add(new DataGridTextColumn { Header = "Country", Binding = new Binding("Country") });
             
@@ -225,37 +230,59 @@ namespace Client
         {
             try
             {
-                priceList.Dispatcher.VerifyAccess();
-                _doReloadPrices();
+                domesticPriceList.Dispatcher.VerifyAccess();
+                _doReloadDomesticPrices();
             }
             catch (InvalidOperationException e)
             {
                 if (reloadPricesDelegate == null)
-                    reloadPricesDelegate = new NullArgumentDelegate(_doReloadPrices);
-                priceList.Dispatcher.Invoke(reloadPricesDelegate);
+                    reloadPricesDelegate = new NullArgumentDelegate(_doReloadDomesticPrices);
+                domesticPriceList.Dispatcher.Invoke(reloadPricesDelegate);
+            }
+
+            try
+            {
+                intlPriceList.Dispatcher.VerifyAccess();
+                _doReloadIntlPrices();
+            }
+            catch (InvalidOperationException e)
+            {
+                if (reloadPricesDelegate == null)
+                    reloadPricesDelegate = new NullArgumentDelegate(_doReloadIntlPrices);
+                intlPriceList.Dispatcher.Invoke(reloadPricesDelegate);
             }
 
 
         }
 
-        private void _doReloadPrices()
+        private void _doReloadDomesticPrices()
         {
 
-            priceList.Items.Clear();
+            domesticPriceList.Items.Clear();
+
+            foreach (var c in _clientState.GetAllDomesticPrices())
+            {
+                domesticPriceList.Items.Add(c);
+            }
+        }
+
+        private void _doReloadIntlPrices()
+        {
+
+            intlPriceList.Items.Clear();
 
             foreach (var c in _clientState.GetAllPrices())
             {
-                priceList.Items.Add(c);
+                intlPriceList.Items.Add(c);
             }
         }
-
         private void ReloadRouteNodes()
         {
             try
             {
                 intlPortList.Dispatcher.VerifyAccess();
                 distCenterList.Dispatcher.VerifyAccess();
-                _doReloadPrices();
+                _doReloadDomesticPrices();
             }
             catch (InvalidOperationException e)
             {
@@ -519,7 +546,7 @@ namespace Client
 
                 try
                 {
-                    _clientCon.AddPrice(Convert.ToInt32(origin.Tag), Convert.ToInt32(dest.Tag), priority, weightPrice, volumePrice);
+                    _clientCon.AddDomesticPrice(priority, weightPrice, volumePrice);
                 }
                 catch (Exception ex)
                 {
@@ -705,16 +732,18 @@ namespace Client
             var dlg = new AddPriceDialogBox(_clientState);
 
             // Open the dialog box modally 
-            var price = ((Price) priceList.SelectedItem);
-            dlg.Title = "Edit Price";
-            dlg.origin.IsReadOnly = true;
-            dlg.dest.IsReadOnly = true;
-            dlg.priority.IsReadOnly = true;
-
+            var price = ((Price)domesticPriceList.SelectedItem);
+            dlg.Title = "Edit Domnestic Price";
             
+            dlg.origin.IsEnabled = false;
+            dlg.origin.Text = price.Origin.Country.Name;
+            dlg.dest.IsEnabled = false;
+            dlg.dest.Text = price.Destination.Country.Name;
+            dlg.priority.Text = price.Priority.ToString();
+            dlg.priority.IsEnabled = false;
 
-            dlg.gramPrice.Text = Convert.ToString(((Price) priceList.SelectedItem).PricePerGram);
-            dlg.cubicCmPrice.Text = Convert.ToString(((Price)priceList.SelectedItem).PricePerCm3);
+            dlg.gramPrice.Text = Convert.ToString(((Price)domesticPriceList.SelectedItem).PricePerGram);
+            dlg.cubicCmPrice.Text = Convert.ToString(((Price)domesticPriceList.SelectedItem).PricePerCm3);
 
             dlg.ShowDialog();
             if (dlg.DialogResult != false)
@@ -747,7 +776,7 @@ namespace Client
 
         private void deletePrice_Click(object sender, RoutedEventArgs e)
         {
-            _clientCon.DeletePrice(((Price)priceList.SelectedItem).ID);
+            _clientCon.DeletePrice(((Price)domesticPriceList.SelectedItem).ID);
         }
 
         private void deleteRoute_Click(object sender, RoutedEventArgs e)
@@ -768,6 +797,45 @@ namespace Client
         private void deleteDistCenter_Click(object sender, RoutedEventArgs e)
         {
             _clientCon.DeleteRouteNode(((RouteNode)distCenterList.SelectedItem).ID);
+        }
+
+        private void routesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void addIntlPrice_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new AddPriceDialogBox(_clientState);
+
+            // Open the dialog box modally 
+            dlg.ShowDialog();
+            if (dlg.DialogResult != false)
+            {
+                ComboBoxItem origin = dlg.origin.SelectedItem as ComboBoxItem;
+                ComboBoxItem dest = dlg.dest.SelectedItem as ComboBoxItem;
+                Priority priority = Priority.Standard;
+                if (dlg.priority.SelectedIndex == 0)
+                    priority = Priority.Standard;
+                else if (dlg.priority.SelectedIndex == 1)
+                    priority = Priority.Air;
+                else
+                {
+                    //should never happen
+                    MessageBox.Show("You must select Standard or Air priorty.");
+                }
+                var weightPrice = Convert.ToInt32(dlg.gramPrice.Text);
+                var volumePrice = Convert.ToInt32(dlg.cubicCmPrice.Text);
+
+                try
+                {
+                    _clientCon.AddPrice(Convert.ToInt32(origin.Tag), Convert.ToInt32(dest.Tag), priority, weightPrice, volumePrice);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 
 
