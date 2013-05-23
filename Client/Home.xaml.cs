@@ -239,7 +239,8 @@ namespace Client
                     reloadPricesDelegate = new NullArgumentDelegate(_doReloadDomesticPrices);
                 domesticPriceList.Dispatcher.Invoke(reloadPricesDelegate);
             }
-
+        }
+        private void ReloadIntlPrices(){
             try
             {
                 intlPriceList.Dispatcher.VerifyAccess();
@@ -531,7 +532,7 @@ namespace Client
             {
                 ComboBoxItem origin = dlg.origin.SelectedItem as ComboBoxItem;
                 ComboBoxItem dest = dlg.dest.SelectedItem as ComboBoxItem;
-                Priority priority = Priority.Standard;
+                Priority priority = Priority.Air;
                 if (dlg.priority.SelectedIndex == 0)
                     priority = Priority.Standard;
                 else if (dlg.priority.SelectedIndex == 1)
