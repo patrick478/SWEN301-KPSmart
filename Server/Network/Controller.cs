@@ -282,10 +282,7 @@ namespace Server.Network
             int count = 1;
             // TODO Implement the timeout stuff
             if (tokens[count] == NetCodes.PATH_CANCEL)
-            {
-                // client cancelled request TODO
-                return;
-            }
+                return;                 // client cancelled request - TODO nicer handling
             PathType type = PathTypeExtensions.ParseNetString(tokens[count]);
             deliveryService.SelectDeliveryOption(client.ID, type);
             client.SendMessage(NetCodes.SV_DELIVERY_CONFIRMED);
@@ -298,6 +295,8 @@ namespace Server.Network
         /// <param name="tokens">The network message.</param>
         private void SyncState(Client client, string[] tokens)
         {
+            //client.SendMessage(NetCodes.SV_STATS_BEGIN, eventService.
+
             DateTime clientTime = DateTime.Parse(tokens[1]);
             var companies = companyService.GetAll();
             foreach (Company c in companies)
