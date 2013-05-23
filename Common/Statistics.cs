@@ -17,7 +17,7 @@ namespace Common
         }
 
         /// <summary>Used by ParseNetString</summary>
-        private Statistics();
+        private Statistics() {}
 
         public int TotalRevenue
         {
