@@ -81,6 +81,7 @@ namespace Server.Business
             
             // throws an exception if invalid
             var newPrice = new Price { Origin = price.Origin, Destination = price.Destination, Priority = price.Priority, PricePerGram = pricePerGram, PricePerCm3 = pricePerCm3 };
+            newPrice.ID = priceId;
 
             // throws a database exception if exists already
             dataHelper.Update(newPrice);
