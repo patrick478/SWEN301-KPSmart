@@ -39,7 +39,26 @@ namespace Server.Data
 
         public IList<WeeklyTime> Load (int route_id, DateTime snapshotTime)
         {
-            throw new NotImplementedException();
+            // check values
+            if (route_id == 0)
+                throw new ArgumentException("Route_id cannot be zero", "route_id");
+
+            var list = new List<WeeklyTime>();
+            lock (Database.Instance)
+            {
+                var sql = SQLQueryBuilder.SelectFieldsWhereFieldsEqualAtTimeStamp(TABLE_NAME, new string[] { "route_id" }, new string[] { route_id.ToString() }, new[] { ID_COL_NAME, "weekly_time" }, ID_COL_NAME, snapshotTime);
+                var rows = Database.Instance.FetchRows(sql);
+
+                foreach (object[] row in rows)
+                {
+                    int id = row[0].ToInt();
+                    long ticks = (long)row[1];
+                    list.Add(new WeeklyTime(ticks) { ID = id });
+                }
+            }
+
+            list.Sort();
+            return list;
         }
 
         /// <summary>

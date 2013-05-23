@@ -47,6 +47,34 @@ namespace Server.Data
             return list;
         }
 
+        public List<RouteInstance> Load(int delivery_id, DateTime snapshotTime)
+        {
+            // check values
+            if (delivery_id == 0)
+                throw new ArgumentException("Delivery_id cannot be zero", "delivery_id");
+
+            var list = new List<RouteInstance>();
+
+            object[] rows;
+            lock (Database.Instance)
+            {
+                var sql = SQLQueryBuilder.SelectFieldsWhereFieldsEqualAtTimeStamp(TABLE_NAME, new string[] {"delivery_id"}, new string[] {delivery_id.ToString()}, new[] { "route_id", "departure_time" }, ID_COL_NAME, snapshotTime);
+                rows = Database.Instance.FetchRows(sql);
+            }
+
+            foreach (object[] row in rows)
+            {
+                int route_id = row[0].ToInt();
+                DateTime departureTime = (DateTime)row[1];
+                Route route = routeDataHelper.Load(route_id, true);
+
+                list.Add(new RouteInstance(route, departureTime));
+            }
+
+            list.Sort();
+            return list;
+        }
+
 
         /// <summary>
         /// Saves all the departure times for the new route.

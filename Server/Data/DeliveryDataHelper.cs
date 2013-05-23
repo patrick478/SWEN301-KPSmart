@@ -168,13 +168,22 @@ namespace Server.Data
         {
             string sql;
             object[][] rows;
-            string timestamp = String.Format("{0}-{1}-{2} {3}:{4}:{5}", snapshotTime.Year, snapshotTime.Month, snapshotTime.Day, snapshotTime.Hour, snapshotTime.Minute, snapshotTime.Second); //2013-05-20 09:53:10"
             Dictionary<int, Delivery> deliveries = new Dictionary<int, Delivery>();
 
             // LOCK BEGINS HERE
             lock (Database.Instance)
             {
-                sql = String.Format("SELECT origin_id, destination_id, priority, weight_in_grams, volume_in_cm3, total_price, total_cost, time_of_request, time_of_delivery, created, delivery_id created FROM '{0}' WHERE created < \"{1}\" GROUP BY delivery_id ORDER BY created DESC", TABLE_NAME, timestamp);
+                sql = SQLQueryBuilder.SelectFieldsAtDateTime(TABLE_NAME, new string[] { "origin_id", 
+                                                                               "destination_id",
+                                                                               "priority",
+                                                                               "weight_in_grams",
+                                                                               "volume_in_cm3",
+                                                                               "total_price",
+                                                                               "total_cost",
+                                                                               "time_of_request",
+                                                                               "time_of_delivery",
+                                                                               "created",
+                                                                               "delivery_id"}, ID_COL_NAME, snapshotTime);
                 rows = Database.Instance.FetchRows(sql);
             }
             // LOCK ENDS HERE
@@ -224,7 +233,7 @@ namespace Server.Data
                 Logger.WriteLine(delivery.ToString());
             }
 
-            return deliveries;
+            return deliveries;   
 
         }
 

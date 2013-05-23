@@ -70,6 +70,32 @@ namespace Server.Data
             return sql;
         }
 
+        public static string SelectFieldsWhereFieldsEqualAtTimeStamp(string tableName, string[] fieldNames, string[] fieldValues, string[] requiredFieldNames, string idColName, DateTime snapshotTime)
+        {
+            string timestamp = String.Format("{0}-{1}-{2} {3}:{4}:{5}", snapshotTime.Year, snapshotTime.Month, snapshotTime.Day, snapshotTime.Hour, snapshotTime.Minute, snapshotTime.Second); //2013-05-20 09:53:10"
+
+            // format the fields section
+            string fields = "";
+            foreach (string field in requiredFieldNames)
+            {
+                fields += field + ", ";
+            }
+            fields = fields.Trim();
+            fields = fields.Trim(',');
+
+            // format equals section
+            string equalsSection = "";
+            for (int i = 0; i < fieldNames.Length; i++)
+            {
+                equalsSection += String.Format("AND {0}='{1}' ", fieldNames[i], fieldValues[i]);
+            }
+
+            // build the query
+            var sql = String.Format("SELECT {0} FROM '{1}' WHERE created < \"{2}\" {3} GROUP BY {3} ORDER BY created DESC", fields, tableName, timestamp, equalsSection, idColName);
+
+            return sql;
+        }
+
 
         /// <summary>
         /// "SELECT 'requiredFieldNames' FROM `'tableName'` WHERE active=1 AND 'fieldName' LIKE 'fieldValue'"

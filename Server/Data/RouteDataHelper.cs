@@ -223,14 +223,11 @@ namespace Server.Data
             string sql;
             object[][] rows;
 
-            string timestamp = String.Format("{0}-{1}-{2} {3}:{4}:{5}", snapshotTime.Year, snapshotTime.Month, snapshotTime.Day, snapshotTime.Hour, snapshotTime.Minute, snapshotTime.Second); //2013-05-20 09:53:10"
-
             // BEGIN LOCK HERE
             lock (Database.Instance)
             {
 
-                sql = String.Format("SELECT id, name, created FROM '{1}' WHERE created < \"{2}\" GROUP BY {1} ORDER BY created DESC", TABLE_NAME, ID_COL_NAME, timestamp);
-                sql = SQLQueryBuilder.SelectFields(TABLE_NAME, new string[] { 
+                sql = SQLQueryBuilder.SelectFieldsAtDateTime(TABLE_NAME, new string[] { 
                                                                               "origin_id", 
                                                                               "destination_id",
                                                                               "company_id",
@@ -241,7 +238,7 @@ namespace Server.Data
                                                                               "cost_per_cm3",
                                                                               "cost_per_gram",
                                                                               "created",
-                                                                              "route_id"});
+                                                                              "route_id"}, ID_COL_NAME, snapshotTime);
                 rows = Database.Instance.FetchRows(sql);
             }
             // END LOCK HERE

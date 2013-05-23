@@ -137,13 +137,16 @@ namespace Server.Data
             object[][] rows;
             IDictionary<int, Price> prices = new Dictionary<int, Price>();
 
-            string timestamp = String.Format("{0}-{1}-{2} {3}:{4}:{5}", snapshotTime.Year, snapshotTime.Month, snapshotTime.Day, snapshotTime.Hour, snapshotTime.Minute, snapshotTime.Second); //2013-05-20 09:53:10"
-
-            // BEGIN LOCK HERE
+            // LOCK BEGINS HERE
             lock (Database.Instance)
             {
-
-                sql = String.Format("SELECT destination_id, priority, price_per_cm3, price_per_gram, created, price_id FROM 'prices' WHERE created < \"{0}\" GROUP BY price_id ORDER BY created DESC", timestamp);
+                sql = SQLQueryBuilder.SelectFieldsAtDateTime(TABLE_NAME, new string[] { "origin_id", 
+                                                                                                                            "destination_id",
+                                                                                                                            "priority",
+                                                                                                                            "price_per_cm3",
+                                                                                                                            "price_per_gram",
+                                                                                                                            "created",
+                                                                                                                            "price_id"}, ID_COL_NAME, snapshotTime);
                 rows = Database.Instance.FetchRows(sql);
             }
             // LOCK ENDS HERE

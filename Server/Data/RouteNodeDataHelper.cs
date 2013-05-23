@@ -102,7 +102,41 @@ namespace Server.Data
 
         public override IDictionary<int, RouteNode> LoadAll(DateTime snapshotTime)
         {
-            throw new NotImplementedException();
+            string sql;
+            object[][] rows;
+
+            // BEGIN LOCK HERE
+            lock (Database.Instance)
+            {
+                sql = SQLQueryBuilder.SelectFieldsAtDateTime(TABLE_NAME, new string[] { ID_COL_NAME, "country_id", "name", "created" }, ID_COL_NAME, snapshotTime);
+                rows = Database.Instance.FetchRows(sql);
+            }
+            // END LOCK HERE
+            Logger.WriteLine("Loaded {0} routeNodes:", rows.Length);
+
+            var results = new Dictionary<int, RouteNode>();
+            foreach (object[] row in rows)
+            {
+                // extract data
+                int id = row[0].ToInt();
+                int country_id = row[1].ToInt();
+                string name = row[2] as string;
+                DateTime created = (DateTime)row[3];
+
+                // country
+                var country = countryDataHelper.Load(country_id);
+
+                // make routeNode
+                if (name == String.Empty)
+                    results[id] = new InternationalPort(country) { ID = id, LastEdited = created };
+
+                if (name != String.Empty)
+                    results[id] = new DistributionCentre(name) { ID = id, LastEdited = created, Country = country };
+
+                Logger.WriteLine(results[id].ToString());
+            }
+
+            return results;
         }
 
         public override void Delete(int id)
