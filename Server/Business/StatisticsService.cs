@@ -33,9 +33,9 @@ namespace Server.Business
         /// </summary>
         /// <param name="time"></param>
         /// <returns></returns>
-        public Statistics GetStatisticsFromPoint (DateTime time) 
+        public Statistics GetStatisticsFromPoint (DateTime dt) 
         {
-
+            var time = new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59);
             var routes = routeDataHelper.LoadAll(time);
             var prices = priceDataHelper.LoadAll(time);
             var routeNodes = routeNodeDataHelper.LoadAll(time);
