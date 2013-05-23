@@ -41,20 +41,24 @@ namespace Client
             _pathfindService = new DeliveryService(state, _pathFinder);
             _clientController = clientCon;
 
-            foreach (var country in _clientState.GetAllCountries())
+            foreach (var routeNode in clientState.GetAllRouteNodes())
             {
-                //this.originComboBox.Items.Add(countries.Name);
                 ComboBoxItem cbi = new ComboBoxItem();
-                cbi.Content = country.Name;
-                cbi.Tag = country.ID;
+                if (routeNode is DistributionCentre)
+                    cbi.Content = ((DistributionCentre)routeNode).Name;
+                else if (routeNode is InternationalPort)
+                    cbi.Content = routeNode.Country.Name;
+                cbi.Tag = routeNode.ID;
                 this.origin.Items.Add(cbi);
 
                 ComboBoxItem cbi2 = new ComboBoxItem();
-                cbi2.Content = country.Name;
-                cbi2.Tag = country.ID;
+                if (routeNode is DistributionCentre)
+                    cbi2.Content = ((DistributionCentre)routeNode).Name;
+                else if (routeNode is InternationalPort)
+                    cbi2.Content = routeNode.Country.Name;
+                cbi2.Tag = routeNode.ID;
                 this.destination.Items.Add(cbi2);
             }
-
 
 
 
@@ -69,17 +73,12 @@ namespace Client
             MessageBox.Show("Recieved options!!!");
 
 
-            var standardDelivery = prices[PathType.Standard];
-            var expressDelivery = prices[PathType.Express];
-            var airStandardDelivery = prices[PathType.AirStandard];
-            var airExpressDelivery = prices[PathType.AirExpress];
+            var standardPrice = prices[PathType.Standard];
+            var standardExpressPrice = prices[PathType.Express];
+            var airPrice = prices[PathType.AirStandard];
+            var airExpressPrice = prices[PathType.AirExpress];
 
-            var standardPrice = 0;
-            var standardExpressPrice = 0;
-            var airPrice = 0;
-            var airExpressPrice = 0;
-
-
+           
 
 
             air.Visibility = Visibility.Visible;
@@ -119,9 +118,12 @@ namespace Client
 
             submitButton.Visibility = Visibility.Hidden;
 
+            ComboBoxItem orig = origin.SelectedItem as ComboBoxItem;
+            ComboBoxItem dest = destination.SelectedItem as ComboBoxItem;
+
            
-            int originNode = Convert.ToInt32(origin.Tag);
-            int destNode = Convert.ToInt32(destination.Tag);
+            int originNode = Convert.ToInt32(orig.Tag);
+            int destNode = Convert.ToInt32(dest.Tag);
                
 
 

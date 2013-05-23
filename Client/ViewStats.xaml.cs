@@ -22,7 +22,8 @@ namespace Client
     /// </summary>
     public partial class ViewStats : Page
     {
-        
+        private DateTime lastDate;
+        private DateTime firstDate;
 
         public ViewStats()
         {
@@ -32,7 +33,17 @@ namespace Client
             triples.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
             triples.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
             triples.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
-            
+
+            lastDate = DateTime.UtcNow;
+            firstDate = new DateTime(2013, 3, 12, 23, 59, 59);
+
+            var numDays = (lastDate - firstDate).Days;
+
+            dateSlider.Maximum = numDays;
+
+
+
+
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -43,6 +54,11 @@ namespace Client
         private void backToHomeButton_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new System.Uri("Home.xaml", UriKind.RelativeOrAbsolute));
+        }
+
+        private void dateSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            selectedDate.Content = "Selected Date: " + firstDate.AddDays(dateSlider.Value).Date;
         }
 
         

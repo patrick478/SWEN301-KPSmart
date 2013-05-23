@@ -17,7 +17,10 @@ namespace Common
         }
 
         /// <summary>Used by ParseNetString</summary>
-        private Statistics();
+        private Statistics()
+        {
+            throw new NotImplementedException();
+        }
 
         public int TotalRevenue
         {
