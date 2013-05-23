@@ -21,6 +21,9 @@ namespace Client
         }
 
         #region Receiving
+        public delegate void InitialDateDeleage(DateTime date);
+        public event InitialDateDeleage InitialDateReceived;
+
         public delegate void StateUpdatedDelegate(string type);
         public event StateUpdatedDelegate Updated;
 
@@ -65,8 +68,10 @@ namespace Client
                     StatsAnswer(tokens);
                     return;
                 case NetCodes.SV_SYNC_UPDATE:
-                    ObjectUpdate(tokens, false);;
+                    ObjectUpdate(tokens, false);
                     return;
+                case NetCodes.SV_STATS_BEGIN:
+                    StatsInitialTime(tokens);
                 case NetCodes.SV_SYNC_DONE:
                     Updated(NetCodes.OBJECT_ALL);
                     return;
@@ -188,6 +193,17 @@ namespace Client
             Statistics stats = Statistics.ParseNetString(tokens, 1, state);
             if (StatsReceived != null)
                 StatsReceived(stats);
+        }
+
+        /// <summary>
+        /// Request Business Figures for the given point in time.
+        /// </summary>
+        /// <param name="time">Point in time.</param>
+        public void StatsInitialTime(string[] tokens)
+        {
+            DateTime date = DateTime.Parse(tokens[1]);
+            if (InitialDateReceived != null)
+                InitialDateReceived(date);
         }
 
         private void ErrorMessage(string[] tokens)
