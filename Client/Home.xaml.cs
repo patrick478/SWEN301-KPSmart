@@ -613,7 +613,7 @@ namespace Client
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new System.Uri("ViewStats.xaml", UriKind.RelativeOrAbsolute));
+            NavigationService.Navigate(new ViewStats(_clientCon));
         }
 
         private void addDistCenterButton_Click(object sender, RoutedEventArgs e)

@@ -93,6 +93,30 @@ namespace Client
 
         }
 
+        public void populateStats(IDictionary<PathType, int> prices)
+        {
+            MessageBox.Show("Recieved options!!!");
+
+
+            var standardPrice = prices[PathType.Standard];
+            var standardExpressPrice = prices[PathType.Express];
+            var airPrice = prices[PathType.AirStandard];
+            var airExpressPrice = prices[PathType.AirExpress];
+
+
+
+
+            air.Visibility = Visibility.Visible;
+            airExpress.Visibility = Visibility.Visible;
+            standard.Visibility = Visibility.Visible;
+            standardExpress.Visibility = Visibility.Visible;
+
+            air.Content = "Air: " + airPrice;
+            airExpress.Content = "Air Express: " + airExpressPrice;
+            standard.Content = "Standard: " + standardPrice;
+            standardExpress.Content = "Standard Express: " + standardExpressPrice;
+        }
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
 

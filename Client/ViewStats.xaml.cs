@@ -22,12 +22,14 @@ namespace Client
     /// </summary>
     public partial class ViewStats : Page
     {
+        private readonly ClientController _clientCon;
         private DateTime lastDate;
         private DateTime firstDate;
 
-        public ViewStats()
+        public ViewStats(ClientController clientCon)
         {
-            
+            _clientCon = clientCon;
+
             InitializeComponent();
 
             triples.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
@@ -41,9 +43,8 @@ namespace Client
 
             dateSlider.Maximum = numDays;
 
-
-
-
+            _clientCon.StatsReceived += new ClientController.StatisticsReceivedDelegate((Stats_Recieved));
+            
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -61,7 +62,15 @@ namespace Client
             selectedDate.Content = "Selected Date: " + firstDate.AddDays(dateSlider.Value).Date;
         }
 
-        
+        private void submit_Click(object sender, RoutedEventArgs e)
+        {
+            _clientCon.StatsRequest(firstDate.AddDays(dateSlider.Value));
+        }
+
+        public void Stats_Recieved(Statistics stats)
+        {
+            MessageBox.Show("Stats recieved");
+        }
 
     }
 }
