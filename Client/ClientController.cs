@@ -396,7 +396,7 @@ namespace Client
         /// <param name="time">Point in time.</param>
         public void StatsRequest(DateTime time)
         {
-            NetCodes.BuildNetworkString(NetCodes.CL_STATS_REQUEST, time.ToString());
+            Send(NetCodes.CL_STATS_REQUEST, time.ToString());
         }
 
         /// <summary>
