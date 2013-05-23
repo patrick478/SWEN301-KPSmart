@@ -62,8 +62,8 @@ namespace Server.Business
         /// <returns></returns>
         public DateTime GetDateTimeOfFirstEvent()
         {
-            //return dataHelper.GetDateTimeOfFirstEvent();
-            return DateTime.Now - new TimeSpan(4, 12, 31, 13);
+
+            return dataHelper.GetDateTimeOfFirstEvent();
         }
 
     }

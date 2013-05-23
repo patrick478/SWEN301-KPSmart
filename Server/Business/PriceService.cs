@@ -9,6 +9,9 @@ namespace Server.Business
 {
     public class PriceService: Service<Price>
     {
+
+        private PriceDataHelper dataHelper = new PriceDataHelper();
+
         public PriceService(CurrentState state) : base(state, new PriceDataHelper())
         {
             // initialise current prices from DB
@@ -48,6 +51,16 @@ namespace Server.Business
             return newPrice;
         }
 
+        public DomesticPrice GetDomesticPrice (int id)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException("id cannot be less than or equal to 0");
+            }
+
+            return state.GetDomesticPrice(id);
+        }
+
         public DomesticPrice CreateDomesticPrice (Priority priority, int pricePerGram, int pricePerCm3) 
         {
             // throws an exception if invalid
@@ -63,6 +76,25 @@ namespace Server.Business
             return newPrice; 
         }
 
+        public DomesticPrice UpdateDomesticPrice (int priceId, Priority priority, int pricePerGram, int pricePerCm3) 
+        {
+            // throws an exception if invalid
+            var newPrice = new DomesticPrice(priority) { ID = priceId, PricePerCm3 = pricePerCm3, PricePerGram = pricePerGram };
+
+            // throws a database exception if doens't exist already
+            dataHelper.Update(newPrice);
+
+            // update state
+            state.SaveDomesticPrice(newPrice);
+            state.IncrementNumberOfEvents();
+
+            return newPrice; 
+        }
+
+        public IList<DomesticPrice> GetAllDomesticPrices () 
+        {
+            return state.GetAllDomesticPrices();
+        }
 
         /// <summary>
         /// Updates the given price.
@@ -81,6 +113,7 @@ namespace Server.Business
             
             // throws an exception if invalid
             var newPrice = new Price { Origin = price.Origin, Destination = price.Destination, Priority = price.Priority, PricePerGram = pricePerGram, PricePerCm3 = pricePerCm3 };
+            newPrice.ID = priceId;
 
             // throws a database exception if exists already
             dataHelper.Update(newPrice);
@@ -91,6 +124,9 @@ namespace Server.Business
 
             return newPrice;
         }
+
+
+
 
 
         public override Price Get(int id)
@@ -111,7 +147,8 @@ namespace Server.Business
         public override bool Exists(Price price)
         {
             var prices = state.GetAllPrices().AsQueryable();
-            return prices.Any(t => t.Equals(price));
+            var domesticPrices = state.GetAllDomesticPrices().AsQueryable();
+            return prices.Any(t => t.Equals(price)) || domesticPrices.Any(t => t.Equals(price));
         }
 
         public override void Delete(int id)
@@ -122,6 +159,9 @@ namespace Server.Business
             }
 
             var price = state.GetPrice(id);
+
+            if (price == null)
+                throw new ArgumentException("No price with that id was found: " + id);
 
             // checks there aren't any routes with the same [origin, destination] combination.
             var routes = state.GetAllRoutes();

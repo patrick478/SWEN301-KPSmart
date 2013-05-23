@@ -36,11 +36,15 @@ namespace Server.Data
         {
             var sql = "SELECT MIN(created) FROM 'events'";
             var result = Database.Instance.FetchRow(sql);
-            if (result.Length == 0) throw new Exception();
+
+            if (result[0] is System.DBNull) return DateTime.Now;
             DateTime retValue;
             try
             {
-                retValue = (DateTime)result[0];
+                if (result[0] is string)
+                    retValue = DateTime.Parse((string)result[0]);
+                else
+                    retValue = (DateTime)result[0];
             }
             catch(Exception ex)
             {

@@ -30,7 +30,13 @@ namespace Common
 
         public override string ToString ()
         {
+            return Name;
+        }
+
+        public string ToDebugString () 
+        {
             return string.Format("Company[ID={0}, LastEdited={1}, Name={2}]", ID, LastEdited, Name);
+        
         }
 
 
