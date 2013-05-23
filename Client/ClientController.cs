@@ -390,6 +390,11 @@ namespace Client
         }
         #endregion
 
+        public void StatsRequest(DateTime time)
+        {
+            NetCodes.BuildNetworkString(NetCodes.CL_STATS_REQUEST, time.ToString());
+        }
+
         /// <summary>
         /// Alias method for sending message to server.
         /// </summary>

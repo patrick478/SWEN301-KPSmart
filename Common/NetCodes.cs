@@ -45,6 +45,7 @@ namespace Common
         public const string SV_SYNC_DONE = "sd";
 
         public const string SV_STATS_ANSWER = "bf";     // Statistics Def (Statistics.ParseNetString)
+        public const string SV_STATS_BEGIN = "s1";     // (DateTime)
 
         public const string SV_ERROR = "er"; // Error Message (string ...)   // CHECK unless we want to have error codes. Or have both; a code followed by a string.
 
