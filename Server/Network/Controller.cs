@@ -21,8 +21,9 @@ namespace Server.Network
         private CountryService countryService;
         private CompanyService companyService;
         private StatisticsService statisticsService;
+        private EventService eventService;
 
-        public Controller(CountryService countryService, CompanyService companyService, DeliveryService deliveryService, PriceService priceService, RouteService routeService, LocationService locationService, StatisticsService statisticsService)
+        public Controller(CountryService countryService, CompanyService companyService, DeliveryService deliveryService, PriceService priceService, RouteService routeService, LocationService locationService, StatisticsService statisticsService, EventService eventService)
         {
             this.countryService = countryService;
             this.companyService = companyService;
@@ -31,6 +32,7 @@ namespace Server.Network
             this.routeService = routeService;
             this.locationService = locationService;
             this.statisticsService = statisticsService;
+            this.eventService = eventService;
 
             Network.Instance.MessageReceived += new Network.MessageReceivedDelegate(OnReceived);
         }
@@ -236,6 +238,10 @@ namespace Server.Network
             {
                 SendErrorMessage(client, "Malformed network message.");
             }
+            catch (Exception e)
+            {
+                SendErrorMessage(client, e.Message);
+            }
         }
 
         /// <summary>
@@ -262,6 +268,10 @@ namespace Server.Network
             {
                 SendErrorMessage(client, "Malformed network message.");
             }
+            catch (Exception e)
+            {
+                SendErrorMessage(client, e.Message);
+            }
         }
 
         /// <summary>
@@ -274,10 +284,7 @@ namespace Server.Network
             int count = 1;
             // TODO Implement the timeout stuff
             if (tokens[count] == NetCodes.PATH_CANCEL)
-            {
-                // client cancelled request TODO
-                return;
-            }
+                return;                 // client cancelled request - TODO nicer handling
             PathType type = PathTypeExtensions.ParseNetString(tokens[count]);
             deliveryService.SelectDeliveryOption(client.ID, type);
             client.SendMessage(NetCodes.SV_DELIVERY_CONFIRMED);
@@ -290,6 +297,8 @@ namespace Server.Network
         /// <param name="tokens">The network message.</param>
         private void SyncState(Client client, string[] tokens)
         {
+            client.SendMessage(NetCodes.BuildNetworkString(NetCodes.SV_STATS_BEGIN, eventService.GetDateOfFirstEvent().ToString()));
+
             DateTime clientTime = DateTime.Parse(tokens[1]);
             var companies = companyService.GetAll();
             foreach (Company c in companies)
