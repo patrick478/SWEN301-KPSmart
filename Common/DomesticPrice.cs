@@ -21,7 +21,7 @@ namespace Common
 
         public override string ToNetString()
         {
-            return NetCodes.BuildObjectNetString(base.ToNetString(), Priority.ToNetString(), Convert.ToString(PricePerGram), Convert.ToString(PricePerCm3));
+            return NetCodes.BuildObjectNetString(ID.ToString(), Priority.ToNetString(), Convert.ToString(PricePerGram), Convert.ToString(PricePerCm3));
         }
 
         public static DomesticPrice ParseNetString(string objectDef)
