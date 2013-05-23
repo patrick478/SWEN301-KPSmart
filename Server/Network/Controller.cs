@@ -236,6 +236,10 @@ namespace Server.Network
             {
                 SendErrorMessage(client, "Malformed network message.");
             }
+            catch (Exception e)
+            {
+                SendErrorMessage(client, e.Message);
+            }
         }
 
         /// <summary>
@@ -261,6 +265,10 @@ namespace Server.Network
             catch (FormatException e)
             {
                 SendErrorMessage(client, "Malformed network message.");
+            }
+            catch (Exception e)
+            {
+                SendErrorMessage(client, e.Message);
             }
         }
 
