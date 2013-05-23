@@ -60,27 +60,28 @@ namespace Server.Gui
 
             //BenDBTests(countryService, routeService);
             //SetUpDatabaseWithData();
-            /*
-            try
+            
+            /*try
             {
                 var priceDH = new PriceDataHelper();
 
-                //var standardPrice = new DomesticPrice(Priority.Standard) { PricePerGram = 3, PricePerCm3 = 5 };
-                //priceDH.Create(standardPrice);
+                var standardPrice = new DomesticPrice(Priority.Standard) { PricePerGram = 3, PricePerCm3 = 5 };
+                //standardPrice = priceService.CreateDomesticPrice(standardPrice.Priority, standardPrice.PricePerGram, standardPrice.PricePerCm3);
 
-                //standardPrice.PricePerCm3 = 8;
-                //priceDH.Update(standardPrice);
+                standardPrice.PricePerCm3 = 8;
+                //standardPrice = priceService.UpdateDomesticPrice(standardPrice.ID, standardPrice.Priority, standardPrice.PricePerGram, standardPrice.PricePerCm3);
 
-                priceDH.Load(1);
+                var loadedPrice = priceService.GetDomesticPrice(1);
+                var prices = priceService.GetAllDomesticPrices();
+
+                var normalPrices = priceService.GetAll();
             }
             catch (DatabaseException er) {
                 Logger.WriteLine(er.Message);
                 Logger.Write(er.StackTrace);
-            }
-            */
-
-
-
+            }*/
+           
+        
         }
 
 

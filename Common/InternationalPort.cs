@@ -27,12 +27,17 @@ namespace Common
 
         public override string ToString ()
         {
-            return string.Format("InternationalPort[ID={0}, Country={2}, LastEdited={1}]", ID, LastEdited, Country.ToShortString());
+            return Country.ToString();
         }
 
         public override string ToShortString ()
         {
             return Country.Name;
+        }
+
+        public string ToDebugString () 
+        {
+            return string.Format("InternationalPort[ID={0}, Country={2}, LastEdited={1}]", ID, LastEdited, Country.ToShortString());
         }
 
         public override string ToNetString()

@@ -62,12 +62,17 @@ namespace Common
 
         public override string ToString ()
         {
-            return string.Format("DistributionCentre[ID={0}, Name={2}, LastEdited={1}]", ID, LastEdited, Name);
+            return Name;
         }
 
         public override string  ToShortString()
         {
             return Name;
+        }
+
+        public string ToDebugString () 
+        {
+            return string.Format("DistributionCentre[ID={0}, Name={2}, LastEdited={1}]", ID, LastEdited, Name);
         }
 
         public override string ToNetString()
