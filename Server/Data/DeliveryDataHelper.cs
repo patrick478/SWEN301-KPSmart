@@ -166,7 +166,66 @@ namespace Server.Data
 
         public override IDictionary<int, Delivery> LoadAll(DateTime snapshotTime)
         {
-            throw new NotImplementedException();
+            string sql;
+            object[][] rows;
+            string timestamp = String.Format("{0}-{1}-{2} {3}:{4}:{5}", snapshotTime.Year, snapshotTime.Month, snapshotTime.Day, snapshotTime.Hour, snapshotTime.Minute, snapshotTime.Second); //2013-05-20 09:53:10"
+            Dictionary<int, Delivery> deliveries = new Dictionary<int, Delivery>();
+
+            // LOCK BEGINS HERE
+            lock (Database.Instance)
+            {
+                sql = String.Format("SELECT origin_id, destination_id, priority, weight_in_grams, volume_in_cm3, total_price, total_cost, time_of_request, time_of_delivery, created, delivery_id created FROM '{0}' WHERE created < \"{1}\" GROUP BY country_id ORDER BY created DESC", TABLE_NAME, timestamp);
+                rows = Database.Instance.FetchRows(sql);
+            }
+            // LOCK ENDS HERE
+
+            Logger.WriteLine("Loaded " + rows.Length + " deliveries:");
+
+            foreach (object[] row in rows)
+            {
+                // get field values
+                int originId = row[0].ToInt();
+                int destinationId = row[1].ToInt();
+                Priority priority = row[2].ToString() == "Air" ? Priority.Air : Priority.Standard;
+                int weight = row[3].ToInt();
+                int volume = row[4].ToInt();
+                int totalPrice = row[5].ToInt();
+                int totalCost = row[6].ToInt();
+                DateTime timeOfRequest = (DateTime)row[7];
+                DateTime timeOfDelivery = (DateTime)row[8];
+                DateTime created = (DateTime)row[9];
+                int id = row[10].ToInt();
+
+                // load origin
+                var origin = routeNodeDataHelper.Load(originId);
+
+                // load destination
+                var destination = routeNodeDataHelper.Load(destinationId);
+
+                var routeInstances = deliveryRouteInstanceDataHelper.Load(id);
+
+                var delivery = new Delivery
+                {
+                    Origin = origin,
+                    Destination = destination,
+                    Priority = priority,
+                    WeightInGrams = weight,
+                    VolumeInCm3 = volume,
+                    TotalPrice = totalPrice,
+                    TotalCost = totalCost,
+                    TimeOfRequest = timeOfRequest,
+                    TimeOfDelivery = timeOfDelivery,
+                    ID = id,
+                    LastEdited = created,
+                    Routes = routeInstances
+                };
+
+                deliveries[id] = delivery;
+                Logger.WriteLine(delivery.ToString());
+            }
+
+            return deliveries;
+
         }
 
         /// <summary>
