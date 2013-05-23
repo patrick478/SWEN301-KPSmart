@@ -11,7 +11,10 @@ namespace Common
     public class DomesticPrice: Price
     {
 
-        public DomesticPrice (Priority priority) {}
+        public DomesticPrice (Priority priority)
+        {
+            Priority = priority;
+        }
 
 
         public override string ToString ()
