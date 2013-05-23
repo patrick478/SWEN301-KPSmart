@@ -49,5 +49,16 @@ namespace Server.Business
             return dataHelper.GetNumberOfEvents(time);
         }
 
+
+        /// <summary>
+        /// Returns a DateTime object which is equal to the time of the first event.
+        /// </summary>
+        /// <returns></returns>
+        public DateTime GetDateTimeOfFirstEvent()
+        {
+            //return dataHelper.GetDateTimeOfFirstEvent();
+            return DateTime.Now - new TimeSpan(4, 12, 31, 13);
+        }
+
     }
 }

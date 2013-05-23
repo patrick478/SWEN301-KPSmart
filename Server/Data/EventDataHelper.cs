@@ -32,7 +32,22 @@ namespace Server.Data
             throw new NotImplementedException();
         }
 
+        public DateTime GetDateTimeOfFirstEvent()
+        {
+            var sql = "SELECT MIN(created) FROM 'events'";
+            var result = Database.Instance.FetchRow(sql);
+            if (result.Length == 0) throw new Exception();
+            DateTime retValue;
+            try
+            {
+                retValue = (DateTime)result[0];
+            }
+            catch(Exception ex)
+            {
+                throw new DatabaseException("Unable to fetch first event data: " + ex.ToString());
+            }
 
-
+            return retValue;
+        }
     }
 }

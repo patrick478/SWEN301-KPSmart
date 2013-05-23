@@ -164,6 +164,7 @@ namespace Server.Data
 
                     for (int i = 0; i < reader.VisibleFieldCount; i++)
                         row.Add(reader.GetValue(i));
+
                 }
             }
             catch (Exception ex)
@@ -176,7 +177,7 @@ namespace Server.Data
             }
 
             return row.ToArray();
-        }
+        } 
 
         public int CheckUserPassword(string username, string password)
         {

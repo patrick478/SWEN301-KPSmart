@@ -59,6 +59,7 @@
     <Compile Include="CompanyDataHelperTest.cs" />
     <Compile Include="CountryDataHelperTest.cs" />
     <Compile Include="CountryServiceTest.cs" />
+    <Compile Include="EventDataHelperTest.cs" />
     <Compile Include="IzziTests.cs" />
     <Compile Include="PathFinderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
