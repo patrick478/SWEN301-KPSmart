@@ -10,8 +10,10 @@ namespace Common
 
         private State state;
 
-        public Statistics(State state) {
+        public Statistics(State state)
+        {
             this.state = state;
+            GetStatistics();
         }
 
         public int TotalRevenue
@@ -45,7 +47,8 @@ namespace Common
         }
 
 
-        public void GetStatistics(){
+        private void GetStatistics()
+        {
 
             IList<Delivery> deliveries = state.GetAllDeliveries();
             Triple.Clear();
