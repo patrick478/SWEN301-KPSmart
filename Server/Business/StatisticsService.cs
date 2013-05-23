@@ -43,8 +43,6 @@ namespace Server.Business
 
             var statistics = new Statistics(stateSnapshot);
 
-            statistics.GetStatistics();
-
             return statistics;
         }
 
