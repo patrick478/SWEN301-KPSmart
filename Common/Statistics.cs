@@ -16,11 +16,16 @@ namespace Common
             GetStatistics();
         }
 
+<<<<<<< HEAD
         /// <summary>Used by ParseNetString</summary>
         private Statistics()
         {
             throw new NotImplementedException();
         }
+=======
+        /// <summary>Used by ParseNetString</summary>
+        private Statistics() {}
+>>>>>>> 87c4443feb15d050854d34c871fc6e0a23fb8e34
 
         public int TotalRevenue
         {
