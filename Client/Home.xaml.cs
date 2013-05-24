@@ -35,7 +35,8 @@ namespace Client
                     ReloadCompanies();
                     return;
                 case NetCodes.OBJECT_PRICE:
-                    ReloadPrices();
+                    ReloadDomesticPrices();
+                    ReloadIntlPrices();
                     return;
                 case NetCodes.OBJECT_ROUTE:
                     ReloadRoutes();
@@ -45,11 +46,7 @@ namespace Client
                     ReloadRouteNodes();
                     return;
                 case NetCodes.OBJECT_ALL:
-                    ReloadCompanies();
-                    ReloadCountries();
-                    ReloadPrices();
-                    ReloadRoutes();
-                    ReloadRouteNodes();
+                    ReloadAll();
                     return;
             }
         }
@@ -236,7 +233,7 @@ namespace Client
             }
         }
 
-        private void ReloadPrices()
+        private void ReloadDomesticPrices()
         {
             try
             {
@@ -245,9 +242,9 @@ namespace Client
             }
             catch (InvalidOperationException e)
             {
-                if (reloadPricesDelegate == null)
-                    reloadPricesDelegate = new NullArgumentDelegate(_doReloadDomesticPrices);
-                domesticPriceList.Dispatcher.Invoke(reloadPricesDelegate);
+                if (reloadDomesticPricesDelegate == null)
+                    reloadDomesticPricesDelegate = new NullArgumentDelegate(_doReloadDomesticPrices);
+                domesticPriceList.Dispatcher.Invoke(reloadDomesticPricesDelegate);
             }
         }
         private void ReloadIntlPrices()
@@ -259,9 +256,9 @@ namespace Client
             }
             catch (InvalidOperationException e)
             {
-                if (reloadPricesDelegate == null)
-                    reloadPricesDelegate = new NullArgumentDelegate(_doReloadIntlPrices);
-                intlPriceList.Dispatcher.Invoke(reloadPricesDelegate);
+                if (reloadInternationalPricesDelegate == null)
+                    reloadInternationalPricesDelegate = new NullArgumentDelegate(_doReloadIntlPrices);
+                intlPriceList.Dispatcher.Invoke(reloadInternationalPricesDelegate);
             }
 
 
@@ -283,7 +280,7 @@ namespace Client
 
             intlPriceList.Items.Clear();
 
-            foreach (var c in _clientState.GetAllPrices())
+            foreach (var c in _clientState.GetAllInternationalPrices())
             {
                 intlPriceList.Items.Add(c);
             }
@@ -294,7 +291,7 @@ namespace Client
             {
                 intlPortList.Dispatcher.VerifyAccess();
                 distCenterList.Dispatcher.VerifyAccess();
-                _doReloadDomesticPrices();
+                _doReloadRouteNodes();
             }
             catch (InvalidOperationException e)
             {
@@ -351,6 +348,12 @@ namespace Client
                 var name = dlg.countryName.Text;
                 var code = dlg.countryCode.Text;
 
+                if (name == String.Empty || code == String.Empty)
+                {
+                    MessageBox.Show("Cannot have empty fields");
+                    return;
+                }
+
                 try
                 {
                     _clientCon.AddCountry(code, name);
@@ -383,7 +386,11 @@ namespace Client
             dlg.countryName.IsReadOnly = true;
             if (dlg.DialogResult != false)
             {
-
+                if (dlg.countryCode.Text == String.Empty)
+                {
+                    MessageBox.Show("Cannot have empty fields");
+                    return;
+                }
                 _clientCon.EditCountry(((Country)countriesList.SelectedItem).ID, dlg.countryCode.Text);
             }
 
@@ -415,7 +422,11 @@ namespace Client
             if (dlg.DialogResult != false)
             {
                 var name = dlg.companyName.Text;
-
+                if (name == String.Empty)
+                {
+                    MessageBox.Show("Cannot have empty fields");
+                    return;
+                }
 
                 try
                 {
@@ -516,7 +527,27 @@ namespace Client
                     times.Add(new WeeklyTime(day, time.Hour, time.Minute));
                 }
 
+                if (origin == null || dest == null || company == null || dlg.weightCost.Text == String.Empty || dlg.volumeCost.Text == String.Empty || dlg.maxWeight.Text == String.Empty || dlg.maxVolume.Text == String.Empty || dlg.duration.Text == String.Empty)
+                {
+                    MessageBox.Show("Cannot have empty fields");
+                    return;
+                }
 
+                try
+                {
+                    Int32.Parse(dlg.weightCost.Text);
+                    Int32.Parse(dlg.volumeCost.Text);
+                    Int32.Parse(dlg.maxVolume.Text);
+                    Int32.Parse(dlg.maxWeight.Text);
+                    Int32.Parse(dlg.duration.Text);
+
+
+                }
+                catch
+                {
+                    MessageBox.Show("You put NaN in a number field. Please enter integers where required");
+                    return;
+                }
 
                 try
                 {
@@ -559,6 +590,23 @@ namespace Client
                     MessageBox.Show("You must select Standard or Air priorty.");
                 }
 
+                if (dlg.gramPrice.Text == String.Empty || dlg.cubicCmPrice.Text == String.Empty)
+                {
+                    MessageBox.Show("Empty fields entered");
+                    return;
+                }
+
+                try
+                {
+                    Int32.Parse(dlg.gramPrice.Text);
+                    Int32.Parse(dlg.cubicCmPrice.Text);
+                }
+                catch
+                {
+                    MessageBox.Show("NaN enterered in a one of the price fields. Please enter a  number");
+                    return;
+                }
+
                 var weightPrice = Convert.ToInt32(dlg.gramPrice.Text);
                 var volumePrice = Convert.ToInt32(dlg.cubicCmPrice.Text);
 
@@ -585,7 +633,11 @@ namespace Client
             {
                 ComboBoxItem country = dlg.countries.SelectedItem as ComboBoxItem;
 
-
+                if (country == null)
+                {
+                    MessageBox.Show("Invalid Country");
+                    return;
+                }
                 try
                 {
                     _clientCon.AddInternationalPort(Convert.ToInt32(country.Tag));
@@ -605,6 +657,8 @@ namespace Client
             // Instantiate the dialog box
             var dlg = new AddRouteDialogBox(_clientState);
             var r = ((Route)routesList.SelectedItem);
+            if (r == null)
+                return;
 
             dlg.Title = "Edit Route";
 
@@ -731,7 +785,11 @@ namespace Client
             dlg.ShowDialog();
             if (dlg.DialogResult != false)
             {
-
+                if (dlg.name.Text == String.Empty)
+                {
+                    MessageBox.Show("Can't have empty name");
+                    return;
+                }
 
                 try
                 {
@@ -794,32 +852,31 @@ namespace Client
 
         private void deletePrice_Click(object sender, RoutedEventArgs e)
         {
-            _clientCon.DeletePrice(((Price)domesticPriceList.SelectedItem).ID);
+            if (domesticPriceList.SelectedItem == null)
+                return;
+            _clientCon.DeletePrice(((DomesticPrice)domesticPriceList.SelectedItem).ID);
         }
 
         private void deleteRoute_Click(object sender, RoutedEventArgs e)
         {
+            if (routesList.SelectedItem == null)
+                return;
+
             _clientCon.DeleteRoute(((Route)routesList.SelectedItem).ID);
         }
 
         private void deleteIntlPortButton_Click(object sender, RoutedEventArgs e)
         {
+            if (intlPortList.SelectedItem == null)
+                return;
             _clientCon.DeleteRouteNode(((RouteNode)intlPortList.SelectedItem).ID);
-        }
-
-        private void editDistCenter_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void deleteDistCenter_Click(object sender, RoutedEventArgs e)
         {
+            if (distCenterList.SelectedItem == null)
+                return;
             _clientCon.DeleteRouteNode(((RouteNode)distCenterList.SelectedItem).ID);
-        }
-
-        private void routesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
         }
 
         private void addIntlPrice_Click(object sender, RoutedEventArgs e)
@@ -841,6 +898,12 @@ namespace Client
                 {
                     //should never happen
                     MessageBox.Show("You must select Standard or Air priorty.");
+                }
+
+                if (origin == null || dest == null)
+                {
+                    MessageBox.Show("Invalid origin/destination");
+                    return;
                 }
                 var weightPrice = Convert.ToInt32(dlg.gramPrice.Text);
                 var volumePrice = Convert.ToInt32(dlg.cubicCmPrice.Text);
@@ -865,10 +928,23 @@ namespace Client
         {
             ReloadCompanies();
             ReloadIntlPrices();
-            ReloadPrices();
+            ReloadDomesticPrices();
             ReloadRouteNodes();
             ReloadRoutes();
             ReloadCountries();
+
+            
+        }
+
+        private NullArgumentDelegate reloadInternationalPricesDelegate { get; set; }
+
+        private NullArgumentDelegate reloadDomesticPricesDelegate { get; set; }
+
+        private void deleteIntlPrice_Click(object sender, RoutedEventArgs e)
+        {
+            if (intlPriceList.SelectedItem == null)
+                return;
+            _clientCon.DeletePrice(((Price)intlPriceList.SelectedItem).ID);
         }
     }
 

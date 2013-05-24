@@ -109,6 +109,7 @@ namespace Server.Data
                     sql = SQLQueryBuilder.InsertFields(TABLE_NAME,  new[] { EVENT_ID, "active", ID_COL_NAME, "route_id", "departure_time" }, new string[] { event_id.ToString(), "1", delivery_id.ToString(), routeInstance.Route.ID.ToString(), routeInstance.DepartureTime.ToString("yyyy-MM-dd HH:mm:ss") });
                     Database.Instance.InsertQuery(sql);
                 }
+
             }
             // END LOCK HERE
 

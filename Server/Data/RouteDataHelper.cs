@@ -373,8 +373,12 @@ namespace Server.Data
             route.DepartureTimes.Sort();
             existingRoute.DepartureTimes.Sort();
             var departureTimesSame = route.DepartureTimes.AsQueryable().SequenceEqual<WeeklyTime>(existingRoute.DepartureTimes);
-            if (durationSame && maxWeightSame && maxVolumeSame && costPerCm3Same && costPerGramSame && departureTimesSame)
-                throw new NoChangeException();
+            try
+            {
+                if (durationSame && maxWeightSame && maxVolumeSame && costPerCm3Same && costPerGramSame && departureTimesSame)
+                    throw new NoChangeException();
+            }
+            catch { }
 
             // load ids of fields
             int origin_id = routeNodeDataHelper.GetId(route.Origin);

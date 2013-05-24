@@ -46,6 +46,10 @@ namespace Client
             triples.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
             triples.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
 
+            criticalRoutes.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
+            criticalRoutes.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
+            criticalRoutes.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
+
             lastDate = DateTime.UtcNow;
 
             firstDate = _clientState.FirstEvent;
@@ -110,6 +114,11 @@ namespace Client
             foreach (var triple in stats.Triples)
             {
                 triples.Items.Add(triple);
+            }
+            criticalRoutes.Items.Clear();
+            foreach (var criticalRoute in stats.CriticalRoutes)
+            {
+                criticalRoutes.Items.Add(criticalRoute);
             }
         }
 

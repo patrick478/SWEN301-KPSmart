@@ -60,7 +60,6 @@ namespace Common
                 case "land":
                     return TransportType.Land;
                 case "sea":
-
                     return TransportType.Sea;
                 default:
                     throw new ArgumentException("Unsupported string value: " + raw);

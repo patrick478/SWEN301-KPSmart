@@ -33,6 +33,9 @@ namespace Client
         delegate void PricesDelegate(IDictionary<PathType, int> prices);
         PricesDelegate priceDelegate;
 
+        delegate void ReturnHomeDelegate();
+        ReturnHomeDelegate returnHomeDelegate;
+
 
         public RequestDelivery(ClientController clientCon, ClientState clientState)
         {
@@ -68,7 +71,30 @@ namespace Client
 
 
             _clientController.OptionsReceived += new ClientController.DeliveryOptionsDelegate(DeliveryOptions_Returned);
+            _clientController.DeliveryOK+= new ClientController.DeliveryConfirmedDelegate(DeliveryConfirmed);
 
+        }
+
+        private void DeliveryConfirmed()
+        {
+            MessageBox.Show("Delivery successfully added! Streets ahead!");
+
+            try
+            {
+                this.Dispatcher.VerifyAccess();
+                ReturnHome();
+            }
+            catch (InvalidOperationException e)
+            {
+                if (returnHomeDelegate == null)
+                    returnHomeDelegate = new ReturnHomeDelegate(ReturnHome);
+                this.Dispatcher.Invoke(returnHomeDelegate);
+            }
+        }
+
+        public void ReturnHome()
+        {
+            NavigationService.Navigate(new Home(_clientState));
         }
 
 
@@ -89,13 +115,23 @@ namespace Client
 
         public void populateStats(IDictionary<PathType, int> prices)
         {
-            MessageBox.Show("Recieved options!!!");
 
+            var standardPrice = -1;
+            var standardExpressPrice = -1;
+            var airPrice = -1;
+            var airExpressPrice = -1;
 
-            var standardPrice = prices[PathType.Standard];
-            var standardExpressPrice = prices[PathType.Express];
-            var airPrice = prices[PathType.AirStandard];
-            var airExpressPrice = prices[PathType.AirExpress];
+            if(prices != null){
+                standardPrice = prices.Keys.Contains(PathType.Standard) ? prices[PathType.Standard] : -1;
+                standardExpressPrice = prices.Keys.Contains(PathType.Express) ? prices[PathType.Express] : -1;
+                airPrice = prices.Keys.Contains(PathType.AirStandard) ? prices[PathType.AirStandard] : -1;
+                airExpressPrice = prices.Keys.Contains(PathType.AirExpress) ? prices[PathType.AirExpress] : -1;
+            }
+
+            if (standardPrice < 0 && standardExpressPrice < 0 && airPrice < 0 && airExpressPrice < 0)
+                submitDeliveryType.IsEnabled = false;
+            else
+                submitDeliveryType.IsEnabled = true;
 
 
 
@@ -106,7 +142,7 @@ namespace Client
             airExpress.Visibility = Visibility.Visible;
             standard.Visibility = Visibility.Visible;
             standardExpress.Visibility = Visibility.Visible;
-            if (standardPrice == null)
+            if (standardPrice == -1)
             {
                 air.Content = "Air: none available";
                 air.IsEnabled = false;
@@ -116,7 +152,7 @@ namespace Client
                 air.Content = "Air: " + airPrice;
             }
 
-            if (airExpressPrice == null)
+            if (airExpressPrice == -1)
             {
                 airExpress.Content = "Air Express: none available";
                 airExpress.IsEnabled = false;
@@ -126,7 +162,7 @@ namespace Client
                 airExpress.Content = "Air Express: " + airExpressPrice;
             }
 
-            if (standardPrice == null)
+            if (standardPrice == -1)
             {
                 standard.Content = "Standard: none available";
                 standard.IsEnabled = false;
@@ -135,9 +171,9 @@ namespace Client
             {
                 standard.Content = "Standard: " + standardPrice;
             }
-            if (standardExpressPrice == null)
+            if (standardExpressPrice == -1)
             {
-                standard.Content = "Standard Express: none available";
+                standardExpress.Content = "Standard Express: none available";
                 standardExpress.IsEnabled = false;
             }
             else
@@ -182,7 +218,7 @@ namespace Client
 
 
 
-            MessageBox.Show("here");
+           
             _clientController.RequestDelivery(originNode, destNode, Convert.ToInt32(weight.Text),
                                                                                            Convert.ToInt32(volume.Text));
                 
@@ -217,6 +253,8 @@ namespace Client
                 type = PathType.AirExpress;
             
             _clientController.ChooseDelivery(type);
+            
+
         }
 
     }

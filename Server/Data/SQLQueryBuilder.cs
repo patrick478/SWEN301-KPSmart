@@ -91,7 +91,7 @@ namespace Server.Data
             }
 
             // build the query
-            var sql = String.Format("SELECT {0} FROM '{1}' WHERE created < \"{2}\" {3} GROUP BY {3} ORDER BY created DESC", fields, tableName, timestamp, equalsSection, idColName);
+            var sql = String.Format("SELECT {0} FROM '{1}' WHERE created < \"{2}\" AND active = 1 AND {3} GROUP BY {3} ORDER BY created DESC", fields, tableName, timestamp, equalsSection, idColName);
 
             return sql;
         }
@@ -161,7 +161,7 @@ namespace Server.Data
             fields = fields.Trim(',');
 
             // build the query
-            var sql = String.Format("SELECT {0} FROM '{1}' WHERE created < \"{2}\" GROUP BY {3} ORDER BY created DESC", fields, tableName, timestamp, idColName);
+            var sql = String.Format("SELECT {0} FROM '{1}' WHERE created < \"{2}\" AND active = 1 GROUP BY {3} ORDER BY created DESC", fields, tableName, timestamp, idColName);
 
             return sql;      
 

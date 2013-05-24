@@ -56,6 +56,13 @@ namespace Client.DialogBoxes
 
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
+
+            if (Convert.ToInt32(hours.Text) > 23 || Convert.ToInt32(hours.Text) < 0 || Convert.ToInt32(minutes.Text) > 59 || Convert.ToInt32(minutes.Text) < 0)
+            {
+                MessageBox.Show("Invalid hours and/or minute entered");
+                return;
+            }
+
             try
             {
                 timesGrid.Items.Add(new DayMinuteHourHolder

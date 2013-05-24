@@ -30,6 +30,16 @@ namespace Common
         {
             this.routes = routes;
             this.prices = prices;
+            this.domesticPrices = new Dictionary<int, DomesticPrice>();
+            foreach (var kvp in prices)
+                if (kvp.Value is DomesticPrice)
+                    this.domesticPrices.Add(kvp.Key, kvp.Value as DomesticPrice);
+
+            foreach(var kvp in domesticPrices)
+            {
+                this.prices.Remove(kvp.Key);
+            }
+
             this.deliveries = deliveries;
             this.routeNodes = routeNodes;
             this.companies = companies;
@@ -61,6 +71,9 @@ namespace Common
             }
             else {
                 var value = GetAllInternationalPrices().AsQueryable().Where(t => t.Origin.Equals(route.Origin) && t.Destination.Equals(route.Destination) && t.Priority.Equals(priority)).FirstOrDefault<Price>();
+                var attempt = (priority == Priority.Air ? Priority.Standard : Priority.Air);
+                if(value == null)
+                    value = GetAllInternationalPrices().AsQueryable().Where(t => t.Origin.Equals(route.Origin) && t.Destination.Equals(route.Destination) && t.Priority.Equals(attempt)).FirstOrDefault<Price>();
                 return value;
             }   
         }
