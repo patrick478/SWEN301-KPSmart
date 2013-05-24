@@ -256,8 +256,9 @@ namespace Common
 
             List<Triple> triples = new List<Triple>();
             string[] tripleTokens = tokens[arrayOffset++].Split(NetCodes.SEPARATOR_ELEMENT);
-            for (int i = 0; i < tripleTokens.Length; ++i)
-                triples.Add(Triple.ParseNetString(tripleTokens[i], state));
+            if(tripleTokens.Length == 3)
+                for (int i = 0; i < tripleTokens.Length; ++i)
+                    triples.Add(Triple.ParseNetString(tripleTokens[i], state));
 
             List<Route> critRoutes = new List<Route>();
             string[] critTokens = tokens[arrayOffset++].Split(NetCodes.SEPARATOR_ELEMENT);
