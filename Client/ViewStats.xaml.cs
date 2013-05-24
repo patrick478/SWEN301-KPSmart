@@ -31,6 +31,9 @@ namespace Client
         delegate void DateArgumentDelegate(DateTime date);
         DateArgumentDelegate initialDateDelegate;
 
+        delegate void StatsDelegate(Statistics stats);
+        StatsDelegate statsDelegate;
+
 
         public ViewStats(ClientController clientCon, ClientState clientState)
         {
@@ -45,13 +48,21 @@ namespace Client
 
             lastDate = DateTime.UtcNow;
 
-            dateSlider.IsEnabled = false;
+            firstDate = _clientState.FirstEvent;
+
+            var numDays = (lastDate - firstDate).Days + 1;
+
+            dateSlider.Maximum = numDays;
+            dateSlider.IsEnabled = true;
+
+            firstDayLabel.Content = firstDate.ToShortDateString();
+            lastDayLabel.Content = lastDate.ToShortDateString();
 
             
 
             _clientCon.StatsReceived += new ClientController.StatisticsReceivedDelegate(Stats_Recieved);
 
-            _clientCon.InitialDateReceived += new ClientController.InitialDateDeleage(InitialDate_Recieved);
+            
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -76,39 +87,29 @@ namespace Client
 
         public void Stats_Recieved(Statistics stats)
         {
-            MessageBox.Show("Stats recieved");
-        }
-
-
-        private void InitialDate_Recieved(DateTime date)
-        {
             try
             {
-                dateSlider.Dispatcher.VerifyAccess();
-                do_InitialDate(date);
+                revenue.Dispatcher.VerifyAccess();
+                PopulateStats(stats);
             }
             catch (InvalidOperationException e)
             {
-                if (initialDateDelegate == null)
-                    initialDateDelegate = new DateArgumentDelegate(do_InitialDate);
-                dateSlider.Dispatcher.Invoke(initialDateDelegate, System.Windows.Threading.DispatcherPriority.Normal, date);
+                if (statsDelegate == null)
+                    statsDelegate = new StatsDelegate(PopulateStats);
+                revenue.Dispatcher.Invoke(statsDelegate, System.Windows.Threading.DispatcherPriority.Normal, stats);
             }
-
-
         }
 
-        private void do_InitialDate(DateTime date)
+
+        public void PopulateStats(Statistics stats)
         {
-            firstDate = date;
-
-            var numDays = (lastDate - firstDate).Days;
-
-            dateSlider.Maximum = numDays;
-            dateSlider.IsEnabled = true;
-
-            firstDayLabel.Content = firstDate.ToShortDateString();
-            lastDayLabel.Content = lastDate.ToShortDateString();
+            MessageBox.Show("Stats recieved");
+            revenue.Text = Convert.ToString(stats.TotalRevenue);
+            expenditure.Text = Convert.ToString(stats.TotalExpenditure);
+            events.Text = Convert.ToString(stats.TotalEvents);
         }
+
+                
 
     }
 }

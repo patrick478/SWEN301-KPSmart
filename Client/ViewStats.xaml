@@ -16,11 +16,11 @@
             <Canvas Canvas.Left="10" Canvas.Top="10" Height="491" Name="canvas2" Width="917">
                 <Label Canvas.Left="253" Canvas.Top="139" Content="Total expenditure:" Height="28" Name="label3" Width="109" />
                 <Label Canvas.Left="469" Canvas.Top="139" Content="Total Events:" Height="28" Name="label4" Width="109" />
-                <TextBox Canvas.Left="143" Canvas.Top="144" Height="23" Name="origin" Width="43" IsReadOnly="True" />
-                <TextBox Canvas.Left="357" Canvas.Top="144" Height="23" Name="destination" Width="43" IsReadOnly="True" />
-                <TextBox Canvas.Left="573" Canvas.Top="144" Height="23" Name="weight" Width="43" IsReadOnly="True" />
+                <TextBox Canvas.Left="143" Canvas.Top="144" Height="23" Name="revenue" Width="43" IsReadOnly="True" />
+                <TextBox Canvas.Left="357" Canvas.Top="144" Height="23" Name="expenditure" Width="43" IsReadOnly="True" />
+                <TextBox Canvas.Left="573" Canvas.Top="144" Height="23" Name="events" Width="43" IsReadOnly="True" />
                 <Label Canvas.Left="17" Canvas.Top="16" Content="View Stats" Height="56" Name="label6" FontSize="28" Width="266" />
-                <Slider Canvas.Left="62" Canvas.Top="78" Height="25" Name="dateSlider" Width="792" Maximum="100" ValueChanged="dateSlider_ValueChanged" IsMoveToPointEnabled="True" />
+                <Slider Canvas.Left="62" Canvas.Top="78" Height="25" Name="dateSlider" Width="792" Maximum="100" ValueChanged="dateSlider_ValueChanged" IsMoveToPointEnabled="True" IsEnabled="True" />
                 <Label Canvas.Left="47" Canvas.Top="95" Content="First day" Height="25" Width="84" Name="firstDayLabel" />
                 <Label Canvas.Left="823" Canvas.Top="95" Content="Last day" Height="25" Width="84" Name="lastDayLabel" />
                 <Label Canvas.Left="39" Canvas.Top="142" Content="Total revenue:" Height="25" Width="84" />

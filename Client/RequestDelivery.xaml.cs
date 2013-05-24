@@ -99,7 +99,7 @@ namespace Client
 
 
 
-
+            submitDeliveryType.Visibility = Visibility.Visible;
             air.Visibility = Visibility.Visible;
             airExpress.Visibility = Visibility.Visible;
             standard.Visibility = Visibility.Visible;
