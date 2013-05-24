@@ -255,16 +255,24 @@ namespace Common
             int totalEvents = Convert.ToInt32(tokens[arrayOffset++]);
 
             List<Triple> triples = new List<Triple>();
-            string[] tripleTokens = tokens[arrayOffset++].Split(NetCodes.SEPARATOR_ELEMENT);
-            if(tripleTokens.Length == 3)
-                for (int i = 0; i < tripleTokens.Length; ++i)
-                    triples.Add(Triple.ParseNetString(tripleTokens[i], state));
+            var tripleTokensString = tokens[arrayOffset++];
+            if (tripleTokensString.Length > 0)
+            {
+                string[] tripleTokens = tripleTokensString.Split(NetCodes.SEPARATOR_ELEMENT);
+                if (tripleTokens.Length > 0)
+                    for (int i = 0; i < tripleTokens.Length; ++i)
+                        triples.Add(Triple.ParseNetString(tripleTokens[i], state));
+            }
 
             List<Route> critRoutes = new List<Route>();
-            string[] critTokens = tokens[arrayOffset++].Split(NetCodes.SEPARATOR_ELEMENT);
-            if(critTokens.Length == 3)
-                for (int i = 0; i < critTokens.Length; ++i)
-                    critRoutes.Add(state.GetRoute( Convert.ToInt32(critTokens[i]) ));
+            string critTokenString = tokens[arrayOffset++];
+            if (critTokenString.Length > 0)
+            {
+                string[] critTokens = critTokenString.Split(NetCodes.SEPARATOR_ELEMENT);
+                if (critTokens.Length > 0)
+                    for (int i = 0; i < critTokens.Length; ++i)
+                        critRoutes.Add(state.GetRoute(Convert.ToInt32(critTokens[i])));
+            }
 
             return new Statistics() { TotalRevenue = totalRevenue, TotalExpenditure = totalExpenditrue, TotalEvents = totalEvents, Triples = triples, CriticalRoutes = critRoutes };
         }

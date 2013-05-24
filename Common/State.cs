@@ -60,7 +60,8 @@ namespace Common
                 return GetAllDomesticPrices().AsQueryable().Where(t => t.Priority == priority).FirstOrDefault<DomesticPrice>();
             }
             else {
-                return GetAllPrices().AsQueryable().Where(t => t.Origin.Equals(route.Origin) && t.Destination.Equals(route.Destination) && t.Priority.Equals(priority)).FirstOrDefault<Price>();
+                var value = GetAllInternationalPrices().AsQueryable().Where(t => t.Origin.Equals(route.Origin) && t.Destination.Equals(route.Destination) && t.Priority.Equals(priority)).FirstOrDefault<Price>();
+                return value;
             }   
         }
         #endregion
@@ -88,6 +89,11 @@ namespace Common
         public IList<Price> GetAllPrices()
         {
             return new List<Price>(prices.Values);
+        }
+
+        public IList<Price> GetAllInternationalPrices()
+        {
+            return new List<Price>(prices.Values.Where(t => !(t is DomesticPrice)));
         }
         #endregion
 

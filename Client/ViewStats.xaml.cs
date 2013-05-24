@@ -99,13 +99,29 @@ namespace Client
             }
         }
 
-
+     
         public void PopulateStats(Statistics stats)
         {
-            MessageBox.Show("Stats recieved");
+            
             revenue.Text = Convert.ToString(stats.TotalRevenue);
             expenditure.Text = Convert.ToString(stats.TotalExpenditure);
             events.Text = Convert.ToString(stats.TotalEvents);
+            triples.Items.Clear();
+            foreach (var triple in stats.Triples)
+            {
+                triples.Items.Add(triple);
+            }
+        }
+
+        private void triples_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var triple = ((Statistics.Triple)triples.SelectedItem);
+
+            totalMail.Text = Convert.ToString(triple.TotalMail);
+            totalWeight.Text = Convert.ToString(triple.TotalWeight);
+            totalVolume.Text = Convert.ToString(triple.TotalVolume);
+            averageTime.Text = Convert.ToString(triple.AverageDeliveryTimes);
+
         }
 
                 

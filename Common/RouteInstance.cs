@@ -6,15 +6,23 @@
 //////////////////////
 
 using System;
+using System.Collections.Generic;
 
 namespace Common
 {
+
     /// <summary>
     /// Represents an instance of a Route, with a specific Time.
     /// Is used by Delivery.cs.
     /// </summary>
-    public class RouteInstance
+    public class RouteInstance : IComparable<RouteInstance>
     {
+        public int CompareTo(RouteInstance other)
+        {
+            if (other.ArrivalTime == this.ArrivalTime && other.DepartureTime == this.DepartureTime && this.Route.Equals(other.Route))
+                return 0;
+            return -1;
+        }
 
         public RouteInstance(Route route, DateTime time)
         {

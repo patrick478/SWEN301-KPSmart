@@ -152,7 +152,7 @@ namespace Client
 
         private void _doReloadCountries()
         {
-            MessageBox.Show("Reloading countries: " + _clientState.GetAllCountries().Count.ToString());
+            
             countriesList.Items.Clear();
 
             foreach (var c in _clientState.GetAllCountries())
@@ -182,7 +182,7 @@ namespace Client
 
         private void _doReloadCompanies()
         {
-            MessageBox.Show("Reloading companies: " + _clientState.GetAllCompanies().Count.ToString());
+            
             companiesList.Items.Clear();
 
             foreach (var c in _clientState.GetAllCompanies())
