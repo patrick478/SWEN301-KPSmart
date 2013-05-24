@@ -28,6 +28,7 @@
                 <Label Canvas.Left="17" Canvas.Top="16" Content="Request Delivery" Height="56" Name="label6" FontSize="28" Width="266" />
                 <ComboBox Canvas.Left="303" Canvas.Top="160" Height="23" Name="origin" Width="120" IsHitTestVisible="True" IsEditable="True" />
                 <ComboBox Canvas.Left="303" Canvas.Top="194" Height="23" Name="destination" Width="120" IsEditable="True" />
+                <Button Canvas.Left="680" Canvas.Top="401" Content="Submit" Height="23" Name="submitDeliveryType" Width="75" />
             </Canvas>
         </Canvas>
     </Grid>

@@ -30,6 +30,10 @@ namespace Client
         private DeliveryService _pathfindService;
         private ClientController _clientController;
 
+        delegate void PricesDelegate(IDictionary<PathType, int> prices);
+        PricesDelegate priceDelegate;
+
+
         public RequestDelivery(ClientController clientCon, ClientState clientState)
         {
             
@@ -70,27 +74,17 @@ namespace Client
 
         public void DeliveryOptions_Returned(IDictionary<PathType, int> prices)
         {
-            MessageBox.Show("Recieved options!!!");
-
-
-            var standardPrice = prices[PathType.Standard];
-            var standardExpressPrice = prices[PathType.Express];
-            var airPrice = prices[PathType.AirStandard];
-            var airExpressPrice = prices[PathType.AirExpress];
-
-           
-
-
-            air.Visibility = Visibility.Visible;
-            airExpress.Visibility = Visibility.Visible;
-            standard.Visibility = Visibility.Visible;
-            standardExpress.Visibility = Visibility.Visible;
-
-            air.Content = "Air: " + airPrice;
-            airExpress.Content = "Air Express: " + airExpressPrice;
-            standard.Content = "Standard: " + standardPrice;
-            standardExpress.Content = "Standard Express: " + standardExpressPrice;
-
+            try
+            {
+                air.Dispatcher.VerifyAccess();
+                populateStats(prices);
+            }
+            catch (InvalidOperationException e)
+            {
+                if (priceDelegate == null)
+                    priceDelegate = new PricesDelegate(populateStats);
+                air.Dispatcher.Invoke(priceDelegate, System.Windows.Threading.DispatcherPriority.Normal, prices);
+            }
         }
 
         public void populateStats(IDictionary<PathType, int> prices)
@@ -110,11 +104,44 @@ namespace Client
             airExpress.Visibility = Visibility.Visible;
             standard.Visibility = Visibility.Visible;
             standardExpress.Visibility = Visibility.Visible;
+            if (standardPrice == null)
+            {
+                air.Content = "Air: none available";
+                air.IsEnabled = false;
+            }
+            else
+            {
+                air.Content = "Air: " + airPrice;
+            }
 
-            air.Content = "Air: " + airPrice;
-            airExpress.Content = "Air Express: " + airExpressPrice;
-            standard.Content = "Standard: " + standardPrice;
-            standardExpress.Content = "Standard Express: " + standardExpressPrice;
+            if (airExpressPrice == null)
+            {
+                airExpress.Content = "Air Express: none available";
+                airExpress.IsEnabled = false;
+            }
+            else
+            {
+                airExpress.Content = "Air Express: " + airExpressPrice;
+            }
+
+            if (standardPrice == null)
+            {
+                standard.Content = "Standard: none available";
+                standard.IsEnabled = false;
+            }
+            else
+            {
+                standard.Content = "Standard: " + standardPrice;
+            }
+            if (standardExpressPrice == null)
+            {
+                standard.Content = "Standard Express: none available";
+                standardExpress.IsEnabled = false;
+            }
+            else
+            {
+                standardExpress.Content = "Standard Express: " + standardExpressPrice;
+            }
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -169,6 +196,11 @@ namespace Client
         private void standardCheap_Checked(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void submitDeliveryType_Click(object sender, RoutedEventArgs e)
+        {
+           
         }
 
     }
