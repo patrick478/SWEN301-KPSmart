@@ -110,6 +110,7 @@ namespace Common
                 }
             }
             CriticalRoutes = criticalRoutes;
+            Triples = new List<Triple>(Triple.instances);
         }
 
 
