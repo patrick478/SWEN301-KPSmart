@@ -105,6 +105,7 @@ namespace Client
             intlPriceList.Columns.Add(new DataGridTextColumn { Header = "Price per gram", Binding = new Binding("PricePerGram") });
             intlPriceList.Columns.Add(new DataGridTextColumn { Header = "Price per cm^3", Binding = new Binding("PricePerCm3") });
             intlPortList.Columns.Add(new DataGridTextColumn { Header = "Country", Binding = new Binding("Country") });
+            intlPortList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
         }
 
         public Home()
