@@ -41,8 +41,7 @@ namespace Server.Business
         public Dictionary<PathType, List<RouteInstance>> findRoutes(RouteNode origin, RouteNode destination, int weight, int volume)
         {
             //get the DateTime to the nearest minute as the requested Date Time
-            DateTime requestTime = DateTime.Today;
-            requestTime = requestTime.AddHours(DateTime.Now.Hour).AddMinutes(DateTime.Now.Minute);
+            DateTime requestTime = DateTime.Now;
 
             var paths = new Dictionary<PathType, List<RouteInstance>>
                 {

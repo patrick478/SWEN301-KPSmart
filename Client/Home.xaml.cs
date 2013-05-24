@@ -558,6 +558,7 @@ namespace Client
                     //should never happen
                     MessageBox.Show("You must select Standard or Air priorty.");
                 }
+
                 var weightPrice = Convert.ToInt32(dlg.gramPrice.Text);
                 var volumePrice = Convert.ToInt32(dlg.cubicCmPrice.Text);
 
