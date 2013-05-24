@@ -23,6 +23,8 @@ namespace Client
     public partial class ViewStats : Page
     {
         private readonly ClientController _clientCon;
+        private readonly ClientState _clientState;
+
         private DateTime lastDate;
         private DateTime firstDate;
 
@@ -30,9 +32,10 @@ namespace Client
         DateArgumentDelegate initialDateDelegate;
 
 
-        public ViewStats(ClientController clientCon)
+        public ViewStats(ClientController clientCon, ClientState clientState)
         {
             _clientCon = clientCon;
+            _clientState = clientState;
 
             InitializeComponent();
 
@@ -43,6 +46,8 @@ namespace Client
             lastDate = DateTime.UtcNow;
 
             dateSlider.IsEnabled = false;
+
+            
 
             _clientCon.StatsReceived += new ClientController.StatisticsReceivedDelegate(Stats_Recieved);
 
@@ -56,7 +61,7 @@ namespace Client
 
         private void backToHomeButton_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new System.Uri("Home.xaml", UriKind.RelativeOrAbsolute));
+            NavigationService.Navigate(new Home(_clientState));
         }
 
         private void dateSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -86,7 +91,7 @@ namespace Client
             {
                 if (initialDateDelegate == null)
                     initialDateDelegate = new DateArgumentDelegate(do_InitialDate);
-                //dateSlider.Dispatcher.Invoke(do_InitialDate(date));
+                dateSlider.Dispatcher.Invoke(initialDateDelegate, System.Windows.Threading.DispatcherPriority.Normal, date);
             }
 
 
@@ -100,7 +105,9 @@ namespace Client
 
             dateSlider.Maximum = numDays;
             dateSlider.IsEnabled = true;
-           
+
+            firstDayLabel.Content = firstDate.ToShortDateString();
+            lastDayLabel.Content = lastDate.ToShortDateString();
         }
 
     }

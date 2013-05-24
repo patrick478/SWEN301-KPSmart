@@ -133,7 +133,14 @@ namespace Common
 
         protected bool Equals (Price other)
         {
-            return this.Origin.Equals(other.Origin) && this.Destination.Equals(other.Destination) && this.Priority == other.Priority;
+            if (this is DomesticPrice || other is DomesticPrice)
+            {
+                return this.Priority == other.Priority;
+            }
+            else
+            {
+                return this.Origin.Equals(other.Origin) && this.Destination.Equals(other.Destination) && this.Priority == other.Priority;
+            }
         }
 
         public override int GetHashCode ()

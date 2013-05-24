@@ -21,8 +21,8 @@
                 <TextBox Canvas.Left="573" Canvas.Top="144" Height="23" Name="weight" Width="43" IsReadOnly="True" />
                 <Label Canvas.Left="17" Canvas.Top="16" Content="View Stats" Height="56" Name="label6" FontSize="28" Width="266" />
                 <Slider Canvas.Left="62" Canvas.Top="78" Height="25" Name="dateSlider" Width="792" Maximum="100" ValueChanged="dateSlider_ValueChanged" IsMoveToPointEnabled="True" />
-                <Label Canvas.Left="47" Canvas.Top="95" Content="First day" Height="25" Width="84" />
-                <Label Canvas.Left="823" Canvas.Top="95" Content="Last day" Height="25" Width="84" />
+                <Label Canvas.Left="47" Canvas.Top="95" Content="First day" Height="25" Width="84" Name="firstDayLabel" />
+                <Label Canvas.Left="823" Canvas.Top="95" Content="Last day" Height="25" Width="84" Name="lastDayLabel" />
                 <Label Canvas.Left="39" Canvas.Top="142" Content="Total revenue:" Height="25" Width="84" />
                 <DataGrid AutoGenerateColumns="False" Canvas.Left="47" Canvas.Top="223" Height="231" Name="triples" Width="531" />
                 <TextBox Canvas.Left="769" Canvas.Top="282" Height="23" IsReadOnly="True" Name="textBox1" Width="43" />

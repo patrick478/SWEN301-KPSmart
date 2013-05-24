@@ -18,10 +18,10 @@ namespace Client
     /// </summary>
     public partial class Home
     {
-        private readonly ClientState _clientState;
-        private readonly ClientController _clientCon;
+        private ClientState _clientState;
+        private ClientController _clientCon;
 
-        private readonly CurrentState _currentState;
+        private CurrentState _currentState;
 
 
         public void clientController_Updated(string type)
@@ -40,7 +40,7 @@ namespace Client
                 case NetCodes.OBJECT_ROUTE:
                     ReloadRoutes();
                     return;
-                
+
                 case NetCodes.OBJECT_ROUTENODE:
                     ReloadRouteNodes();
                     return;
@@ -55,12 +55,8 @@ namespace Client
         }
 
 
-
-
-        public Home()
+        public void SetUpHome()
         {
-            InitializeComponent();
-
             // initialise network
             Network network = Network.Instance;
             network.BeginConnect("localhost", 8080);
@@ -68,10 +64,7 @@ namespace Client
             // initialise database
             Database.Instance.Connect();
 
-            // initialise the state
-            _clientState = new ClientState();
 
-            _clientCon = new ClientController(_clientState);
 
             // initialise all the services (they set up the state themselves)
 
@@ -82,7 +75,7 @@ namespace Client
 
 
 
-            _clientCon.Updated += new ClientController.StateUpdatedDelegate(clientController_Updated);
+
 
 
             //set up Columns in all of the DataGrids
@@ -99,37 +92,54 @@ namespace Client
             routesList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
             routesList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
             routesList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
-            routesList.Columns.Add(new DataGridTextColumn { Header = "Company", Binding = new Binding("Company") }); 
+            routesList.Columns.Add(new DataGridTextColumn { Header = "Company", Binding = new Binding("Company") });
             routesList.Columns.Add(new DataGridTextColumn { Header = "TransportType", Binding = new Binding("TransportType") });
 
 
             domesticPriceList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
-            domesticPriceList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
-            domesticPriceList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
             domesticPriceList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
+            domesticPriceList.Columns.Add(new DataGridTextColumn { Header = "Price per gram", Binding = new Binding("PricePerGram") });
+            domesticPriceList.Columns.Add(new DataGridTextColumn { Header = "Price per cm^3", Binding = new Binding("PricePerCm3") });
 
             intlPriceList.Columns.Add(new DataGridTextColumn { Header = "ID", Binding = new Binding("ID") });
             intlPriceList.Columns.Add(new DataGridTextColumn { Header = "Origin", Binding = new Binding("Origin") });
             intlPriceList.Columns.Add(new DataGridTextColumn { Header = "Destination", Binding = new Binding("Destination") });
             intlPriceList.Columns.Add(new DataGridTextColumn { Header = "Priority", Binding = new Binding("Priority") });
-
+            intlPriceList.Columns.Add(new DataGridTextColumn { Header = "Price per gram", Binding = new Binding("PricePerGram") });
+            intlPriceList.Columns.Add(new DataGridTextColumn { Header = "Price per cm^3", Binding = new Binding("PricePerCm3") });
             intlPortList.Columns.Add(new DataGridTextColumn { Header = "Country", Binding = new Binding("Country") });
-            
-            //disable edit buttons until something is clicked in the corresponding datagrids
-            editCountry.IsEnabled = false;
+        }
 
+        public Home()
+        {
+            InitializeComponent();
 
-            //editCompanyButton.IsEnabled = false;
+            SetUpHome();
 
-            /*editDistCenter.IsEnabled = false;
-            editPrice.IsEnabled = false;
-            editRoute.IsEnabled = false;
-            editIntlPortButton.IsEnabled = false;*/
+            // initialise the state
+            _clientState = new ClientState();
 
-                        
+            _clientCon = new ClientController(_clientState);
+
+            _clientCon.Updated += new ClientController.StateUpdatedDelegate(clientController_Updated);
 
         }
 
+        public Home(ClientState state)
+        {
+            InitializeComponent();
+
+            SetUpHome();
+
+            _clientState = state;
+
+            _clientCon = new ClientController(_clientState);
+
+            _clientCon.Updated += new ClientController.StateUpdatedDelegate(clientController_Updated);
+
+            ReloadAll();
+
+        }
 
         //Helper methods to make it easier to referesh the information shown in a DataGrid
 
@@ -188,14 +198,14 @@ namespace Client
                 companiesList.Dispatcher.VerifyAccess();
                 _doReloadCompanies();
             }
-            catch(InvalidOperationException e)
+            catch (InvalidOperationException e)
             {
                 if (reloadCompaniesDelegate == null)
                     reloadCompaniesDelegate = new NullArgumentDelegate(_doReloadCompanies);
                 companiesList.Dispatcher.Invoke(reloadCompaniesDelegate);
             }
 
-         
+
         }
 
         private void ReloadRoutes()
@@ -240,7 +250,8 @@ namespace Client
                 domesticPriceList.Dispatcher.Invoke(reloadPricesDelegate);
             }
         }
-        private void ReloadIntlPrices(){
+        private void ReloadIntlPrices()
+        {
             try
             {
                 intlPriceList.Dispatcher.VerifyAccess();
@@ -314,7 +325,7 @@ namespace Client
             }
         }
 
-        
+
 
 
 
@@ -339,7 +350,7 @@ namespace Client
             {
                 var name = dlg.countryName.Text;
                 var code = dlg.countryCode.Text;
-                
+
                 try
                 {
                     _clientCon.AddCountry(code, name);
@@ -351,43 +362,43 @@ namespace Client
             }
         }
 
-        
+
 
         private void editCountry_Click(object sender, RoutedEventArgs e)
         {
             // Instantiate the dialog box
             var dlg = new AddCountryDialogBox
                 {
-                    countryName = {Text = ((Country) countriesList.SelectedItem).Name},
+                    countryName = { Text = ((Country)countriesList.SelectedItem).Name },
                     countryCode = { Text = ((Country)countriesList.SelectedItem).Code },
                     Title = "Edit Country",
-            
+
                 };
 
             // Open the dialog box modally 
             dlg.Title = "Edit Country";
             dlg.countryName.IsReadOnly = true;
             dlg.ShowDialog();
-            
+
             dlg.countryName.IsReadOnly = true;
             if (dlg.DialogResult != false)
             {
 
                 _clientCon.EditCountry(((Country)countriesList.SelectedItem).ID, dlg.countryCode.Text);
             }
-           
+
         }
 
         private void deleteCountry_Click(object sender, RoutedEventArgs e)
         {
-           
-            _clientCon.DeleteCountry(((Country) countriesList.SelectedItem).ID);
-            
-            
-        }
-            
 
-        
+            _clientCon.DeleteCountry(((Country)countriesList.SelectedItem).ID);
+
+
+        }
+
+
+
 
         private void countriesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -404,7 +415,7 @@ namespace Client
             if (dlg.DialogResult != false)
             {
                 var name = dlg.companyName.Text;
-             
+
 
                 try
                 {
@@ -424,7 +435,7 @@ namespace Client
             ReloadCompanies();
         }
 
-       
+
 
         private void requestDelivery_Click(object sender, RoutedEventArgs e)
         {
@@ -444,16 +455,16 @@ namespace Client
             ReloadCompanies();
         }
 
-        
+
         private void addRoute_Click(object sender, RoutedEventArgs e)
         {
-        // Instantiate the dialog box
+            // Instantiate the dialog box
             var dlg = new AddRouteDialogBox(_clientState);
 
             // Open the dialog box modally 
             dlg.ShowDialog();
 
-            
+
             if (dlg.DialogResult != false)
             {
                 ComboBoxItem origin = dlg.originComboBox.SelectedItem as ComboBoxItem;
@@ -505,26 +516,31 @@ namespace Client
                     times.Add(new WeeklyTime(day, time.Hour, time.Minute));
                 }
 
-                
+
 
                 try
                 {
-                    _clientCon.AddRoute(Convert.ToInt32(origin.Tag), Convert.ToInt32(dest.Tag),Convert.ToInt32(company.Tag) , transport, Convert.ToInt32(dlg.weightCost.Text), Convert.ToInt32(dlg.volumeCost.Text), Convert.ToInt32(dlg.maxWeight.Text), Convert.ToInt32(dlg.maxVolume.Text), Convert.ToInt32(dlg.duration.Text),  times );
+                    _clientCon.AddRoute(Convert.ToInt32(origin.Tag), Convert.ToInt32(dest.Tag), Convert.ToInt32(company.Tag), transport, Convert.ToInt32(dlg.weightCost.Text), Convert.ToInt32(dlg.volumeCost.Text), Convert.ToInt32(dlg.maxWeight.Text), Convert.ToInt32(dlg.maxVolume.Text), Convert.ToInt32(dlg.duration.Text), times);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
 
-            
-        }
 
-       
+            }
+
+
         }
 
         private void addPrice_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new AddPriceDialogBox(_clientState);
+            var dlg = new AddPriceDialogBox(_clientState, true);
+            dlg.origin.Text = "NA";
+            dlg.origin.IsEnabled = false;
+
+            dlg.dest.Text = "NA";
+            dlg.dest.IsEnabled = false;
 
             // Open the dialog box modally 
             dlg.ShowDialog();
@@ -567,12 +583,12 @@ namespace Client
             if (dlg.DialogResult != false)
             {
                 ComboBoxItem country = dlg.countries.SelectedItem as ComboBoxItem;
-                
+
 
                 try
                 {
                     _clientCon.AddInternationalPort(Convert.ToInt32(country.Tag));
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -587,7 +603,7 @@ namespace Client
         {
             // Instantiate the dialog box
             var dlg = new AddRouteDialogBox(_clientState);
-            var r = ((Route) routesList.SelectedItem);
+            var r = ((Route)routesList.SelectedItem);
 
             dlg.Title = "Edit Route";
 
@@ -691,11 +707,11 @@ namespace Client
                     times.Add(new WeeklyTime(day, time.Hour, time.Minute));
 
 
-                   
-                        _clientCon.EditRoute(r.ID, Convert.ToInt32(dlg.weightCost.Text),
-                                             Convert.ToInt32(dlg.volumeCost.Text), Convert.ToInt32(dlg.maxWeight.Text),
-                                             Convert.ToInt32(dlg.maxVolume.Text), Convert.ToInt32(dlg.duration.Text), times);
-                  
+
+                    _clientCon.EditRoute(r.ID, Convert.ToInt32(dlg.weightCost.Text),
+                                         Convert.ToInt32(dlg.volumeCost.Text), Convert.ToInt32(dlg.maxWeight.Text),
+                                         Convert.ToInt32(dlg.maxVolume.Text), Convert.ToInt32(dlg.duration.Text), times);
+
 
                 }
             }
@@ -703,7 +719,7 @@ namespace Client
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new ViewStats(_clientCon));
+            NavigationService.Navigate(new ViewStats(_clientCon, _clientState));
         }
 
         private void addDistCenterButton_Click(object sender, RoutedEventArgs e)
@@ -714,7 +730,7 @@ namespace Client
             dlg.ShowDialog();
             if (dlg.DialogResult != false)
             {
-                
+
 
                 try
                 {
@@ -730,12 +746,12 @@ namespace Client
 
         private void editPrice_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new AddPriceDialogBox(_clientState);
+            var dlg = new AddPriceDialogBox(_clientState, true);
 
             // Open the dialog box modally 
             var price = ((Price)domesticPriceList.SelectedItem);
             dlg.Title = "Edit Domnestic Price";
-            
+
             dlg.origin.IsEnabled = false;
             dlg.origin.Text = price.Origin.Country.Name;
             dlg.dest.IsEnabled = false;
@@ -807,7 +823,7 @@ namespace Client
 
         private void addIntlPrice_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new AddPriceDialogBox(_clientState);
+            var dlg = new AddPriceDialogBox(_clientState, false);
 
             // Open the dialog box modally 
             dlg.ShowDialog();
@@ -841,6 +857,11 @@ namespace Client
 
         private void reload_Click_1(object sender, RoutedEventArgs e)
         {
+            ReloadAll();
+        }
+
+        private void ReloadAll()
+        {
             ReloadCompanies();
             ReloadIntlPrices();
             ReloadPrices();
@@ -848,9 +869,7 @@ namespace Client
             ReloadRoutes();
             ReloadCountries();
         }
-
-
-        }
+    }
 
     }
 

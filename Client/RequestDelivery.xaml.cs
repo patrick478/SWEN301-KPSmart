@@ -124,7 +124,7 @@ namespace Client
 
         private void backToHomeButton_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new System.Uri("Home.xaml", UriKind.RelativeOrAbsolute));
+            NavigationService.Navigate(new Home(_clientState));
         }
 
         private void submitButton_Click(object sender, RoutedEventArgs e)

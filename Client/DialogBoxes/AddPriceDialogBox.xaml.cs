@@ -10,7 +10,7 @@ namespace Client.DialogBoxes
     /// </summary>
     public partial class AddPriceDialogBox : Window
     {
-        public AddPriceDialogBox(ClientState clientState)
+        public AddPriceDialogBox(ClientState clientState, bool domestic)
         {
             InitializeComponent();
             var locationService = new LocationService(clientState);
@@ -19,15 +19,15 @@ namespace Client.DialogBoxes
                 var cbi = new ComboBoxItem();
                 if (routeNode is DistributionCentre)
                     cbi.Content = ((DistributionCentre)routeNode).Name;
-                else if (routeNode is InternationalPort)
+                else if (routeNode is InternationalPort && !domestic)
                     cbi.Content = routeNode.Country.Name;
                 cbi.Tag = routeNode.ID;
                 this.origin.Items.Add(cbi);
 
                 var cbi2 = new ComboBoxItem();
-                if (routeNode is DistributionCentre)
+                if (routeNode is DistributionCentre )
                     cbi2.Content = ((DistributionCentre)routeNode).Name;
-                else if (routeNode is InternationalPort)
+                else if (routeNode is InternationalPort && !domestic)
                     cbi2.Content = routeNode.Country.Name;
                 cbi2.Tag = routeNode.ID;
                 this.dest.Items.Add(cbi2);
