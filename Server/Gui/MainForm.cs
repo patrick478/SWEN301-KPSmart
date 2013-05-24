@@ -80,8 +80,6 @@ namespace Server.Gui
                 Logger.WriteLine(er.Message);
                 Logger.Write(er.StackTrace);
             }*/
-           
-
         
         }
 

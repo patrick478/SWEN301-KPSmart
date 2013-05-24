@@ -72,7 +72,7 @@ namespace Server.Data
 
         public static string SelectFieldsWhereFieldsEqualAtTimeStamp(string tableName, string[] fieldNames, string[] fieldValues, string[] requiredFieldNames, string idColName, DateTime snapshotTime)
         {
-            string timestamp = String.Format("{0}-{1}-{2} {3}:{4}:{5}", snapshotTime.Year, snapshotTime.Month, snapshotTime.Day, snapshotTime.Hour, snapshotTime.Minute, snapshotTime.Second); //2013-05-20 09:53:10"
+            string timestamp = snapshotTime.ToString("yyyy-MM-dd HH:mm:ss"); //2013-05-20 09:53:10"
 
             // format the fields section
             string fields = "";
@@ -149,7 +149,7 @@ namespace Server.Data
 
         public static string SelectFieldsAtDateTime(string tableName, string[] requiredFieldNames, string idColName, DateTime snapshotTime)
         {
-            string timestamp = String.Format("{0}-{1}-{2} {3}:{4}:{5}", snapshotTime.Year, snapshotTime.Month, snapshotTime.Day, snapshotTime.Hour, snapshotTime.Minute, snapshotTime.Second); //2013-05-20 09:53:10"
+            string timestamp = snapshotTime.ToString("yyyy-MM-dd HH:mm:ss"); //2013-05-20 09:53:10"
 
             // format the fields section
             string fields = "";

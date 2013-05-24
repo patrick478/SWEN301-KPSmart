@@ -29,8 +29,12 @@ namespace Server.Data
         /// <returns></returns>
         public int GetNumberOfEvents(DateTime time)
         {
-            var sql = "SELECT COUNT(*) FROM 'events'";
-            return Database.Instance.FetchNumberQuery(sql).ToInt();
+            lock (Database.Instance) 
+            {
+                var sql = SQLQueryBuilder.SelectFieldsAtDateTime("events", new string[] { "id"}, "id", time);
+                var rows = Database.Instance.FetchRows(sql);
+                return rows.Length;      
+            }
         }
 
         public DateTime GetDateTimeOfFirstEvent()
