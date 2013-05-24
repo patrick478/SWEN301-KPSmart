@@ -26,7 +26,7 @@ namespace Server.Business
         private Dictionary<RouteNode, double> nodeCost;
         private HashSet<RouteNode> closed;
         private SortedList<RouteNode, double> fringe;
-
+       
 
         public PathFinder(RouteService routeService)
         {
@@ -66,7 +66,8 @@ namespace Server.Business
             originPath = new Dictionary<RouteNode, RouteInstance>();
             nodeCost = new Dictionary<RouteNode, double>();
             closed = new HashSet<RouteNode>();
-            fringe = new SortedList<RouteNode, double>();
+            var rc = new RouteComparer();
+            fringe = new SortedList<RouteNode, double>(rc);
 
             fringe.Add(origin, 0);
             originPath.Add(origin, new OriginRouteInstance(requestTime));

@@ -50,8 +50,7 @@ namespace Client
 
             firstDate = _clientState.FirstEvent;
 
-            var numDays = (lastDate - firstDate).Days + 1;
-
+            var numDays = lastDate.Day - firstDate.Day;
             dateSlider.Maximum = numDays;
             dateSlider.IsEnabled = true;
 

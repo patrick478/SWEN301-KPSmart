@@ -6,9 +6,23 @@
 //////////////////////
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+
 
 namespace Common
 {
+    public class RouteComparer : IComparer<RouteNode>
+    {
+        public int Compare(RouteNode a, RouteNode b)
+        {
+            if (a.ID == b.ID)
+                return 0;
+            else
+                return 1;
+        }
+    }
+
     /// <summary>
     /// This class represents a RouteNode that mail can be sent to.
     /// </summary>

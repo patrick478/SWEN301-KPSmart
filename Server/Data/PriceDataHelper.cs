@@ -204,17 +204,29 @@ namespace Server.Data
                 // load destination
                 var destination = routeNodeDataHelper.Load(destinationId);
 
-                var price = new Price
-                {
-                    Origin = origin,
-                    Destination = destination,
-                    Priority = priority,
-                    PricePerCm3 = pricePerCm3,
-                    PricePerGram = pricePerGram,
-                    ID = row[6].ToInt(),
-                    LastEdited = created
-                };
+                Price price;
 
+                if(origin == null && destination == null)
+                    price = new DomesticPrice {
+                        Priority = priority,
+                        PricePerCm3 = pricePerCm3,
+                        PricePerGram = pricePerGram,
+                        ID = row[6].ToInt(),
+                        LastEdited = created
+                    };
+            
+                else
+                    price = new Price
+                    {
+                        Origin = origin,
+                        Destination = destination,
+                        Priority = priority,
+                        PricePerCm3 = pricePerCm3,
+                        PricePerGram = pricePerGram,
+                        ID = row[6].ToInt(),
+                        LastEdited = created
+                    };
+                
                 Logger.WriteLine(price.ToString());
 
                 prices[price.ID] = price;
