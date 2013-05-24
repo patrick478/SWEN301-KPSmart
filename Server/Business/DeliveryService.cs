@@ -75,6 +75,8 @@ namespace Server.Business
             {
                 var pathType = delivery.Key;
                 var path = delivery.Value;
+                if (path == null)
+                    continue;
 
                 // make the delivery (will throw an exception if fields are incorrect)
                 var newDelivery = GetDeliveryFromRouteInstances(path, weightInGrams, volumeInCm3,
