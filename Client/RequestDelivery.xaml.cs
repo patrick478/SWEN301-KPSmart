@@ -100,6 +100,8 @@ namespace Client
 
 
             submitDeliveryType.Visibility = Visibility.Visible;
+            submitDeliveryType.Content = "Sumbit Delivery";
+            submitDeliveryType.Click += new RoutedEventHandler(submitDeliveryType_Click);
             air.Visibility = Visibility.Visible;
             airExpress.Visibility = Visibility.Visible;
             standard.Visibility = Visibility.Visible;
@@ -142,6 +144,7 @@ namespace Client
             {
                 standardExpress.Content = "Standard Express: " + standardExpressPrice;
             }
+            
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -175,11 +178,11 @@ namespace Client
            
             int originNode = Convert.ToInt32(orig.Tag);
             int destNode = Convert.ToInt32(dest.Tag);
-               
 
 
 
-            
+
+            MessageBox.Show("here");
             _clientController.RequestDelivery(originNode, destNode, Convert.ToInt32(weight.Text),
                                                                                            Convert.ToInt32(volume.Text));
                 
@@ -200,7 +203,20 @@ namespace Client
 
         private void submitDeliveryType_Click(object sender, RoutedEventArgs e)
         {
-           
+            
+
+            PathType type = PathType.Standard;
+
+            if ((bool)standard.IsChecked)
+                type = PathType.Standard;
+            else if ((bool)standardExpress.IsChecked)
+                type = PathType.Express;
+            else if ((bool)air.IsChecked)
+                type = PathType.AirStandard;
+            else if ((bool)airExpress.IsChecked)
+                type = PathType.AirExpress;
+            
+            _clientController.ChooseDelivery(type);
         }
 
     }

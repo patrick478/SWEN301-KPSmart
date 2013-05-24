@@ -120,7 +120,7 @@ namespace Server.Business
                 Route route = routeInstance.Route;
 
                 // check contiguous
-                if (previousDestination != null && route.Origin.Equals(previousDestination))
+                if (previousDestination != null && !route.Origin.Equals(previousDestination))
                     throw new ArgumentException("Path isn't contiguous: " + path);
 
                 // add to cost
@@ -129,10 +129,25 @@ namespace Server.Business
 
                 // add to price
                 var prices = state.GetAllPrices();
-                var price =
-                prices.First(t =>
-                    t.Origin.Equals(route.Origin) && t.Destination.Equals(route.Destination) &&
-                    t.Priority.Equals(priority));
+                //var price =
+                //prices.First(t =>
+                //    t.Origin.Equals(route.Origin) && t.Destination.Equals(route.Destination) && 
+                //   t.Priority.Equals(route.TransportType));
+                Price price = null;
+                foreach(Price p in prices)
+                {
+                    if(p.Origin.Equals(route.Origin) && p.Destination.Equals(route.Destination))
+                    {
+                        if (price == null)
+                            price = p;
+
+                        if(price.Priority == Priority.Standard && priority == Priority.Air && p.Priority == Priority.Air)
+                            price = p;
+                    }
+                }
+                if (price == null)
+                    throw new Exception("Price does not exists");
+
                 totalPrice += price.PricePerCm3 * volumeInCm3;
                 totalPrice += price.PricePerGram * weightInGrams;
 
