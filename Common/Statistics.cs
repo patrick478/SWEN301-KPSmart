@@ -262,8 +262,9 @@ namespace Common
 
             List<Route> critRoutes = new List<Route>();
             string[] critTokens = tokens[arrayOffset++].Split(NetCodes.SEPARATOR_ELEMENT);
-            for (int i = 0; i < critTokens.Length; ++i)
-                critRoutes.Add(state.GetRoute( Convert.ToInt32(critTokens[i]) ));
+            if(critTokens.Length == 3)
+                for (int i = 0; i < critTokens.Length; ++i)
+                    critRoutes.Add(state.GetRoute( Convert.ToInt32(critTokens[i]) ));
 
             return new Statistics() { TotalRevenue = totalRevenue, TotalExpenditure = totalExpenditrue, TotalEvents = totalEvents, Triples = triples, CriticalRoutes = critRoutes };
         }
