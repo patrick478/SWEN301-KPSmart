@@ -209,6 +209,7 @@ namespace Client
         public void StatsInitialTime(string[] tokens)
         {
             DateTime date = DateTime.Parse(tokens[1]);
+            this.state.FirstEvent = date;
             if (InitialDateReceived != null)
                 InitialDateReceived(date);
         }

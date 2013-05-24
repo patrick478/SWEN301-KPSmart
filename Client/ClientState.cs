@@ -54,5 +54,7 @@ namespace Client
 
         public override bool DeliveriesInitialised { get { return false; } }
         #endregion
+
+        public DateTime FirstEvent { get; set; }
     }
 }
